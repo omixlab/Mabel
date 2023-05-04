@@ -1,0 +1,13 @@
+# external requirements
+pandas 
+numpy
+biopython
+python-dotenv>=0.5.1
+notebook
+jupyterlab
+black
+black[jupyter]
+isort
+metapub
+litstudy
+#litreviewer
