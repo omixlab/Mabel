@@ -17,14 +17,6 @@ import requests
 import urllib 
 
 
-# keyword = input("Insert your keyword: ")
-# num_of_articles = int(input("How many articles you want to extract? "))
-
-# (cancer of the prostate) AND (molecular targeted therapy)                                     RAW
-#   -> (cancer of the prostate[MeSH Terms]) AND (molecular targeted therapy[MeSH Terms])        PUBMED
-#   -> %28cancer+of+the+prostate%29+%28+molecular+targeted+therapy%29                           ELSEVIER
-
-
 # PubMed Extractor
 def extractor_pubmed(keyword, num_of_articles):
     print(f"Starting data extraction of {num_of_articles} articles from Pubmed using the keyword: {keyword}")
@@ -127,8 +119,44 @@ def extractor_scidir(keyword, num_of_articles=100):
     return scidir_data
 
 
-# extractor_scopus('%28cancer+of+the+prostate%29+%28+molecular+targeted+therapy%29')
-extractor_scidir('%28cancer+of+the+prostate%29+%28+molecular+targeted+therapy%29')
+# MAIN
+def main(num_of_articles=None, *args):
+    # Caso os parâmetros não sejam fornecidos (temporário)
+    if not args:
+        args = [input("Insert your keyword: ")]
+        while True:
+            extra = input("Insert more keywords or leave blank to continue: ")
+            if extra == '':
+                break
+            args.append(extra)
 
-# Fazer função main para executar as 3
-# Lib para trocar url: URL lib -> URL encode
+        keyword = f'({args[0]})'
+        for arg in args:
+            if arg != args[0]:
+                keyword += f' AND ({arg})'
+            
+    if not num_of_articles:
+        num_of_articles = int(input('Provide a number of articles to extract: '))
+
+    
+    # Converter keyword
+    pubmed_kw = keyword.replace(')', '[MeSH Terms])') 
+    elsevier_kw = keyword.replace('AND ', '').replace(' ', '+').replace('(', '%28').replace(')', '%29')         # Deveria colocar em lower case?
+    # (cancer of the prostate) AND (molecular targeted therapy)                                     RAW
+    #   -> (cancer of the prostate[MeSH Terms]) AND (molecular targeted therapy[MeSH Terms])        PUBMED
+    #   -> %28cancer+of+the+prostate%29+%28+molecular+targeted+therapy%29                           ELSEVIER
+
+    # Chamar as funções                       
+    extractor_pubmed(pubmed_kw, num_of_articles)
+    
+    if num_of_articles > 100:
+        num_of_articles = 100
+    extractor_scidir(elsevier_kw, num_of_articles)
+
+    if num_of_articles > 25:
+        num_of_articles = 25
+    extractor_scopus(elsevier_kw, num_of_articles)
+
+
+if __name__ == '__main__':
+    main()
