@@ -4,3 +4,7 @@ logs
 data
 default
 src/__pycache__/
+templates
+static
+app.py
+dump.json
