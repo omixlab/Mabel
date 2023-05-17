@@ -21,9 +21,7 @@ class Extractor:
         self.num_of_articles = num_of_articles
 
     def pubmed(self):
-        print(
-            f"Starting data extraction of {self.num_of_articles} articles from Pubmed using the keyword: {self.keyword}"
-        )
+        print(f"Starting data extraction of {self.num_of_articles} articles from Pubmed using the keyword: {self.keyword}")
 
         fetch = PubMedFetcher()
         pmids = fetch.pmids_for_query(self.keyword, retmax=self.num_of_articles)
@@ -55,6 +53,7 @@ class Extractor:
         return data_pubmed
 
     def scopus(self):
+        print(f"Starting data extraction of {self.num_of_articles} articles from Scopus using the keyword: {self.keyword}")
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
@@ -85,6 +84,7 @@ class Extractor:
         return doc_srch_scopus.results_df
 
     def scidir(self):
+        print(f"Starting data extraction of {self.num_of_articles} articles from ScienceDirect using the keyword: {self.keyword}")
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
