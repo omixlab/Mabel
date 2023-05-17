@@ -28,16 +28,13 @@ def main():
     articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
     
     pubmed_check = st.sidebar.checkbox('PubMed', True)
-    if pubmed_check:
-        num_pubmed = st.sidebar.select_slider('Number of PubMed articles: ', options=articles_range, value=5000)
+    num_pubmed = st.sidebar.select_slider('Number of PubMed articles: ', options=articles_range, value=5000, disabled=(not pubmed_check))
 
     scopus_check = st.sidebar.checkbox('Scopus', True)
-    if scopus_check:
-        num_scopus = st.sidebar.select_slider('Number of Scopus articles: ', options=articles_range, value=5000)
+    num_scopus = st.sidebar.select_slider('Number of Scopus articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check))
 
     scidir_check = st.sidebar.checkbox('ScienceDirect', True)
-    if scidir_check:
-        num_scidir = st.sidebar.select_slider('Number of ScienceDirect articles: ', options=articles_range, value=5000)
+    num_scidir = st.sidebar.select_slider('Number of ScienceDirect articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check))
 
     @st.cache_data
     def convert_df(df):
