@@ -20,16 +20,6 @@ class Extractor:
         self.keyword = keyword
         self.num_of_articles = num_of_articles
 
-        if num_of_articles > 25:
-            self.scopus_num = 25
-        else:
-            self.scopus_num = num_of_articles
-
-        if num_of_articles > 100:
-            self.scidir_num = 100
-        else:
-            self.scidir_num = num_of_articles
-
     def pubmed(self):
         print(
             f"Starting data extraction of {self.num_of_articles} articles from Pubmed using the keyword: {self.keyword}"
@@ -68,7 +58,7 @@ class Extractor:
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
-        doc_srch_scopus = ElsSearch("cancer prostata", "scopus")
+        doc_srch_scopus = ElsSearch(self.keyword, "scopus")
         t = doc_srch_scopus.execute(client, get_all=True)
         print("doc_srch has", len(doc_srch_scopus.results), "results.")
 

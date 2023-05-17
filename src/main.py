@@ -48,7 +48,7 @@ def main():
         # BUSCA PARA O PUBMED
         if pubmed_check:
             with st.spinner(f'Searching articles with keyword "{keyword}" in PubMed ({num_pubmed}) wait...'):
-                data_tmp = Extractor(keyword, 3).pubmed()
+                data_tmp = Extractor(keyword, num_pubmed).pubmed()
 
                 data = convert_df(data_tmp)
 
@@ -64,7 +64,7 @@ def main():
         # BUSCA PARA O Scopus
         if scopus_check:
             with st.spinner(f'Searching articles with keyword "{keyword}" in Scopus ({num_scopus}) wait...'):
-                data_tmp = Extractor(keyword, 3).scopus()
+                data_tmp = Extractor(keyword, num_scopus).scopus()
 
                 data = convert_df(data_tmp)
 
@@ -80,7 +80,7 @@ def main():
         # BUSCA PARA O Science Direct
         if scidir_check:
             with st.spinner(f'Searching articles with keyword "{keyword}" in ScienceDirect ({num_scidir}) wait...'):
-                data_tmp = Extractor(keyword, 3).scidir()
+                data_tmp = Extractor(keyword, num_scidir).scidir()
 
                 data = convert_df(data_tmp)
 
