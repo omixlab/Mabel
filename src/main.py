@@ -21,9 +21,9 @@ def main():
 
     #        st.write("Welcome, ", email)
 
-    """Aqui fica o campo onde escrevemos a palavra-chave. 
-    Embaixo desse podemos adicionar o número
-    de artigos que queremos"""
+    #Aqui fica o campo onde escrevemos a palavra-chave. 
+    #Embaixo desse podemos adicionar o número
+    #de artigos que queremos
 
     keyword = st.sidebar.text_input("Keyword", "Cancer prostata")
 
@@ -41,9 +41,9 @@ def main():
             with st.spinner(
                 f"Searching articles with keyword {keyword} in {database_name} wait..."
             ):
-                """O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
-                escolha e se não escolher deixar um default de 5k talvez
-                """
+                #O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
+                #escolha e se não escolher deixar um default de 5k talvez
+                
                 data_tmp = Extractor(keyword, 3).pubmed()
 
                 data = convert_df(data_tmp)
