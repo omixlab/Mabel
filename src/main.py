@@ -7,48 +7,77 @@ from extractor import Extractor
 
 def main():
     st.title("Systematic Review")
+    mode = st.radio('Mode:', options=("Basic", "Advanced"))
         
     # email = st.text_input('To login tell me your email, please')
-
     # ADMIN_USERS = {
     #    'gratidutra@gmail.com',
     #    'test@localhost.com'
     # }
 
     # if st.button("Send"):
-
     #    if st.experimental_user.email in ADMIN_USERS:
-
     #        st.write("Welcome, ", email)
 
-# INTERFACE DE BUSCA
-    keyword = st.text_input("Keyword")
 
-    st.write('Select your desired databases')
-    col1, col2 = st.columns([1,2])
-    with col1:
-        pubmed_check = st.checkbox('PubMed', True)
+    # BASIC
+    if mode is "Basic":
+        keyword = st.text_input("Search term")
+
+        st.write('Select your desired databases')
+        col1, col2 = st.columns([1,2])
+        with col1:
+            pubmed_check = st.checkbox('PubMed', True)
+        with col2:
+            articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+            num_pubmed = st.select_slider('Number of PubMed articles: ', options=articles_range, value=5000, disabled=(not pubmed_check))
+
+        col1, col2 = st.columns([1,2])
+        with col1:
+            scopus_check = st.checkbox('Scopus', True)
+        with col2:
+            num_scopus = st.select_slider('Number of Scopus articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check))
+
+        col1, col2 = st.columns([1,2])
+        with col1:
+            scidir_check = st.checkbox('ScienceDirect', True)
+        with col2:
+            num_scidir = st.select_slider('Number of ScienceDirect articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check))
+
+        @st.cache_data
+        def convert_df(df):
+            return df.to_csv().encode("utf-8")
+    
+    # ADVANCED
+    if mode is "Advanced":
+        # PubMed
+        col1, col2 = st.columns([1,2])
+        with col1:
+            st.subheader('PubMed')
+            pubmed_check = st.checkbox('Enabled', False, key='p')
+        with col2:
+            articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+            num_pubmed = st.select_slider('Number of articles: ', options=articles_range, value=5000, disabled=(not pubmed_check), key='p_num')
+
         
-    with col2:
-        articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
-        num_pubmed = st.select_slider('Number of PubMed articles: ', options=articles_range, value=5000, disabled=(not pubmed_check))
+        st.markdown('***')
+        # Scopus
+        col1, col2 = st.columns([1,2])
+        with col1:
+            st.subheader('Scopus')
+            scopus_check = st.checkbox('Enabled', False, key='sc')
+        with col2:
+            num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
 
-    col1, col2 = st.columns([1,2])
-    with col1:
-        scopus_check = st.checkbox('Scopus', True)
-    with col2:
-        num_scopus = st.select_slider('Number of Scopus articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check))
-
-    col1, col2 = st.columns([1,2])
-    with col1:
-        scidir_check = st.checkbox('ScienceDirect', True)
-    with col2:
-        num_scidir = st.select_slider('Number of ScienceDirect articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check))
-
-    @st.cache_data
-    def convert_df(df):
-        return df.to_csv().encode("utf-8")
-
+        st.markdown('***')
+        # ScienceDirect
+        col1, col2 = st.columns([1,2])
+        with col1:
+            st.subheader('ScienceDirect')
+            scidir_check = st.checkbox('Enabled', False, key='sd')
+        with col2:
+            num_scidir = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check), key='sd_num')
+        
 
 # RESULTADOS
     if st.button("Submit"):
