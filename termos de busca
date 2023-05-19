@@ -2,6 +2,7 @@ PubMed
 tags no formato [TAG]
 
 All Fields                                  qs= Terms/Keywords
+Affiliation                                 affiliations= Author affiliation
 Author                                      authors= Author(s)
 Author - Corporate
 Author - First
@@ -60,9 +61,6 @@ SciDir
 https://www.sciencedirect.com/search?qs=terms&pub=journal&date=2000-2020&authors=autores&volume=1&issue=2&page=3&affiliations=autores%20filiados
 
 
-
-
-affiliations= Author affiliation
 references= References
 docId= ISSN or ISBN
 
