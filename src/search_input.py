@@ -61,19 +61,22 @@ def advanced():
     with col3:
         boolean = st.selectbox('', ('AND', 'OR', 'NOT'))
     
-    query = ''
+    if 'query' not in st.session_state:
+        st.session_state.query = None
+
+
     if st.button('Add'):
-        if query == '':
-            query = f'({term})'
+        if st.session_state.query is None:
+            st.session_state.query = f'({term})'
         else:
-            if tag ==  'All Fields':
-                query += f' {boolean} ({term})'
+            if tag == 'All Fields':
+                st.session_state.query += f' {boolean} ({term})'
             else:
-                query += f' {boolean} ({term})[{tag}]'
+                st.session_state.query += f' {boolean} ({term})[{tag}]'
         
     with st.container():
-        st.write(query)
-        pm_keyword = query
+        st.write(st.session_state.query)
+        pm_keyword = st.session_state.query
     
 
     # Scopus
