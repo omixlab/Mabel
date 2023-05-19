@@ -1,0 +1,72 @@
+PubMed
+tags no formato [TAG]
+
+All Fields                                  qs= Terms/Keywords
+Author                                      authors= Author(s)
+Author - Corporate
+Author - First
+Author - Identifier
+Author - Last
+Book                                        pub= In journal or book
+Journal
+Conflict of Interest Statements
+EC/RN Number
+Editor                    accessTypes=openaccess
+Grant Number
+ISBN
+Investigator
+Issue
+Language
+Location ID
+MeSH Major Topic
+MeSH Subheading
+MeSH Terms
+Other Term
+Pagination                                  page= Page(s)
+Pharmacological Action
+Publication Type
+Publisher
+Secondary Source ID
+Subject - Personal Name
+Supplementary Concep
+Title                                       title= Title
+Title/Abstract                              tak= Title, abstract or author-specified keywords
+Transliterated Title
+Text Word
+Volume                                      volume= Volume(s)
+
+Date - Completion
+Date - Create
+Date - Entry
+Date - MeSH
+Date Modification
+Date Publication                            date= Year(s)
+
+[Filter]
+Availability 
+    Abstract = fha 
+    Free Full Text = ffrft
+    Full Text = fft
+Attribute
+Type
+Species
+Language
+Sex
+Age
+Other
+
+
+SciDir
+https://www.sciencedirect.com/search?qs=terms&pub=journal&date=2000-2020&authors=autores&volume=1&issue=2&page=3&affiliations=autores%20filiados
+
+
+
+
+affiliations= Author affiliation
+references= References
+docId= ISSN or ISBN
+
+issue= Issue(s)
+
+
+

@@ -20,9 +20,9 @@ def main():
     #        st.write("Welcome, ", email)
 
 
-    # BASIC
-    if mode is "Basic":
-        keyword = st.text_input("Search term")
+    # BASIC INPUT
+    if mode == "Basic":
+        keyword = st.text_input("Keyword")
 
         st.write('Select your desired databases')
         col1, col2 = st.columns([1,2])
@@ -48,8 +48,8 @@ def main():
         def convert_df(df):
             return df.to_csv().encode("utf-8")
     
-    # ADVANCED
-    if mode is "Advanced":
+    # ADVANCED INPUT
+    if mode == "Advanced":
         # PubMed
         col1, col2 = st.columns([1,2])
         with col1:
@@ -58,7 +58,6 @@ def main():
         with col2:
             articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
             num_pubmed = st.select_slider('Number of articles: ', options=articles_range, value=5000, disabled=(not pubmed_check), key='p_num')
-
         
         st.markdown('***')
         # Scopus
