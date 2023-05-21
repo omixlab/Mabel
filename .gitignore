@@ -5,3 +5,4 @@ data
 default
 src/__pycache__/
 dump.json
+version_old

@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from extractor import Extractor
+from utils.extractor import Extractor
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
                 #O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
                 #escolha e se não escolher deixar um default de 5k talvez
                 
-                data_tmp = Extractor(keyword, 3).pubmed()
+                data_tmp = Extractor(keyword, 200).pubmed()
 
                 data = convert_df(data_tmp)
 

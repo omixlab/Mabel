@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}
+    Form Register
+{% endblock %}
+{% block content %}
+    <body class="text-center">
+        <div class="container">
+            <img class='mb-4'src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKa4lhwylNXxl4aGSgzA1ZrXizM6FCdQq7K-bEauj8VUtSfFXRwiw9lW1Tg1Og58TUSQA&usqp=CAU">
+            <h1 class="h3 mb-3 font-weight-normal">
+                Create your account
+            </h1>
+            <form method="POST" class = "form-register" styler="color: withesmoke">
+                {{ form.user.label() }}
+                {{ form.user(class='form-control', placeholder='Your username') }}
+
+                {{ form.email.label() }}
+                {{ form.email(class='form-control', placeholder='Your E-mail') }}
+
+                {{ form.password.label() }}
+                {{ form.password(class='form-control', placeholder='Your password') }}
+
+                {{ form.password_conf.label() }}
+                {{ form.password_conf(class='form-control', placeholder='Confirm your password') }}
+
+                <br>
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-lg btn-success") }}
+                </div>
+            </form>
+
+        </div>
+    </body>
+{% endblock %}
