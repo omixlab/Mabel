@@ -3,81 +3,79 @@ import streamlit as st
 
 sys.path.insert(0, "src/utils/")
 from extractor import Extractor
+from search_input import basic, advanced
+
+
+from search_input import basic, advanced
 
 
 def main():
-    st.title("Systematic Review")
-    st.write("""## Insert your keyword & choose database""")
-
-    keyword = st.sidebar.text_input("Keyword", "Cancer prostata")
-
-    database_name = st.sidebar.selectbox(
-        "Select Database", ("Pubmed", "Scopus", "Science Direct", "All")
-    )
+    mode = st.radio('Mode:', options=("Basic", "Advanced"))
+        
+    # BASIC INPUT
+    if mode == "Basic":
+        request = basic()
+    
+    # ADVANCED INPUT
+    if mode == "Advanced":
+        request = advanced()
 
     @st.cache_data
     def convert_df(df):
         return df.to_csv().encode("utf-8")
 
-    # BUSCA PARA O PUBMED
-    if database_name == "Pubmed":
-        if st.sidebar.button("Submit"):
-            with st.spinner(
-                f"Searching articles with keyword {keyword} in {database_name} wait..."
-            ):
-                # O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
-                # escolha e se não escolher deixar um default de 5k talvez
+# RESULTADOS
+    if st.button("Submit"):
+        st.sidebar.write("""## Extracting...""")
 
-                data_tmp = Extractor(keyword, 200).pubmed()
+        # BUSCA PARA O PUBMED
+        if request['pm_check']:
+            with st.spinner(f'Searching articles with keyword "{request["pm_keyword"]}" in PubMed ({request["pm_num"]} articles) wait...'):
+                data_tmp = Extractor(request["pm_keyword"], request["pm_num"]).pubmed()
+
+                data = convert_df(data_tmp)
+
+                st.sidebar.download_button(
+                    label="Download PubMed data as CSV",
+                    data=data,
+                    file_name=f"pubmed_df.csv",
+                    mime="text/csv",
+                )
+
+                st.success("PubMed Done!")
+
+        # BUSCA PARA O Scopus
+        if request["sc_check"]:
+            with st.spinner(f'Searching articles with keyword "{request["sc_keyword"]}" in Scopus ({request["sc_num"]}) wait...'):
+                data_tmp = Extractor(request["sc_keyword"], request["sc_num"]).scopus()
 
                 data = convert_df(data_tmp)
 
                 st.download_button(
-                    label="Download data as CSV",
+                    label="Download Scopus data as CSV",
                     data=data,
-                    file_name=f"{database_name}_df.csv",
+                    file_name=f"scopus_df.csv",
                     mime="text/csv",
                 )
 
-                st.success("Done!")
-    # BUSCA PARA O Science Direct
-    elif database_name == "Science Direct":
-        if st.sidebar.button("Submit"):
-            with st.spinner(
-                f"Searching articles with keyword {keyword} in {database_name} wait..."
-            ):
-                data_tmp = Extractor(keyword, 5).scidir()
+                st.success("Scopus Done!")
+        
+        # BUSCA PARA O Science Direct
+        if request["sd_check"]:
+            with st.spinner(f'Searching articles with keyword "{request["sd_keyword"]}" in ScienceDirect ({request["sd_num"]}) wait...'):
+                data_tmp = Extractor(request["sd_keyword"], request["sd_num"]).scidir()
 
                 data = convert_df(data_tmp)
 
-                st.download_button(
-                    label="Download data as CSV",
+                st.sidebar.download_button(
+                    label="Download ScienceDirect data as CSV",
                     data=data,
-                    file_name=f"{database_name}_df.csv",
+                    file_name=f"scidir_df.csv",
                     mime="text/csv",
                 )
 
-                st.success("Done!")
-    # BUSCA PARA O Scopus
-    elif database_name == "Scopus":
-        if st.sidebar.button("Submit"):
-            with st.spinner(
-                f"Searching articles with keyword {keyword} in {database_name} wait..."
-            ):
-                data_tmp = Extractor(keyword, 5).scopus()
-
-                data = convert_df(data_tmp)
-
-                st.download_button(
-                    label="Download data as CSV",
-                    data=data,
-                    file_name=f"{database_name}_df.csv",
-                    mime="text/csv",
-                )
-
-                st.success("Done!")
-    # else:
-    #    st.error("## O nooo!! your email don't is in us database")
+                st.success("ScienceDirect Done!")
+        st.sidebar.success("Extraction complete!")
 
 
 if __name__ == "__main__":
