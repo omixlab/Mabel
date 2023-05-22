@@ -10,8 +10,10 @@
                 Create your account
             </h1>
             <form method="POST" class = "form-register" styler="color: withesmoke">
-                {{ form.user.label() }}
-                {{ form.user(class='form-control', placeholder='Your username') }}
+                {{form.hidden_tag()}}
+
+                {{ form.name.label() }}
+                {{ form.name(class='form-control', placeholder='Your username') }}
 
                 {{ form.email.label() }}
                 {{ form.email(class='form-control', placeholder='Your E-mail') }}

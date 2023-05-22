@@ -1,29 +1,13 @@
-import time
-
+import sys
 import streamlit as st
 
-from utils.extractor import Extractor
+sys.path.insert(0, "src/utils/")
+from extractor import Extractor
 
 
 def main():
     st.title("Systematic Review")
     st.write("""## Insert your keyword & choose database""")
-    # email = st.text_input('To login tell me your email, please')
-
-    # ADMIN_USERS = {
-    #    'gratidutra@gmail.com',
-    #    'test@localhost.com'
-    # }
-
-    # if st.button("Send"):
-
-    #    if st.experimental_user.email in ADMIN_USERS:
-
-    #        st.write("Welcome, ", email)
-
-    #Aqui fica o campo onde escrevemos a palavra-chave. 
-    #Embaixo desse podemos adicionar o número
-    #de artigos que queremos
 
     keyword = st.sidebar.text_input("Keyword", "Cancer prostata")
 
@@ -41,9 +25,9 @@ def main():
             with st.spinner(
                 f"Searching articles with keyword {keyword} in {database_name} wait..."
             ):
-                #O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
-                #escolha e se não escolher deixar um default de 5k talvez
-                
+                # O número de artigos está fixo para 3 precisamos criar um botão para que o usuário
+                # escolha e se não escolher deixar um default de 5k talvez
+
                 data_tmp = Extractor(keyword, 200).pubmed()
 
                 data = convert_df(data_tmp)
