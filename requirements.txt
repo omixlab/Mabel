@@ -1,3 +1,4 @@
+altair==4.2.2
 anyio @ file:///work/ci_py311/anyio_1676823771847/work/dist
 argon2-cffi @ file:///opt/conda/conda-bld/argon2-cffi_1645000214183/work
 argon2-cffi-bindings @ file:///work/ci_py311/argon2-cffi-bindings_1676823553406/work
@@ -5,11 +6,13 @@ asttokens @ file:///opt/conda/conda-bld/asttokens_1646925590279/work
 attrs @ file:///work/ci_py311/attrs_1676822758931/work
 Babel @ file:///work/ci_py311/babel_1676825020543/work
 backcall @ file:///home/ktietz/src/ci/backcall_1611930011877/work
+bcrypt==4.0.1
 beautifulsoup4 @ file:///croot/beautifulsoup4-split_1681493039619/work
 bibtexparser==1.4.0
 biopython==1.81
 black==23.3.0
 bleach @ file:///opt/conda/conda-bld/bleach_1641577558959/work
+blinker==1.6.2
 brotlipy==0.7.0
 cachetools==5.3.0
 certifi @ file:///work/ci_py311/certifi_1676822443922/work/certifi
@@ -29,24 +32,37 @@ debugpy @ file:///work/ci_py311/debugpy_1676824903649/work
 decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
 defusedxml @ file:///tmp/build/80754af9/defusedxml_1615228127516/work
 distlib==0.3.6
+dnspython==2.3.0
 docopt==0.6.2
+elsapy==0.5.1
+email-validator==2.0.0.post2
 entrypoints @ file:///work/ci_py311/entrypoints_1676823319002/work
 eutils==0.6.0
 executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
 fastjsonschema @ file:///work/ci_py311_2/python-fastjsonschema_1679340124475/work
 feedparser==6.0.10
 filelock==3.12.0
+Flask==2.3.2
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.2
+Flask-SQLAlchemy==3.0.3
+Flask-WTF==1.1.1
 fonttools==4.39.3
 gensim==4.3.1
+gitdb==4.0.10
+GitPython==3.1.31
+greenlet==2.0.2
 habanero==1.2.3
 humanfriendly==10.0
 idna @ file:///work/ci_py311/idna_1676822698822/work
+importlib-metadata==6.6.0
 iniconfig==2.0.0
 ipykernel @ file:///work/ci_py311/ipykernel_1677867938687/work
 ipython @ file:///croot/ipython_1680701871216/work
 ipython-genutils @ file:///tmp/build/80754af9/ipython_genutils_1606773439826/work
 ipywidgets @ file:///croot/ipywidgets_1679394798311/work
 isort==5.12.0
+itsdangerous==2.1.2
 jedi @ file:///work/ci_py311_2/jedi_1679336495545/work
 Jinja2 @ file:///work/ci_py311/jinja2_1676823587943/work
 joblib==1.2.0
@@ -96,14 +112,18 @@ pluggy==1.0.0
 ply==3.11
 prometheus-client @ file:///work/ci_py311_2/prometheus_client_1679340520168/work
 prompt-toolkit @ file:///work/ci_py311/prompt-toolkit_1676824857154/work
+protobuf==3.20.3
 psutil @ file:///work/ci_py311_2/psutil_1679337388738/work
 ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pubmed-mapper==0.1.1
 pubmed-parser==0.3.1
 pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
+pyarrow==12.0.0
 pybliometrics==3.5.2
 pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pydeck==0.8.1b0
 Pygments==2.15.1
+Pympler==1.0.1
 pyOpenSSL @ file:///croot/pyopenssl_1678965284384/work
 pyparsing==3.0.9
 pyproject_api==1.5.1
@@ -116,6 +136,7 @@ python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
 python-dotenv==1.0.0
 python-Levenshtein==0.21.0
 pytz @ file:///work/ci_py311/pytz_1676825004346/work
+pytz-deprecation-shim==0.1.0.post0
 pyvis==0.3.2
 pyzmq @ file:///croot/pyzmq_1682697643292/work
 qtconsole @ file:///croot/qtconsole_1681394213385/work
@@ -131,29 +152,38 @@ sgmllib3k==1.0.0
 sip @ file:///work/ci_py311/sip_1676825117084/work
 six @ file:///tmp/build/80754af9/six_1644875935023/work
 smart-open==6.3.0
+smmap==5.0.0
 sniffio @ file:///work/ci_py311/sniffio_1676823742530/work
 soupsieve @ file:///croot/soupsieve_1680518478486/work
+SQLAlchemy==2.0.15
 stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
+streamlit==1.22.0
 tabulate==0.9.0
+tenacity==8.2.2
 terminado @ file:///work/ci_py311/terminado_1677696151350/work
 threadpoolctl==3.1.0
 tinycss2 @ file:///work/ci_py311/tinycss2_1676823757641/work
 tokenize-rt==5.0.0
 toml @ file:///tmp/build/80754af9/toml_1616166611790/work
 tomli @ file:///work/ci_py311/tomli_1676822660974/work
+toolz==0.12.0
 tornado @ file:///work/ci_py311/tornado_1676823418767/work
 tox==4.5.1
 tqdm==4.65.0
 traitlets @ file:///work/ci_py311/traitlets_1676823305040/work
 typing_extensions @ file:///croot/typing_extensions_1681939499988/work
 tzdata==2023.3
+tzlocal==4.3
 Unidecode==1.3.6
 urllib3 @ file:///croot/urllib3_1680254681959/work
+validators==0.20.0
 virtualenv==20.23.0
+watchdog==3.0.0
 wcwidth @ file:///Users/ktietz/demo/mc3/conda-bld/wcwidth_1629357192024/work
 webencodings==0.5.1
 websocket-client @ file:///work/ci_py311/websocket-client_1676824890004/work
+Werkzeug==2.3.4
 widgetsnbextension @ file:///croot/widgetsnbextension_1679313860248/work
 wordcloud==1.9.1.1
-streamlit 
-Flask
+WTForms==3.0.1
+zipp==3.15.0
