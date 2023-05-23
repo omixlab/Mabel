@@ -37,10 +37,17 @@ def basic():
     }
     return request
 
+
+
 def advanced():
     # PUBMED
     def force_update():
         pass
+
+    # Starts variable 'query' as session state
+    if 'query' not in st.session_state:
+        st.session_state.query = None
+
 
     col1, col2 = st.columns([1,2])
     with col1:
@@ -84,43 +91,52 @@ def advanced():
             term = f'"{date1}"[{tag}] : "{date2}"'
         
         # Filtros
-        filters.filter()
+        if 'selected_filters' not in st.session_state:
+            st.session_state.selected_filters = []
+    
+        with st.expander('Filters', expanded=False):
+            tab1, tab2, tab3, tab4, tab5 = st.tabs(["Availability", "Type", "Age", "Language", "Others"])
+            tabs = [tab1, tab2, tab3, tab4, tab5]
+            for n in range(len(tabs)):
+                print(n)
+                with tabs[n]:
+                    for filter in filters.pubmed_filters[n]:
+                        if st.checkbox(filter, disabled=(not pubmed_check)):
+                            st.session_state.selected_filters.append(filter)
 
-        if st.button("Apply filters"):
-            filters_set = set()
-            for key in st.session_state.selected_filters:
-                filters_set.add(filters.dict.get(key))
+            if st.button("Apply filters", disabled=(not pubmed_check)):
+                filters_set = set()
+                for key in st.session_state.selected_filters:
+                    filters_set.add(filters.dict.get(key))
 
-            for filter in filters_set:
-                st.session_state.query += f' AND ({filter}[Filter])'
+                for filter in filters_set:
+                    st.session_state.query += f' AND ({filter}[Filter])'
 
 
     with col3:
         # Boolean operator
         boolean = st.selectbox('', ('AND', 'OR', 'NOT'), key='bool', disabled=(not pubmed_check), label_visibility="visible")
 
-
-    # Starts variable 'query' as session state
-    if 'query' not in st.session_state:
-        st.session_state.query = None
-
-    # Query
-    if st.button('Add', disabled=(not pubmed_check)):
-        if st.session_state.query is None:
-            if tag == 'All Fields':
-                st.session_state.query = f'({term})'
+        # Query
+        if st.button('Add', disabled=(not pubmed_check)):
+            if st.session_state.query is None:
+                if tag == 'All Fields':
+                    st.session_state.query = f'({term})'
+                else:
+                    st.session_state.query = f'({term}[{tag}])'
             else:
-                st.session_state.query = f'({term}[{tag}])'
-        else:
-            if tag == 'All Fields':
-                st.session_state.query += f' {boolean} ({term})'
-            else:
-                st.session_state.query += f' {boolean} ({term}[{tag}])'
-        
+                if tag == 'All Fields':
+                    st.session_state.query += f' {boolean} ({term})'
+                else:
+                    st.session_state.query += f' {boolean} ({term}[{tag}])'
+            
     pm_keyword = st.text_area('', st.session_state.query, disabled=(not pubmed_check), key='pm_keyword')
     
 
-    # Scopus
+
+
+
+    # SCOPUS
     st.markdown('***')    
     col1, col2 = st.columns([1,2])
     with col1:
@@ -131,8 +147,12 @@ def advanced():
 
     sc_keyword = st.text_area('', disabled=(not scopus_check), key='sc_keyword')
 
+
+
+
+
     st.markdown('***')
-    # ScienceDirect
+    # SCIENCE DIRECT
     col1, col2 = st.columns([1,2])
     with col1:
         st.subheader('ScienceDirect')
@@ -141,6 +161,10 @@ def advanced():
         num_scidir = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check), key='sd_num')
 
     sd_keyword = st.text_area('', disabled=(not scidir_check), key='sd_keyword')
+
+
+
+
 
     # Return everything as a dictionary
     request = {
