@@ -45,8 +45,11 @@ def advanced():
         pass
 
     # Starts variable 'query' as session state
-    if 'query' not in st.session_state:
-        st.session_state.query = None
+    if 'pm_query' not in st.session_state:
+        st.session_state.pm_query = None
+
+    if 'selected_filters' not in st.session_state:
+            st.session_state.selected_filters = []
 
 
     col1, col2 = st.columns([1,2])
@@ -70,9 +73,9 @@ def advanced():
              )
         if select == 'Author':
             tag = st.radio('Type', ('Author', 'Author - Corporate', 'Author - First', 'Author - Last', 'Author - Identifier'))
-        if select == 'MeSH':
+        elif select == 'MeSH':
             tag = st.radio('Type', ('MeSH Major Topic', 'MeSH Subheading', 'MeSH Terms'))
-        if select == 'Date':
+        elif select == 'Date':
             tag = st.radio('Type', ('Date - Completion', 'Date - Create', 'Date - Entry', 'Date - MeSH', 'Date Modification', 'Date Publication'))
         else:
             tag = select
@@ -91,9 +94,6 @@ def advanced():
             term = f'"{date1}"[{tag}] : "{date2}"'
         
         # Filtros
-        if 'selected_filters' not in st.session_state:
-            st.session_state.selected_filters = []
-    
         with st.expander('Filters', expanded=False):
             # Show filters
             tab1, tab2, tab3, tab4, tab5 = st.tabs(["Availability", "Type", "Test subject", "Language", "Others"])
@@ -108,14 +108,14 @@ def advanced():
             if st.button("Apply filters", disabled=(not pubmed_check)):
                 filters_set = set()
                 for key in st.session_state.selected_filters:
-                    filters_set.add(filters.dict.get(key))
+                    filters_set.add(filters.pumbed_dict.get(key))
 
-                st.session_state.query += ' AND ('
+                st.session_state.pm_query += ' AND ('
                 for i, filter in enumerate(filters_set):
                     if i == 0:
-                        st.session_state.query += f'({filter}[Filter])'
-                    else: st.session_state.query += f' OR ({filter}[Filter])'
-                st.session_state.query += ')'
+                        st.session_state.pm_query += f'({filter}[Filter])'
+                    else: st.session_state.pm_query += f' OR ({filter}[Filter])'
+                st.session_state.pm_query += ')'
 
 
     with col3:
@@ -124,22 +124,21 @@ def advanced():
 
         # Query
         if st.button('Add', disabled=(not pubmed_check)):
-            if st.session_state.query is None:
+            if st.session_state.pm_query is None:
                 if tag == 'All Fields':
-                    st.session_state.query = f'({term})'
+                    st.session_state.pm_query = f'({term})'
                 else:
-                    st.session_state.query = f'({term}[{tag}])'
+                    st.session_state.pm_query = f'({term}[{tag}])'
             else:
                 if tag == 'All Fields':
-                    st.session_state.query += f' {boolean} ({term})'
+                    st.session_state.pm_query += f' {boolean} ({term})'
                 else:
-                    st.session_state.query += f' {boolean} ({term}[{tag}])'
+                    st.session_state.pm_query += f' {boolean} ({term}[{tag}])'
             
-    pm_keyword = st.text_area('Query', st.session_state.query, disabled=(not pubmed_check), key='pm_keyword', 
+    pm_keyword = st.text_area('Query', st.session_state.pm_query, disabled=(not pubmed_check), key='pm_keyword', 
                               help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
-    if st.session_state.query is not None:
-        st.session_state.query = pm_keyword
-    print(st.session_state.query)
+    if st.session_state.pm_query is not None:
+        st.session_state.pm_query = pm_keyword
     
 
 
@@ -150,9 +149,30 @@ def advanced():
     col1, col2 = st.columns([1,2])
     with col1:
         st.subheader('Scopus')
-        scopus_check = st.checkbox('Enabled', False, key='sc', disabled=True)
+        scopus_check = st.checkbox('Enabled', False, key='sc')
     with col2:
         num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
+
+    col1, col2, col3 = st.columns([2, 4, 1])
+    with col1:
+        # Tags
+        select = st.selectbox('All', 'Abstract', 'Affiliation', 'Author', 'Article number', 'Chemical', 
+
+        if select == 'Affiliation':
+            tag = st.radio('Affiliation', 'Affiliation ID', 'Affiliation city', 'Affiliation country', 'Affiliation organization')
+        elif select == 'Author':
+            tag = st.radio('Author', 'Author ID', 'Author name', 'Author first initial', 'Author last name', 'Collaboration author', 'Author keywords')
+        elif select == 'Chemical':
+            tag = st.radio('Chemical', 'Chemical name', 'CAS registry number')
+        elif select == 'Author':
+            tag = st.radio(
+        
+                
+        else:
+            tag = select
+
+
+
 
     sc_keyword = st.text_area('Query', disabled=(not scopus_check), key='sc_keyword')
 
@@ -178,7 +198,7 @@ def advanced():
     # Return everything as a dictionary
     request = {
         'pm_keyword': pm_keyword,
-        #'sc_keyword': sc_keyword,
+        'sc_keyword': sc_keyword,
         #'sd_keyword': sd_keyword,
         'pm_check': pubmed_check,
         'sc_check': scopus_check,

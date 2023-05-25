@@ -12,7 +12,7 @@ Book                                        pub= In journal or book
 Journal
 Conflict of Interest Statements
 EC/RN Number
-Editor                    accessTypes=openaccess
+Editor                    
 Grant Number
 ISBN
 Investigator
@@ -46,7 +46,7 @@ Date Publication                            date= Year(s)
 [Filter]
 Availability 
     Abstract = fha 
-    Free Full Text = ffrft
+    Free Full Text = ffrft                  accessTypes=openaccess
     Full Text = fft
 Attribute
 Type
@@ -59,6 +59,9 @@ Other
 
 SciDir
 https://www.sciencedirect.com/search?qs=terms&pub=journal&date=2000-2020&authors=autores&volume=1&issue=2&page=3&affiliations=autores%20filiados
+
+SCOPUS
+ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
 
 
 references= References
