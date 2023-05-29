@@ -10,7 +10,7 @@ def basic():
     with col1:
         pubmed_check = st.checkbox('PubMed', True)
     with col2:
-        articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+        articles_range = list(range(1, 25)) + list(range(25, 50, 5)) + list(range(50, 250, 10)) + list(range(250, 1000, 50)) + list(range(1000, 5001, 100))
         num_pubmed = st.select_slider('Number of PubMed articles: ', options=articles_range, value=5000, disabled=(not pubmed_check))
 
     col1, col2 = st.columns([1,2])
@@ -64,7 +64,7 @@ def advanced():
         pubmed_check = st.checkbox('Enabled', False, key='p')
     with col2:
         # Number of articles
-        articles_range = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+        articles_range = list(range(1, 25)) + list(range(25, 50, 5)) + list(range(50, 250, 10)) + list(range(250, 1000, 50)) + list(range(1000, 5001, 100))
         num_pubmed = st.select_slider('Number of articles: ', options=articles_range, value=5000, disabled=(not pubmed_check), key='num_pubmed')
 
     col1, col2, col3 = st.columns([2, 4, 1])
@@ -77,12 +77,15 @@ def advanced():
              'Issue', 'Location ID', 'Secondary Source ID', 'Other Term', 'Publication Type', 'Publisher', 'Subject - Personal Name', 'Supplementary Concept',  
              ), key='pm_tag', disabled=(not pubmed_check), label_visibility="hidden"
              )
-        if select == 'Author':
-            tag = st.radio('Type', ('Author', 'Author - Corporate', 'Author - First', 'Author - Last', 'Author - Identifier'))
+        
+        if select == 'All Fields':
+            tag = ''
+        elif select == 'Author':
+            tag = f"[{st.radio('Type', ('Author', 'Author - Corporate', 'Author - First', 'Author - Last', 'Author - Identifier'))}]"
         elif select == 'MeSH':
-            tag = st.radio('Type', ('MeSH Major Topic', 'MeSH Subheading', 'MeSH Terms'))
+            tag = f"[{st.radio('Type', ('MeSH Major Topic', 'MeSH Subheading', 'MeSH Terms'))}]"
         elif select == 'Date':
-            tag = st.radio('Type', ('Date - Completion', 'Date - Create', 'Date - Entry', 'Date - MeSH', 'Date Modification', 'Date Publication'))
+            tag = f"[{st.radio('Type', ('Date - Completion', 'Date - Create', 'Date - Entry', 'Date - MeSH', 'Date Modification', 'Date Publication'))}]"
         else:
             tag = select
 
@@ -114,7 +117,7 @@ def advanced():
             if st.button("Apply filters", disabled=(not pubmed_check)):
                 filters_set = set()
                 for key in st.session_state.selected_filters:
-                    filters_set.add(pubmed.pumbed_dict.get(key))
+                    filters_set.add(pubmed.pubmed_dict.get(key))
 
                 st.session_state.pm_query += ' AND ('
                 for i, filter in enumerate(filters_set):
@@ -130,19 +133,19 @@ def advanced():
 
         # Query
         if st.button('Add', disabled=(not pubmed_check), key='pm_add'):
-            if st.session_state.pm_query is not None:
-                st.session_state.pm_query += f' {boolean} '
-
-            if tag == 'All Fields':
-                st.session_state.pm_query = f'({term})'
+            if st.session_state.pm_query is None or '':
+                st.session_state.pm_query = f'({term}{tag})'
             else:
-                st.session_state.pm_query = f'({term}[{tag}])'
+                st.session_state.pm_query += f' {boolean} ({term}{tag})'
+                
             
             
     pm_keyword = st.text_area('Query', st.session_state.pm_query, disabled=(not pubmed_check), key='pm_keyword', 
                               help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
     if st.session_state.pm_query is not None:
         st.session_state.pm_query = pm_keyword
+    if pm_keyword == '':
+        st.session_state.pm_query = None
     
 
 
@@ -212,9 +215,6 @@ def advanced():
                 else:
                     st.session_state.sc_query += f'{scopus.field[sc_tag]}({sc_term})'
 
-        
-
-
 
     sc_keyword = st.text_area('Query', st.session_state.sc_query, disabled=(not scopus_check), key='sc_keyword', 
                               help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
@@ -225,8 +225,8 @@ def advanced():
 
 
 
-    st.markdown('***')
     # SCIENCE DIRECT
+    st.markdown('***')
     col1, col2 = st.columns([1,2])
     with col1:
         st.subheader('ScienceDirect')

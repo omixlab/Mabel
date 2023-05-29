@@ -60,7 +60,7 @@ def main():
 
                 data = convert_df(data_tmp)
 
-                st.download_button(
+                st.sidebar.download_button(
                     label="Download Scopus data as CSV",
                     data=data,
                     file_name=f"scopus_df.csv",
