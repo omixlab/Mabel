@@ -70,22 +70,12 @@ def advanced():
     col1, col2, col3 = st.columns([2, 4, 1])
     with col1:
         # Tags
-        select = st.selectbox('Tags',
-            ('All Fields', 'Date',
-             'Author', 'Affiliation', 'Book', 'Journal', 'Volume', 'Pagination', 'Title', 'Title/Abstract', 'Transliterated Title', 'Text Word',
-             'Language', 'MeSH', 'Pharmacological Action', 'Conflict of Interest Statements', 'EC/RN Number', 'Grant Number', 'ISBN', 'Investigator',
-             'Issue', 'Location ID', 'Secondary Source ID', 'Other Term', 'Publication Type', 'Publisher', 'Subject - Personal Name', 'Supplementary Concept',  
-             ), key='pm_tag', disabled=(not pubmed_check), label_visibility="hidden"
-             )
+        select = st.selectbox('Tags', pubmed.selects, key='pm_tag', disabled=(not pubmed_check), label_visibility="hidden")
         
         if select == 'All Fields':
             tag = ''
-        elif select == 'Author':
-            tag = f"[{st.radio('Type', ('Author', 'Author - Corporate', 'Author - First', 'Author - Last', 'Author - Identifier'))}]"
-        elif select == 'MeSH':
-            tag = f"[{st.radio('Type', ('MeSH Major Topic', 'MeSH Subheading', 'MeSH Terms'))}]"
-        elif select == 'Date':
-            tag = f"[{st.radio('Type', ('Date - Completion', 'Date - Create', 'Date - Entry', 'Date - MeSH', 'Date Modification', 'Date Publication'))}]"
+        elif select in pubmed.radios:
+            tag = f"[{st.radio('Type', pubmed.radios[select])}]"
         else:
             tag = select
 
@@ -109,7 +99,7 @@ def advanced():
             tabs = [tab1, tab2, tab3, tab4, tab5]
             for n in range(len(tabs)):
                 with tabs[n]:
-                    for filter in pubmed.pubmed_filters[n]:
+                    for filter in pubmed.filters[n]:
                         if st.checkbox(filter, disabled=(not pubmed_check)):
                             st.session_state.selected_filters.append(filter)
 
@@ -117,7 +107,7 @@ def advanced():
             if st.button("Apply filters", disabled=(not pubmed_check)):
                 filters_set = set()
                 for key in st.session_state.selected_filters:
-                    filters_set.add(pubmed.pubmed_dict.get(key))
+                    filters_set.add(pubmed.dict.get(key))
 
                 st.session_state.pm_query += ' AND ('
                 for i, filter in enumerate(filters_set):
