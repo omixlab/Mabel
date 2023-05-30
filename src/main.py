@@ -36,21 +36,14 @@ def main():
 # RESULTADOS
     if st.button("Submit"):
         st.sidebar.write("""## Extracting...""")
+        st.session_state.dataframes = {}
 
         # BUSCA PARA O PUBMED
         if request['pm_check']:
             with st.spinner(f'Searching articles with keyword "{request["pm_keyword"]}" in PubMed ({request["pm_num"]} articles) wait...'):
                 data_tmp = Extractor(request["pm_keyword"], request["pm_num"]).pubmed()
 
-                data = convert_df(data_tmp)
-
-                st.sidebar.download_button(
-                    label="Download PubMed data as CSV",
-                    data=data,
-                    file_name=f"pubmed_df.csv",
-                    mime="text/csv",
-                )
-
+                st.session_state.dataframes["pubmed_df"] = convert_df(data_tmp)
                 st.success("PubMed Done!")
 
         # BUSCA PARA O Scopus
@@ -58,15 +51,7 @@ def main():
             with st.spinner(f'Searching articles with keyword "{request["sc_keyword"]}" in Scopus ({request["sc_num"]}) wait...'):
                 data_tmp = Extractor(request["sc_keyword"], request["sc_num"]).scopus()
 
-                data = convert_df(data_tmp)
-
-                st.sidebar.download_button(
-                    label="Download Scopus data as CSV",
-                    data=data,
-                    file_name=f"scopus_df.csv",
-                    mime="text/csv",
-                )
-
+                st.session_state.dataframes["scopus_df"] = convert_df(data_tmp)
                 st.success("Scopus Done!")
         
         # BUSCA PARA O Science Direct
@@ -74,17 +59,22 @@ def main():
             with st.spinner(f'Searching articles with keyword "{request["sd_keyword"]}" in ScienceDirect ({request["sd_num"]}) wait...'):
                 data_tmp = Extractor(request["sd_keyword"], request["sd_num"]).scidir()
 
-                data = convert_df(data_tmp)
-
-                st.sidebar.download_button(
-                    label="Download ScienceDirect data as CSV",
-                    data=data,
-                    file_name=f"scidir_df.csv",
-                    mime="text/csv",
-                )
-
+                st.session_state.dataframes["scidir_df"] = convert_df(data_tmp)
                 st.success("ScienceDirect Done!")
-        st.sidebar.success("Extraction complete!")
+        
+    
+    # Renderiza os downloads
+    if hasattr(st.session_state, 'dataframes'):
+        st.sidebar.success("Extraction complete!")    
+        for df in st.session_state.dataframes:
+            st.sidebar.download_button(
+                label=f"Download {df} as CSV",
+                data=st.session_state.dataframes[df],
+                file_name=f"{df}.csv",
+                mime="text/csv",
+                )
+        
+        
 
 
 if __name__ == "__main__":

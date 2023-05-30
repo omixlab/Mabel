@@ -77,7 +77,7 @@ def advanced():
         elif select in pubmed.radios:
             tag = f"[{st.radio('Type', pubmed.radios[select])}]"
         else:
-            tag = select
+            tag = f"[{select}]"
 
     with col2:
         if select == 'Date':
