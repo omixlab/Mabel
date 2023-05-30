@@ -141,12 +141,13 @@ def advanced():
 
 
 
-#SCOPUS
+# ELSEVIER
     st.markdown('***')    
     col1, col2 = st.columns([1,2])
     with col1:
-        st.subheader('Scopus')
-        scopus_check = st.checkbox('Enabled', False, key='sc')
+        st.subheader('Elsevier')
+        scopus_check = st.checkbox('Scopus', False, key='sc')
+        scidir_check = st.checkbox('ScienceDirect', False, key='sd')
     with col2:
         num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
 
@@ -210,24 +211,8 @@ def advanced():
                               help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
     if st.session_state.sc_query is not None:
         st.session_state.sc_query = sc_keyword
-
-
-
-
-
-    # SCIENCE DIRECT
-    st.markdown('***')
-    col1, col2 = st.columns([1,2])
-    with col1:
-        st.subheader('ScienceDirect')
-        scidir_check = st.checkbox('Enabled', False, key='sd')
-    with col2:
-        num_scidir = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scidir_check), key='sd_num')
-
-    sd_keyword = st.text_area('Query', st.session_state.sd_query, disabled=(not scidir_check), key='sd_keyword', 
-                              help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
-    if st.session_state.sd_query is not None:
-        st.session_state.sd_query = sd_keyword
+    if sc_keyword == '':
+        st.session_state.sc_query = None
 
 
 
@@ -237,12 +222,12 @@ def advanced():
     request = {
         'pm_keyword': pm_keyword,
         'sc_keyword': sc_keyword,
-        'sd_keyword': sd_keyword,
+        'sd_keyword': sc_keyword,
         'pm_check': pubmed_check,
         'sc_check': scopus_check,
         'sd_check': scidir_check,
         'pm_num': num_pubmed,
         'sc_num': num_scopus,
-        'sd_num': num_scidir
+        'sd_num': num_scopus,
     }
     return request
