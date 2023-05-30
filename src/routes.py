@@ -3,13 +3,14 @@ from flask import render_template, redirect, url_for, flash
 from src.models import Users
 from src.forms import RegisterForm, LoginForm
 from src import db
-from flask_login import login_user
+from flask_login import login_user, logout_user, login_required
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
 @app.route("/articles_extractor/")
+@login_required
 def articles_extractor():
     return render_template("articles_extractor.html")
 
@@ -42,3 +43,9 @@ def login():
         else:
             flash(f"User or password it's wrong. Try again!", category='danger')
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash("You do logout", category = 'info')
+    return redirect(url_for("home"))

@@ -11,5 +11,7 @@ app.config["SECRET_KEY"] = "57eea008c38612d210670283"
 db.init_app(app)
 bcrypt=Bcrypt(app)
 login_manager.init_app(app)
-
+login_manager.login_view = 'login'
+login_manager.login_message = "Please login"
+login_manager.login_category = 'info'
 from src import routes
