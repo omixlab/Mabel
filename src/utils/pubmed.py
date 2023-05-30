@@ -1,9 +1,11 @@
 # PUBMED
-selects = (
-        'All Fields', 'Date',
-        'Author', 'Affiliation', 'Book', 'Journal', 'Volume', 'Pagination', 'Title', 'Title/Abstract', 'Transliterated Title', 'Text Word',
-        'Language', 'MeSH', 'Pharmacological Action', 'Conflict of Interest Statements', 'EC/RN Number', 'Grant Number', 'ISBN', 'Investigator',
-        'Issue', 'Location ID', 'Secondary Source ID', 'Other Term', 'Publication Type', 'Publisher', 'Subject - Personal Name', 'Supplementary Concept',  
+tags = (
+        'All Fields', 'Date', 'Author', 'Affiliation', 'Book', 'Journal', 'Volume', 
+        'Pagination', 'Title', 'Title/Abstract', 'Transliterated Title', 'Text Word',
+        'Language', 'MeSH', 'Pharmacological Action', 'Conflict of Interest Statements', 
+        'EC/RN Number', 'Grant Number', 'ISBN', 'Investigator', 'Issue', 'Location ID',
+        'Secondary Source ID', 'Other Term', 'Publication Type', 'Publisher', 
+        'Subject - Personal Name', 'Supplementary Concept',  
         )
 
 radios = {

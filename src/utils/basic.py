@@ -1,0 +1,13 @@
+'All'
+'Date'
+'Title'
+'Abstract'
+'Author'
+'Affiliation'
+'Pages'
+'Volume'
+'Language'
+'DOI'
+'Publication Type'
+'Publisher'
+

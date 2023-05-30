@@ -3,7 +3,7 @@ import time
 import streamlit as st
 
 from extractor import Extractor
-from search_input import basic, advanced
+from advanced_search import basic, advanced
 
 
 def main():
