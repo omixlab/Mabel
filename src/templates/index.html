@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+<header class="h-100 p-5 text-white bg-dark text-center justidy-content-center 
+align-items-center">
+<h1>Bambu - App Extractor</h1>
+<h2>Welcome the application.</h2>
+<p>To access the page extraction paper click in bottun below </p>
+<a class= 'btn btn-bg btn-primary' type= 'button' href="{{url_for('articles_extractor')}}">Start</a>
+</header>
+</div>
+
+{% endblock %}
