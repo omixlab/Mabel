@@ -68,7 +68,7 @@ class Extractor:
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
-        doc_srch_scopus = ElsSearch("cancer prostata", "scopus")
+        doc_srch_scopus = ElsSearch(self.keyword, "scopus")
         t = doc_srch_scopus.execute(client, get_all=True)
         print("doc_srch has", len(doc_srch_scopus.results), "results.")
 
