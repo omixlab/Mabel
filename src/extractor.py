@@ -14,6 +14,8 @@ from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 
+import utils.globals as globals
+
 
 class Extractor:
     def __init__(self, keyword, num_of_articles):
@@ -28,6 +30,10 @@ class Extractor:
 
         xmls = {}
         for pmid in pmids:
+            if globals.stop_extraction: 
+                print("PubMed stopped")
+                return None
+            
             xmls[pmid] = fetch.article_by_pmid(pmid).xml
 
         data_pubmed = pd.DataFrame()
@@ -53,6 +59,10 @@ class Extractor:
         return data_pubmed
 
     def scopus(self):
+        if globals.stop_extraction: 
+            print("Scopus stopped")
+            return None
+        
         print(f"Starting data extraction of {self.num_of_articles} articles from Scopus using the keyword: {self.keyword}")
         client = ElsClient(apikey)
         client.inst_token = insttoken
@@ -64,6 +74,10 @@ class Extractor:
         dicts = {}
 
         for i in doc_srch_scopus.results_df["prism:url"]:
+            if globals.stop_extraction: 
+                print("Scopus stopped")
+                return None
+            
             scp_doc = AbsDoc(uri=i)
             if scp_doc.read(client):
                 if "dc:description" in scp_doc.data["coredata"]:
@@ -84,6 +98,10 @@ class Extractor:
         return doc_srch_scopus.results_df
 
     def scidir(self):
+        if globals.stop_extraction: 
+            print("ScienceDirect stopped")
+            return None
+        
         print(f"Starting data extraction of {self.num_of_articles} articles from ScienceDirect using the keyword: {self.keyword}")
         client = ElsClient(apikey)
         client.inst_token = insttoken
@@ -96,6 +114,10 @@ class Extractor:
         pubtype = []
 
         for i in doc_srch.results_df["prism:doi"]:
+            if globals.stop_extraction: 
+                print("ScienceDirect stopped")
+                return None
+            
             doi_doc = FullDoc(doi=i)
             if doi_doc.read(client):
                 abstract.append(doi_doc.data["coredata"]["dc:description"])
