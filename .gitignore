@@ -9,3 +9,4 @@ templates
 static
 app.py
 dump.json
+__pycache__
