@@ -4,8 +4,6 @@ import utils.scopus as scopus
 
 def advanced():
     # PUBMED
-    def force_update():
-        pass
 
     # Start variables as session states
     if 'pm_query' not in st.session_state:

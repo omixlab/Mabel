@@ -58,7 +58,7 @@ class Extractor:
         client.inst_token = insttoken
 
         doc_srch_scopus = ElsSearch(self.keyword, "scopus")
-        t = doc_srch_scopus.execute(client, get_all=(self.num_of_articles == 5000))      # get_all=True if num_of_articles is 5000
+        t = doc_srch_scopus.execute(client, get_all=(self.num_of_articles == 5000))      # get_all=True <- if num_of_articles is 5000
         print("doc_srch has", len(doc_srch_scopus.results), "results.")
 
         dicts = {}
@@ -89,7 +89,7 @@ class Extractor:
         client.inst_token = insttoken
 
         doc_srch = ElsSearch(self.keyword, "sciencedirect")
-        t = doc_srch.execute(client, get_all=(self.num_of_articles == 5000))            # get_all=True if num_of_articles is 5000
+        t = doc_srch.execute(client, get_all=(self.num_of_articles == 5000))            # get_all=True <- if num_of_articles is 5000
         print("doc_srch has", len(doc_srch.results), "results.")
 
         abstract = []
