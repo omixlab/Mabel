@@ -112,11 +112,11 @@ def advanced():
     with col1:
         # Enable Scopus and ScienceDirect
         st.subheader('Elsevier')
-        scopus_check = st.checkbox('Scopus', True, key='sc')
+        scopus_check = st.checkbox('Scopus', False, key='sc')
         scidir_check = st.checkbox('ScienceDirect', False, key='sd')
     with col2:
         # Number of articles
-        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=25, disabled=(not scopus_check), key='sc_num')
+        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
 
     col1, col2, col3 = st.columns([2, 4, 1])
     with col1:
