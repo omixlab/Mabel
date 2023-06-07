@@ -154,13 +154,13 @@ def advanced():
                 st.session_state.sc_query = 'OPENACCESS(1)'
             elif 'OPENACCESS(1)' not in st.session_state.sc_query:
                 st.session_state.sc_query += ' AND OPENACCESS(1)'
+        else:
+            if st.session_state.sc_query == 'OPENACCESS(1)':
+                st.session_state.sc_query = None
     
     with col3:
         # Boolean operator
-        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), 
-                               key='sc_bool', 
-                               disabled=(sc_tag == 'Author ID' or sc_tag == 'Affiliation ID' or not scopus_check), 
-                               label_visibility="hidden")
+        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), key='sc_bool', disabled=(not scopus_check), label_visibility="hidden")
 
         # Query constructor
         if st.button('Add', disabled=(not scopus_check), key='sc_add'):
@@ -178,7 +178,7 @@ def advanced():
                     st.session_state.sc_query += f'{scopus.field[sc_tag]}({sc_term})'
 
             # Avoid boolean operator for ID fields
-            if sc_tag == 'Author ID' or sc_tag == 'Affiliation ID':
+            if sc_tag in scopus.non_boolean:
                 for bool in ['AND', 'OR', 'NOT']:
                     if bool in st.session_state.sc_query:
                         st.session_state.boolean_error = True

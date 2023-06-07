@@ -3,18 +3,18 @@ tags = (
     'Chemical', 'Conference', 'Document type', 'Publication stage', 'DOI', 
     'Other IDs', 'Editor', 'Exact source title', 'Funding', 'Index terms', 
     'Issue', 'Keywords', 'Language', 'Manufacturer', 'Publisher', 'References', 
-    'Sequence bank', 'Source', 'Title/Abstract/Keyword', 
+    'Sequence bank', 'Source', 'Subject area', 'Title/Abstract/Keyword', 
     'Title/Abstract/Keyword/Author', 'Tradename', 'Volume', 'Website'
     )
 
 radios = {
-    'Affiliation': ('Affiliation', 'Affiliation ID', 'Affiliation city', 'Affiliation country', 'Affiliation organization'),
-    'Author': ('Author', 'Author ID', 'Author name', 'Author first initial', 'Author last name', 'Collaboration author', 'Author keywords', 'First author'), #Boolean operators cannot be used in the AU-ID field
+    'Affiliation': ('Affiliation', 'Affiliation city', 'Affiliation country', 'Affiliation organization'),
+    'Author': ('Author', 'Author name', 'Author first initial', 'Author last name', 'Collaboration author', 'Author keywords', 'First author'), #Boolean operators cannot be used in the AU-ID field
     'Chemical': ('Chemical', 'Chemical name', 'CAS registry number'),
-    'Conference': ('Conference information', 'Conference Name', 'Conference location', 'Conference sponsors'),
+    'Conference': ('Conference information', 'Conference name', 'Conference location', 'Conference sponsors'),
     'Editor': ('Editor', 'Editor first name', 'Editor last name'),
     'Funding': ('Funding sponsor', 'Funding sponsor acronym', 'Funding grant number'),
-    'Other IDs': ('Article number', 'Code', 'EISSN', 'ISBN', 'ISSNP', 'Pubmed ID'),
+    'Other IDs': ('Article number', 'Code', 'EISSN', 'ISBN', 'ISSNP', 'PubMed ID'),
     'Pages': ('Pages', 'First page', 'Last page'),
     'References': ('References', 'Reference authors', 'Reference title', 'Reference source title', 'Reference year', 'Article number', 'Reference page numbers', 'Reference first page'),
     'Sequence bank': ('Sequence bank', 'Accession number'),
@@ -135,7 +135,7 @@ field = {
         'First page': 'PAGEFIRST',
         'Last page': 'PAGELAST',
         'Pages': 'PAGES',
-        'PubMed identifier': 'PMID',
+        'PubMed ID': 'PMID',
         'Publisher': 'PUBLISHER',
         'Date': 'PUBYEAR',
         'References': 'REF',
@@ -158,3 +158,5 @@ field = {
         'Volume': 'VOLUME',
         'Website': 'WEBSITE',
         }
+
+non_boolean = ['Affiliation ID', 'Author ID', 'Collaboration author', 'DOI', 'Editor', 'Editor first name', 'Editor last name']
