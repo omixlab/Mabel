@@ -10,6 +10,10 @@ def advanced():
         st.session_state.pm_query = None
     if 'selected_filters' not in st.session_state:
         st.session_state.selected_filters = []
+
+    if 'disable_bool' not in st.session_state:
+        st.session_state.disable_bool = False
+
     if 'sc_query' not in st.session_state:
         st.session_state.sc_query = None
     if 'sd_query' not in st.session_state:
@@ -29,7 +33,7 @@ def advanced():
     col1, col2, col3 = st.columns([2, 4, 1])
     with col1:
         # Tags
-        select = st.selectbox('Tags', pubmed.tags, key='pm_tag', disabled=(not pubmed_check), label_visibility="hidden")
+        select = st.selectbox('Field', pubmed.tags, key='pm_tag', disabled=(not pubmed_check))
         
         if select == 'All Fields':
             tag = ''
@@ -89,7 +93,8 @@ def advanced():
                 
     # Query
     pm_keyword = st.text_area('Query', st.session_state.pm_query, disabled=(not pubmed_check), key='pm_keyword', 
-                              help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
+                              help="""This is the query sent for your search. You can type it manually if you prefer.
+                              \n\nLeave blank and press Ctrl+Enter to reset query""")
     
     # Change query manually
     if st.session_state.pm_query is not None:
@@ -101,22 +106,22 @@ def advanced():
 
 
 
-    # ELSEVIER
+# ELSEVIER
     st.markdown('***')    
     col1, col2 = st.columns([1,2])
     with col1:
         # Enable Scopus and ScienceDirect
         st.subheader('Elsevier')
-        scopus_check = st.checkbox('Scopus', False, key='sc')
+        scopus_check = st.checkbox('Scopus', True, key='sc')
         scidir_check = st.checkbox('ScienceDirect', False, key='sd')
     with col2:
         # Number of articles
-        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
+        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=25, disabled=(not scopus_check), key='sc_num')
 
     col1, col2, col3 = st.columns([2, 4, 1])
     with col1:
         # Tags
-        select = st.selectbox('Tags', scopus.tags, disabled=(not scopus_check))
+        select = st.selectbox('Field', scopus.tags, disabled=(not scopus_check))
 
         if select in scopus.radios:
             # Tag subtype
@@ -152,7 +157,10 @@ def advanced():
     
     with col3:
         # Boolean operator
-        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), key='sc_bool', disabled=(not scopus_check), label_visibility="hidden")
+        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), 
+                               key='sc_bool', 
+                               disabled=(sc_tag == 'Author ID' or sc_tag == 'Affiliation ID' or not scopus_check), 
+                               label_visibility="hidden")
 
         # Query constructor
         if st.button('Add', disabled=(not scopus_check), key='sc_add'):
@@ -163,17 +171,24 @@ def advanced():
                 st.session_state.sc_query += f'PUBYEAR {sc_term}'
             elif sc_tag == 'Reference year':
                 st.session_state.sc_query += f'REFPUBYEAR IS {sc_term}'
-
             else:
                 if st.session_state.sc_query is None:
                     st.session_state.sc_query = f'{scopus.field[sc_tag]}({sc_term})'
                 else:
                     st.session_state.sc_query += f'{scopus.field[sc_tag]}({sc_term})'
 
+            # Avoid boolean operator for ID fields
+            if sc_tag == 'Author ID' or sc_tag == 'Affiliation ID':
+                for bool in ['AND', 'OR', 'NOT']:
+                    if bool in st.session_state.sc_query:
+                        st.session_state.boolean_error = True
+
 
     # Query
     sc_keyword = st.text_area('Query', st.session_state.sc_query, disabled=(not scopus_check), key='sc_keyword', 
-                              help='This is the query sent for your search. You can type it manually if you prefer.\n\nLeave blank and press Ctrl+Enter to reset query')
+                              help="""This is the query sent for your search. You can type it manually if you prefer.
+                              \n\nLeave blank and press Ctrl+Enter to reset query
+                              \n\nSearch tips: https://dev.elsevier.com/sc_search_tips.html""")
     
     # Change query manually
     if st.session_state.sc_query is not None:
