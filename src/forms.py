@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
+from wtforms import PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+
 from src.models import Users
 
 
@@ -8,17 +9,21 @@ class RegisterForm(FlaskForm):
     def validate_username(self, check_user):
         user = Users.query.filter_by(name=check_user.data).first()
         if user:
-            raise ValidationError('User already exists! Register another user name.')
-        
+            raise ValidationError("User already exists! Register another user name.")
+
     def validate_email(self, check_email):
         email = Users.query.filter_by(email=check_email.data).first()
         if email:
-            raise ValidationError('E-mail already exists! Register another user E-mail.')
-        
+            raise ValidationError(
+                "E-mail already exists! Register another user E-mail."
+            )
+
     def validate_password(self, check_password):
         password = Users.query.filter_by(password=check_password.data).first()
         if password:
-            raise ValidationError('Password already exists! Register another user Password.')
+            raise ValidationError(
+                "Password already exists! Register another user Password."
+            )
 
     name = StringField(
         label="Username:", validators=[Length(min=2, max=30), DataRequired()]
@@ -32,7 +37,8 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField(label="Submit")
 
+
 class LoginForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    password = PasswordField(label="Senha:",  validators=[DataRequired()])
+    password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")

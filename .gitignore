@@ -6,3 +6,4 @@ default
 src/__pycache__/
 dump.json
 version_old
+extractor_v1.py
