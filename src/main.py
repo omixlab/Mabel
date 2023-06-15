@@ -6,6 +6,7 @@ import utils.globals as globals
 from extractor import Extractor
 from basic_search import basic
 from advanced_search import advanced
+from utils.unify_dfs import unify
 
 
 def main():
@@ -81,8 +82,14 @@ def main():
                     file_name=f"{df}.csv",
                     mime="text/csv",
                     )
+                
+            unified_dataframe = unify(st.session_state.dataframes)
+            
     else:
         st.sidebar.error('Extraction stopped by the user') 
+
+
+    
     
 
 if __name__ == "__main__":

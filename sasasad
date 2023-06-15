@@ -1,0 +1,11 @@
+'title' = 'dc:title' = 'dc:title'
+'abstract' = 'Abstract' = 'abstract'
+'pages' = 'prism:pageRange' = 'prism:startingPage'-'prism:endingPage'
+'journal' = 'prism:publicationName' = 'prism:publicationName'
+'authors' = 'dc:creator' = 'authors'
+'pubdate' != 'prism:coverDate' != 'prism:coverDate'
+'mesh_terms' != None = None
+'publication_types' = 'prism:aggregationType'+'subtypeDescription' = 'pubtype'
+'doi' = 'prism:doi' = 'prism:doi'
+'affiliations' = 'affiliation' = None
+'country' = in 'affiliation' = None
