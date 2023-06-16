@@ -82,9 +82,18 @@ def main():
                     file_name=f"{df}.csv",
                     mime="text/csv",
                     )
-                
-            unified_dataframe = unify(st.session_state.dataframes)
             
+            st.sidebar.write('Unified results')
+            unified_df = unify(st.session_state.dataframes["pubmed_df"],
+                               st.session_state.dataframes["scopus_df"],
+                               st.session_state.dataframes["scidir_df"])
+            st.sidebar.download_button(
+                label='Download results in unified dataframe',
+                data=unified_df,
+                file_name='results,csv',
+                mime='text/csv'
+                )
+
     else:
         st.sidebar.error('Extraction stopped by the user') 
 
