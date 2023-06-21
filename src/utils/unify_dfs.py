@@ -52,8 +52,7 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
     sc_formated_affil = []
     print('-------------------------------------')
     for row in scopus['affiliation']:
-        print(str(row))
-        data = json.loads(str(row).replace("'", "\""))
+        data = json.loads(row)
         affils = [item['affilname'] for item in data]
         sc_formated_affil.append('; '.join(affils))
 
@@ -77,8 +76,9 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
     scidir = sd_df
 
     sd_formated_auth = []
-    for row in scidir['authors']:
-        data = json.loads(str(row).replace("'", "\""))
+    for row in scidir['authors'].map(lambda data: json.dumps(data)):
+        print(row)
+        data = json.loads(row)
         names = [item['$'] for item in data['author']]
         sd_formated_auth.append('; '.join(names))
     
