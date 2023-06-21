@@ -43,7 +43,7 @@ def main():
                 data_tmp = Extractor(request["pm_keyword"], request["pm_num"]).pubmed()
                 
                 if not globals.stop_extraction:
-                    st.session_state.dataframes["pubmed_df"] = convert_df(data_tmp)
+                    st.session_state.dataframes["pubmed_df"] = data_tmp
                     st.success("PubMed Done!")
                 else:
                     st.error('Stopped')
@@ -54,7 +54,7 @@ def main():
                 data_tmp = Extractor(request["sc_keyword"], request["sc_num"]).scopus()
 
                 if not globals.stop_extraction:
-                    st.session_state.dataframes["scopus_df"] = convert_df(data_tmp)
+                    st.session_state.dataframes["scopus_df"] = data_tmp
                     st.success("Scopus Done!")
                 else:
                     st.error('Stopped')
@@ -65,7 +65,7 @@ def main():
                 data_tmp = Extractor(request["sd_keyword"], request["sd_num"]).scidir()
 
                 if not globals.stop_extraction:
-                    st.session_state.dataframes["scidir_df"] = convert_df(data_tmp)
+                    st.session_state.dataframes["scidir_df"] = data_tmp
                     st.success("ScienceDirect Done!")
                 else:
                     st.error('Stopped')
@@ -74,11 +74,12 @@ def main():
     # Renderiza os downloads
     if not globals.stop_extraction:
         if hasattr(st.session_state, 'dataframes'): 
-            st.sidebar.success("Extraction complete!") 
+            st.sidebar.success("Extraction complete!")
+
             for df in st.session_state.dataframes:
                 st.sidebar.download_button(
                     label=f"Download {df} as CSV",
-                    data=st.session_state.dataframes[df],
+                    data=convert_df(st.session_state.dataframes[df]),
                     file_name=f"{df}.csv",
                     mime="text/csv",
                     )
@@ -87,9 +88,10 @@ def main():
             unified_df = unify(st.session_state.dataframes["pubmed_df"],
                                st.session_state.dataframes["scopus_df"],
                                st.session_state.dataframes["scidir_df"])
+
             st.sidebar.download_button(
                 label='Download results in unified dataframe',
-                data=unified_df,
+                data=convert_df(unified_df),
                 file_name='results,csv',
                 mime='text/csv'
                 )
@@ -98,8 +100,6 @@ def main():
         st.sidebar.error('Extraction stopped by the user') 
 
 
-    
-    
 
 if __name__ == "__main__":
     main()

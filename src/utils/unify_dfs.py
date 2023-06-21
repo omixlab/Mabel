@@ -3,17 +3,22 @@ import numpy as np
 import json
 
 def unify(pm_df=None, sc_df=None, sd_df=None):
-    pubmed = pd.read_csv(pm_df)
+
+    pubmed = pm_df
 
     # Formatação de alguns elementos
     pm_formated_auth = []
     for row in pubmed['authors']:
-        authors_list = row.split(';')
-        formated_auth_str = ''
-        for author in authors_list:
-            lastname, firstname, abrev, orcid = author.split('|')
-            formated_auth_str += f'{lastname} {firstname}; '
-        pm_formated_auth.append(formated_auth_str)
+        if row != '':
+            authors_list = row.split(';')
+            formated_auth_str = ''
+            for author in authors_list:
+                info = author.split('|')
+                lastname, firstname = info[0], info[1]
+                formated_auth_str += f'{lastname} {firstname}; '
+            pm_formated_auth.append(formated_auth_str)
+        else:
+            pm_formated_auth.append(np.nan)
 
     pm_formated_type = []
     for row in pubmed['publication_types']:
@@ -38,14 +43,17 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'Affiliations': pubmed['affiliations'],
         'MeSH Terms': pubmed['mesh_terms'],
         })
-    print(pm)
+    pm.to_csv('/home/gabrielliston/pm.csv')
 
 
-    scopus = pd.read_csv(psc_df)
+    # SCOPUS
+    scopus = sc_df
 
     sc_formated_affil = []
+    print('-------------------------------------')
     for row in scopus['affiliation']:
-        data = json.loads(row.replace("'", "\""))
+        print(str(row))
+        data = json.loads(str(row).replace("'", "\""))
         affils = [item['affilname'] for item in data]
         sc_formated_affil.append('; '.join(affils))
 
@@ -62,13 +70,15 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'MeSH Terms': np.nan
         })
     print(sc)
+    sc.to_csv('/home/gabrielliston/sc.csv')
 
 
-    scidir = pd.read_csv(psd_df)
+    # SCIENCE DIRECT
+    scidir = sd_df
 
     sd_formated_auth = []
     for row in scidir['authors']:
-        data = json.loads(row.replace("'", "\""))
+        data = json.loads(str(row).replace("'", "\""))
         names = [item['$'] for item in data['author']]
         sd_formated_auth.append('; '.join(names))
     
@@ -89,6 +99,7 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'MeSH Terms': np.nan
     })
     print(sd)
+    sd.to_csv('/home/gabrielliston/sd.csv')
 
 
     # Concatenação dos dataframes
