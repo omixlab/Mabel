@@ -95,10 +95,8 @@ class Extractor:
             abstracts_df, on="prism:url", how="left"
         )
         doc_srch_scopus.results_df
-        results_df = doc_srch_scopus.results_df
-        results_df['affiliation'] = results_df['affiliation'].map(lambda data: json.dumps(data))
 
-        return results_df
+        return doc_srch_scopus.results_df
 
     def scidir(self):
         if globals.stop_extraction: 
@@ -131,7 +129,5 @@ class Extractor:
         doc_srch.results_df["abstract"] = abstract
         doc_srch.results_df["pubtype"] = pubtype
 
-        results_df = doc_srch.results_df
-        # results_df['affiliation'] = results_df['affiliation'].map(lambda data: json.dumps(data))
 
         return doc_srch.results_df

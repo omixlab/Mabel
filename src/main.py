@@ -92,7 +92,7 @@ def main():
             st.sidebar.download_button(
                 label='Download results in unified dataframe',
                 data=convert_df(unified_df),
-                file_name='results,csv',
+                file_name='results.csv',
                 mime='text/csv'
                 )
 

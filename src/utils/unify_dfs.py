@@ -43,18 +43,14 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'Affiliations': pubmed['affiliations'],
         'MeSH Terms': pubmed['mesh_terms'],
         })
-    pm.to_csv('/home/gabrielliston/pm.csv')
 
 
     # SCOPUS
     scopus = sc_df
 
     sc_formated_affil = []
-    print('-------------------------------------')
     for row in scopus['affiliation']:
-        data = json.loads(row)
-        affils = [item['affilname'] for item in data]
-        sc_formated_affil.append('; '.join(affils))
+        sc_formated_affil.append('; '.join([entry['affilname'] for entry in row]))
 
     sc = pd.DataFrame({
         'Title': scopus['dc:title'],
@@ -68,19 +64,14 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'Affiliations': sc_formated_affil,
         'MeSH Terms': np.nan
         })
-    print(sc)
-    sc.to_csv('/home/gabrielliston/sc.csv')
 
 
     # SCIENCE DIRECT
     scidir = sd_df
 
     sd_formated_auth = []
-    for row in scidir['authors'].map(lambda data: json.dumps(data)):
-        print(row)
-        data = json.loads(row)
-        names = [item['$'] for item in data['author']]
-        sd_formated_auth.append('; '.join(names))
+    for row in scidir['authors']:
+        sd_formated_auth.append('; '.join([entry['$'] for entry in row['author']]))
     
     sd_formated_pages = []
     for start, end in zip(scidir['prism:startingPage'], scidir['prism:endingPage']):
@@ -98,8 +89,6 @@ def unify(pm_df=None, sc_df=None, sd_df=None):
         'Affiliations': np.nan,
         'MeSH Terms': np.nan
     })
-    print(sd)
-    sd.to_csv('/home/gabrielliston/sd.csv')
 
 
     # Concatenação dos dataframes
