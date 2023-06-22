@@ -32,6 +32,7 @@ def main():
     if st.button("Submit"):
         st.sidebar.write("""## Extracting...""")
         st.session_state.dataframes = {}
+        st.session_state.unify_parameters = {}
 
         globals.stop_extraction = False
         if st.button("Stop Extraction"):
@@ -44,6 +45,7 @@ def main():
                 
                 if not globals.stop_extraction:
                     st.session_state.dataframes["pubmed_df"] = data_tmp
+                    st.session_state.unify_parameters['pm'] = data_tmp
                     st.success("PubMed Done!")
                 else:
                     st.error('Stopped')
@@ -55,6 +57,7 @@ def main():
 
                 if not globals.stop_extraction:
                     st.session_state.dataframes["scopus_df"] = data_tmp
+                    st.session_state.unify_parameters['sc'] = data_tmp
                     st.success("Scopus Done!")
                 else:
                     st.error('Stopped')
@@ -66,9 +69,16 @@ def main():
 
                 if not globals.stop_extraction:
                     st.session_state.dataframes["scidir_df"] = data_tmp
+                    st.session_state.unify_parameters['sd'] = data_tmp
                     st.success("ScienceDirect Done!")
                 else:
                     st.error('Stopped')
+
+
+        # UNIFICA AS TABELAS
+        st.session_state.dataframes["unified_df"] = unify(st.session_state.unify_parameters)
+
+                
         
     
     # Renderiza os downloads
@@ -85,16 +95,15 @@ def main():
                     )
             
             st.sidebar.write('Unified results')
-            unified_df = unify(st.session_state.dataframes["pubmed_df"],
-                               st.session_state.dataframes["scopus_df"],
-                               st.session_state.dataframes["scidir_df"])
-
             st.sidebar.download_button(
                 label='Download results in unified dataframe',
-                data=convert_df(unified_df),
+                data=convert_df(st.session_state.dataframes["unified_df"]),
                 file_name='results.csv',
                 mime='text/csv'
                 )
+            
+            # Show unified dataframes
+            st.dataframe(st.session_state.dataframes["unified_df"])
 
     else:
         st.sidebar.error('Extraction stopped by the user') 
