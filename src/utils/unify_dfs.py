@@ -12,26 +12,32 @@ def unify(dfs):
         # Formatação de alguns elementos
         pm_formated_auth = []
         for row in pubmed['authors']:
-            if row != '':
-                authors_list = row.split(';')
-                formated_auth_str = ''
-                for author in authors_list:
-                    info = author.split('|')
-                    lastname, firstname = info[0], info[1]
-                    formated_auth_str += f'{lastname} {firstname}; '
-                pm_formated_auth.append(formated_auth_str)
-            else:
-                pm_formated_auth.append(np.nan)
+            try:
+                if row != '':
+                    authors_list = row.split(';')
+                    formated_auth_str = ''
+                    for author in authors_list:
+                        info = author.split('|')
+                        lastname, firstname = info[0], info[1]
+                        formated_auth_str += f'{lastname} {firstname}; '
+                    pm_formated_auth.append(formated_auth_str)
+                else:
+                    pm_formated_auth.append(np.nan)
+            except:
+                pm_formated_auth.append('error')
 
         pm_formated_type = []
         for row in pubmed['publication_types']:
-            if ';' in row:
-                type_list = row.split(';')
-                formated_type_str = [''.join(type.split(":", 1)[1:]) for type in type_list]
-                pm_formated_type.append('; '.join(formated_type_str))
+            try:
+                if ';' in row:
+                    type_list = row.split(';')
+                    formated_type_str = [''.join(type.split(":", 1)[1:]) for type in type_list]
+                    pm_formated_type.append('; '.join(formated_type_str))
 
-            else:
-                pm_formated_type.append(''.join(row.split(":", 1)[1:]))
+                else:
+                    pm_formated_type.append(''.join(row.split(":", 1)[1:]))
+            except:
+                pm_formated_type.append('error')
 
         # Converte em dataframes padronizados
         formated_dfs.append(
@@ -56,7 +62,10 @@ def unify(dfs):
 
         sc_formated_affil = []
         for row in scopus['affiliation']:
-            sc_formated_affil.append('; '.join([entry['affilname'] for entry in row]))
+            try:
+                sc_formated_affil.append('; '.join([entry['affilname'] for entry in row]))
+            except:
+                sc_formated_affil.append('error')
 
         formated_dfs.append(
             pd.DataFrame({
@@ -80,11 +89,17 @@ def unify(dfs):
 
         sd_formated_auth = []
         for row in scidir['authors']:
-            sd_formated_auth.append('; '.join([entry['$'] for entry in row['author']]))
+            try:
+                sd_formated_auth.append('; '.join([entry['$'] for entry in row['author']]))
+            except:
+                sd_formated_auth.append('error')
         
         sd_formated_pages = []
         for start, end in zip(scidir['prism:startingPage'], scidir['prism:endingPage']):
-            sd_formated_pages.append(f'{start}-{end}')
+            try:
+                sd_formated_pages.append(f'{start}-{end}')
+            except:
+                sd_formated_pages.append('error')
 
         formated_dfs.append(
             pd.DataFrame({

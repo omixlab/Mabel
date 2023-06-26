@@ -116,12 +116,12 @@ def advanced():
         scidir_check = st.checkbox('ScienceDirect', False, key='sd')
     with col2:
         # Number of articles
-        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check), key='sc_num')
+        num_scopus = st.select_slider('Number of articles: ', options=[25, 5000], value=5000, disabled=(not scopus_check and not scidir_check), key='sc_num')
 
     col1, col2, col3 = st.columns([2, 4, 1])
     with col1:
         # Tags
-        select = st.selectbox('Field', scopus.tags, disabled=(not scopus_check))
+        select = st.selectbox('Field', scopus.tags, disabled=(not scopus_check and not scidir_check))
 
         if select in scopus.radios:
             # Tag subtype
@@ -146,10 +146,10 @@ def advanced():
 
         else:
             # Text input
-            sc_term = st.text_input('Search term', key='sc_term', disabled=(not scopus_check))
+            sc_term = st.text_input('Search term', key='sc_term', disabled=(not scopus_check and not scidir_check))
 
         # Filter
-        if st.checkbox('Open access', disabled=(not scopus_check)):
+        if st.checkbox('Open access', disabled=(not scopus_check and not scidir_check)):
             if st.session_state.sc_query is None:
                 st.session_state.sc_query = 'OPENACCESS(1)'
             elif 'OPENACCESS(1)' not in st.session_state.sc_query:
@@ -160,10 +160,10 @@ def advanced():
     
     with col3:
         # Boolean operator
-        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), key='sc_bool', disabled=(not scopus_check), label_visibility="hidden")
+        boolean = st.selectbox('Bool', ('AND', 'OR', 'NOT'), key='sc_bool', disabled=(not scopus_check and not scidir_check), label_visibility="hidden")
 
         # Query constructor
-        if st.button('Add', disabled=(not scopus_check), key='sc_add'):
+        if st.button('Add', disabled=(not scopus_check and not scidir_check), key='sc_add'):
             if st.session_state.sc_query is not None:
                 st.session_state.sc_query += f' {boolean} '
             
@@ -185,7 +185,7 @@ def advanced():
 
 
     # Query
-    sc_keyword = st.text_area('Query', st.session_state.sc_query, disabled=(not scopus_check), key='sc_keyword', 
+    sc_keyword = st.text_area('Query', st.session_state.sc_query, disabled=(not scopus_check and not scidir_check), key='sc_keyword', 
                               help="""This is the query sent for your search. You can type it manually if you prefer.
                               \n\nLeave blank and press Ctrl+Enter to reset query
                               \n\nSearch tips: https://dev.elsevier.com/sc_search_tips.html""")
