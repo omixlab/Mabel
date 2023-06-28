@@ -13,22 +13,15 @@ from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+import json
+
+import utils.globals as globals
 
 
 class Extractor:
     def __init__(self, keyword, num_of_articles):
         self.keyword = keyword
         self.num_of_articles = num_of_articles
-
-        if num_of_articles > 25:
-            self.scopus_num = 25
-        else:
-            self.scopus_num = num_of_articles
-
-        if num_of_articles > 100:
-            self.scidir_num = 100
-        else:
-            self.scidir_num = num_of_articles
 
     def pubmed(self):
         print(
@@ -40,6 +33,10 @@ class Extractor:
 
         xmls = {}
         for pmid in pmids:
+            if globals.stop_extraction:
+                print("PubMed stopped")
+                return None
+
             xmls[pmid] = fetch.article_by_pmid(pmid).xml
 
         data_pubmed = pd.DataFrame()
@@ -65,16 +62,29 @@ class Extractor:
         return data_pubmed
 
     def scopus(self):
+        if globals.stop_extraction:
+            print("Scopus stopped")
+            return None
+
+        print(
+            f"Starting data extraction of {self.num_of_articles} articles from Scopus using the keyword: {self.keyword}"
+        )
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
         doc_srch_scopus = ElsSearch(self.keyword, "scopus")
-        t = doc_srch_scopus.execute(client, get_all=True)
+        t = doc_srch_scopus.execute(
+            client, get_all=(self.num_of_articles == 5000)
+        )  # get_all=True <- if num_of_articles is 5000
         print("doc_srch has", len(doc_srch_scopus.results), "results.")
 
         dicts = {}
 
         for i in doc_srch_scopus.results_df["prism:url"]:
+            if globals.stop_extraction:
+                print("Scopus stopped")
+                return None
+
             scp_doc = AbsDoc(uri=i)
             if scp_doc.read(client):
                 if "dc:description" in scp_doc.data["coredata"]:
@@ -95,17 +105,30 @@ class Extractor:
         return doc_srch_scopus.results_df
 
     def scidir(self):
+        if globals.stop_extraction:
+            print("ScienceDirect stopped")
+            return None
+
+        print(
+            f"Starting data extraction of {self.num_of_articles} articles from ScienceDirect using the keyword: {self.keyword}"
+        )
         client = ElsClient(apikey)
         client.inst_token = insttoken
 
         doc_srch = ElsSearch(self.keyword, "sciencedirect")
-        t = doc_srch.execute(client, get_all=False)
+        t = doc_srch.execute(
+            client, get_all=(self.num_of_articles == 5000)
+        )  # get_all=True <- if num_of_articles is 5000
         print("doc_srch has", len(doc_srch.results), "results.")
 
         abstract = []
         pubtype = []
 
         for i in doc_srch.results_df["prism:doi"]:
+            if globals.stop_extraction:
+                print("ScienceDirect stopped")
+                return None
+
             doi_doc = FullDoc(doi=i)
             if doi_doc.read(client):
                 abstract.append(doi_doc.data["coredata"]["dc:description"])
