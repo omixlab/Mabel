@@ -87,20 +87,15 @@ def main():
             st.sidebar.success("Extraction complete!")
 
             for df in st.session_state.dataframes:
+                if df == "unified_df":
+                    st.sidebar.write('Unified results')
+
                 st.sidebar.download_button(
                     label=f"Download {df} as CSV",
                     data=convert_df(st.session_state.dataframes[df]),
                     file_name=f"{df}.csv",
                     mime="text/csv",
                     )
-            
-            st.sidebar.write('Unified results')
-            st.sidebar.download_button(
-                label='Download results in unified dataframe',
-                data=convert_df(st.session_state.dataframes["unified_df"]),
-                file_name='results.csv',
-                mime='text/csv'
-                )
             
             # Show unified dataframes
             st.dataframe(st.session_state.dataframes["unified_df"])
