@@ -5,6 +5,7 @@ from utils import extractor
 from utils.streamlit import basic_search
 from utils.streamlit import advanced_search
 from utils.streamlit import unify_dfs
+from utils.streamlit import spacy
 
 
 def main():
@@ -84,10 +85,21 @@ def main():
                 else:
                     st.error("Stopped")
 
+
         # UNIFICA AS TABELAS
-        st.session_state.dataframes["unified_df"] = unify_dfs.unify(
-            st.session_state.unify_parameters
-        )
+        unified_df = unify_dfs.unify(st.session_state.unify_parameters)
+
+        # SCISPACY
+        if request["scispacy_param"]:
+            spc_df = spacy.Scispacy(unified_df)
+
+            for option in request["scispacy_param"]:
+                print(option)
+                with st.spinner(f'Analyzing {option} with Spacy'):
+                    spc_df.genes()
+
+        st.session_state.dataframes["unified_df"] = unified_df
+
 
     # Renderiza os downloads
     if not globals.stop_extraction:

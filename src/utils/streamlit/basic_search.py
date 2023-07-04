@@ -107,6 +107,16 @@ def basic():
             disabled=(not scidir_check),
         )
 
+    with st.expander("Scispacy"):
+        st.write('See key elements of abstracts in a separated column of your dataframe using Scispacy')
+        options = {'Gene or gene products': 'genes'}
+
+        scispacy_param = []
+        for opt in options:
+            if st.checkbox(f'{opt}'):
+                scispacy_param.append(options[opt])
+
+
     # RETURN AS DICT
     request = {
         "pm_keyword": pm_keyword,
@@ -118,5 +128,6 @@ def basic():
         "pm_num": num_pubmed,
         "sc_num": num_scopus,
         "sd_num": num_scidir,
+        "scispacy_param": set(scispacy_param)
     }
     return request
