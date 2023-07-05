@@ -41,3 +41,8 @@ class LoginForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
+
+class SearchArticles(FlaskForm):
+    keyword = StringField(label="Keyword:", validators=[Length(min=2, max=30)])
+    submit = SubmitField(label="Search")
+
