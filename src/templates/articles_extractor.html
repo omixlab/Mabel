@@ -5,22 +5,44 @@ Articles Extractor
 {% block content %}
 
 <body class="text-center">
-    <div style="width:50%; height: 550px; float:left;">
-        <h1 class="h3 mb-2 font-weight-normal">
-            Log in
-        </h1>
-        <form method="POST" class="form-signin; mt-5" style="color:whitesmoke">
+    <div class="container" style="float:left;">
+        <h2 class="h3 mb-2 font-weight-normal">
+            Search Articles
+        </h2>
+        <form method="POST" class="form-signin; mt-5" style="color:black">
             {{form.hidden_tag()}}
 
-            {{ form.keyword.label() }}
-            {{ form.keyword(class='form-control', placeholder='Keyword') }}
-
+            {% for subfield in form.option %}
+            <p class="text-justify">
+                {{ subfield }}
+                {{ subfield.label }}
+            </p>
+            {% endfor %}
             <br>
+
+            <div class="row">
+                <div class="col-md-4">{{ form.tags}}</div>
+                <div class="col-md-6">{{ form.keyword(class='form-control', placeholder='Keyword') }}</div>
+                <div class="col-md-2">{{ form.connective}}</div>
+            </div>
+            <div class="text-center">{{form.open_access}} Open access</div>
+            <div class="text-justify">
+                {{form.pubmed_query(placeholder = 'Pubmed Query')}}
+            </div>
+            <br>
+            <div class="text-justify">{{form.pubmed_query(placeholder = 'Elsevier Query')}}</div>
+            <br>
+            <div>
+                <h5 class="text-justify">Select your desired databases</h5>
+                <div class="text-justify">{{form.check_pubmed}} Pubmed</div>
+                <div class="text-justify">{{form.check_scopus}} Scopus</div>
+                <div class="text-justify">{{form.check_elsevier}} Elsevier</div>
+            </div>
+            
             <div class="d-grid">
                 {{ form.submit(class="btn btn-md btn-primary") }}
             </div>
             <br>
-        </form>
         </form>
     </div>
 </body>

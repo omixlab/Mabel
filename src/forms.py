@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, RadioField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from src.models import Users
+import src.utils.dicts_tuples.basic_tuple as basic_tuples
 
 
 class RegisterForm(FlaskForm):
@@ -43,6 +44,15 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Log In")
 
 class SearchArticles(FlaskForm):
+    option =RadioField('label', choices=[('value','Basic'),('value_two','Advanced')])
+    tags = SelectField('option', choices = basic_tuples.tags)
     keyword = StringField(label="Keyword:", validators=[Length(min=2, max=30)])
+    connective = SelectField('connective', choices = [(1, 'AND'), (2, 'OR'), (3, 'NOT')])
+    open_access = BooleanField('open_access')
+    pubmed_query = TextAreaField('pubmed_query', render_kw={'rows':'4', 'cols':'100'})
+    elsevier_query = TextAreaField('elsevier_query', render_kw={'rows':'4', 'cols':'100'})
     submit = SubmitField(label="Search")
+    check_pubmed = BooleanField('check_pubmed')
+    check_scopus = BooleanField('scopus')
+    check_elsevier = BooleanField('elsevier')
 
