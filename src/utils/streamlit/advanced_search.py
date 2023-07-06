@@ -247,6 +247,16 @@ def advanced():
     if sc_keyword == "":
         st.session_state.sc_query = None
 
+
+    with st.expander("Scispacy"):
+        st.write('See key elements of abstracts in a separated column of your dataframe using Scispacy')
+        options = ['Gene or gene product', 'Cancer', 'Amino acid', 'Organ', 'Organism', 'Simple chemical']
+
+        scispacy_param = set()
+        for opt in options:
+            if st.checkbox(f'{opt}'):
+                scispacy_param.add(opt)
+
     # Return everything as a dictionary
     request = {
         "pm_keyword": pm_keyword,
@@ -258,5 +268,6 @@ def advanced():
         "pm_num": num_pubmed,
         "sc_num": num_scopus,
         "sd_num": num_scopus,
+        "scispacy_param": scispacy_param,
     }
     return request

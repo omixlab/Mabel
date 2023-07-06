@@ -109,12 +109,12 @@ def basic():
 
     with st.expander("Scispacy"):
         st.write('See key elements of abstracts in a separated column of your dataframe using Scispacy')
-        options = {'Gene or gene products': 'genes'}
+        options = ['Gene or gene product', 'Cancer', 'Amino acid', 'Organ', 'Organism', 'Simple chemical']
 
-        scispacy_param = []
+        scispacy_param = set()
         for opt in options:
             if st.checkbox(f'{opt}'):
-                scispacy_param.append(options[opt])
+                scispacy_param.add(opt)
 
 
     # RETURN AS DICT
@@ -128,6 +128,6 @@ def basic():
         "pm_num": num_pubmed,
         "sc_num": num_scopus,
         "sd_num": num_scidir,
-        "scispacy_param": set(scispacy_param)
+        "scispacy_param": scispacy_param
     }
     return request

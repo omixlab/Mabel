@@ -91,12 +91,8 @@ def main():
 
         # SCISPACY
         if request["scispacy_param"]:
-            spc_df = spacy.Scispacy(unified_df)
-
-            for option in request["scispacy_param"]:
-                print(option)
-                with st.spinner(f'Analyzing {option} with Spacy'):
-                    spc_df.genes()
+            with st.spinner(f'Analyzing with ScispaCy'):
+                unified_df = spacy.scispacy(unified_df, request["scispacy_param"])
 
         st.session_state.dataframes["unified_df"] = unified_df
 
@@ -106,8 +102,10 @@ def main():
         if hasattr(st.session_state, "dataframes"):
             st.sidebar.success("Extraction complete!")
 
+            st.sidebar.write("Raw data")
             for df in st.session_state.dataframes:
                 if df == "unified_df":
+                    st.sidebar.markdown("***")
                     st.sidebar.write("Unified results")
                 st.sidebar.download_button(
                     label=f"Download {df} as CSV",
