@@ -1,0 +1,11 @@
+name: bambu-enterprise-systematic-review
+channels:
+  - conda-forge
+  - bioconda
+  - anaconda
+dependencies:
+  - python=3.8
+  - pip
+  - nmslib
+  - pip:
+    - -r requirements.txt
