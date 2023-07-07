@@ -1,5 +1,6 @@
-from src import db, bcrypt, login_manager
 from flask_login import UserMixin
+
+from src import bcrypt, db, login_manager
 
 
 @login_manager.user_loader

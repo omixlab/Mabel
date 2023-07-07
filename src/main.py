@@ -2,9 +2,7 @@ import streamlit as st
 
 import utils.globals as globals
 from utils import extractor
-from utils.streamlit import basic_search
-from utils.streamlit import advanced_search
-from utils.streamlit import unify_dfs
+from utils.streamlit import advanced_search, basic_search, unify_dfs
 
 
 def main():

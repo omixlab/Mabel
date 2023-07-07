@@ -7,13 +7,14 @@ _ = os.getenv("NCBI_API_KEY")
 apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
 
+import json
+
 import pandas as pd
 import pubmed_parser as pp
 from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
-import json
 
 import utils.globals as globals
 

@@ -1,25 +1,28 @@
-from src import app
-from flask import render_template, redirect, url_for, flash
+from flask import flash, redirect, render_template, url_for
+from flask_login import login_required, login_user, logout_user
+
+from src import app, db
+from src.forms import LoginForm, RegisterForm, SearchArticles
 from src.models import Users
-from src.forms import RegisterForm, LoginForm, SearchArticles
-from src import db
-from flask_login import login_user, logout_user, login_required
 
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
+
 @app.route("/articles_extractor_str/")
 @login_required
 def articles_extractor_str():
     return render_template("articles_extractor_str.html")
+
 
 @app.route("/articles_extractor/")
 @login_required
 def articles_extractor():
     form = SearchArticles()
     return render_template("articles_extractor.html", form=form)
+
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():

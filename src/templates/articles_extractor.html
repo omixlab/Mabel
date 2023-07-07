@@ -5,7 +5,7 @@ Articles Extractor
 {% block content %}
 
 <body class="text-center">
-    <div class="container" style="float:left;">
+    <div class="ml-2 container" style="float:left;">
         <h2 class="h3 mb-2 font-weight-normal">
             Search Articles
         </h2>
@@ -32,18 +32,27 @@ Articles Extractor
             <br>
             <div class="text-justify">{{form.pubmed_query(placeholder = 'Elsevier Query')}}</div>
             <br>
-            <div>
+            <div class="text-justify">
                 <h5 class="text-justify">Select your desired databases</h5>
-                <div class="text-justify">{{form.check_pubmed}} Pubmed</div>
-                <div class="text-justify">{{form.check_scopus}} Scopus</div>
-                <div class="text-justify">{{form.check_elsevier}} Elsevier</div>
-            </div>
-            
-            <div class="d-grid">
-                {{ form.submit(class="btn btn-md btn-primary") }}
-            </div>
-            <br>
-        </form>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_pubmed}} Pubmed</div>
+                    <div class="col-md-8">{{form.range_pubmed}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_scopus}} Scopus</div>
+                    <div class="col-md-8">{{form.range_scopus}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_scidir}} Scientific Direct</div>
+                    <div class="col-md-8">{{form.range_scidir}}</div>
+                </div>
+    </div>
+
+    <div class="d-grid">
+        {{ form.submit(class="btn btn-md btn-primary") }}
+    </div>
+    <br>
+    </form>
     </div>
 </body>
 {% endblock %}

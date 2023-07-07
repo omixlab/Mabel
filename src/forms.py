@@ -1,8 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, RadioField, SelectField, BooleanField, TextAreaField
-from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
-from src.models import Users
+from wtforms import (
+    BooleanField,
+    IntegerRangeField,
+    PasswordField,
+    RadioField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+)
+#from wtforms.fields import html5 as h5fields
+#from wtforms.widgets import html5 as h5widgets
+#Sfrom wtforms.widgets import TextArea
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, InputRequired, Optional, NumberRange
+
 import src.utils.dicts_tuples.basic_tuple as basic_tuples
+from src.models import Users
 
 
 class RegisterForm(FlaskForm):
@@ -43,16 +56,25 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
-class SearchArticles(FlaskForm):
-    option =RadioField('label', choices=[('value','Basic'),('value_two','Advanced')])
-    tags = SelectField('option', choices = basic_tuples.tags)
-    keyword = StringField(label="Keyword:", validators=[Length(min=2, max=30)])
-    connective = SelectField('connective', choices = [(1, 'AND'), (2, 'OR'), (3, 'NOT')])
-    open_access = BooleanField('open_access')
-    pubmed_query = TextAreaField('pubmed_query', render_kw={'rows':'4', 'cols':'100'})
-    elsevier_query = TextAreaField('elsevier_query', render_kw={'rows':'4', 'cols':'100'})
-    submit = SubmitField(label="Search")
-    check_pubmed = BooleanField('check_pubmed')
-    check_scopus = BooleanField('scopus')
-    check_elsevier = BooleanField('elsevier')
 
+class SearchArticles(FlaskForm):
+    option = RadioField(
+        "label", choices=[(1, "Basic"), (2, "Advanced")],
+
+        validators=[InputRequired()], default=1
+    )
+    tags = SelectField("option", choices=basic_tuples.tags, validators=[InputRequired()], default = 1)
+    keyword = StringField(label="Keyword:", validators=[Length(min=2, max=30)])
+    connective = SelectField("connective", choices=[(1, "AND"), (2, "OR"), (3, "NOT")])
+    open_access = BooleanField("open_access", validators = [Optional()], default=False)
+    pubmed_query = TextAreaField("pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()])
+    elsevier_query = TextAreaField(
+        "elsevier_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
+    )
+    check_pubmed = BooleanField("check_pubmed")
+    range_pubmed = IntegerRangeField(default=100, validators=[DataRequired(), NumberRange(min=0,max=5000)], render_kw={ "cols": "60"})
+    check_scopus = BooleanField("scopus")
+    range_scopus = IntegerRangeField(default=100, validators=[DataRequired(), NumberRange(min=0,max=5000)])
+    check_scidir = BooleanField("scidir")
+    range_scidir = IntegerRangeField(default=100, validators=[DataRequired(), NumberRange(min=0,max=5000)])
+    submit = SubmitField(label="Search")
