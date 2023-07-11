@@ -105,10 +105,6 @@ def main():
             unified_df.to_excel(writer, index=False, sheet_name='Sheet1')
             worksheet = writer.sheets['Sheet1']
 
-            for i, column in enumerate(unified_df.columns):
-                column_width = max(unified_df[column].astype(str).map(len).max(), len(column))
-                worksheet.set_column(i, i, column_width)
-
         excel_file.seek(0)
         st.session_state.dataframes["excel_df"] = excel_file
 
