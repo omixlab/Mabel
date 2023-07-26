@@ -5,21 +5,13 @@ Articles Extractor
 {% block content %}
 
 <body class="text-center">
-    <div class="ml-2 container" style="float:left;">
+    <div class="ml-3 container" style="float:left;">
         <h2 class="h3 mb-2 font-weight-normal">
             Search Articles
         </h2>
         <form method="POST" class="form-signin; mt-5" style="color:black">
             {{form.hidden_tag()}}
-
-            {% for subfield in form.option %}
-            <p class="text-justify">
-                {{ subfield }}
-                {{ subfield.label }}
-            </p>
-            {% endfor %}
-            <br>
-
+            
             <div class="row">
                 <div class="col-md-4">{{ form.tags}}</div>
                 <div class="col-md-6">{{ form.keyword(class='form-control', placeholder='Keyword') }}</div>
@@ -52,6 +44,12 @@ Articles Extractor
         {{ form.submit(class="btn btn-md btn-primary") }}
     </div>
     <br>
+    <div>
+        {% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+        {% endfor %}
+    </div>
     </form>
     </div>
 </body>

@@ -15,53 +15,53 @@ from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+from src import celery
+from json import loads, dumps
+#from src.celery_utils import make_celery
 
-import utils.globals as globals
+from dataclasses import dataclass
 
 
+@dataclass
 class Extractor:
-    def __init__(self, keyword, num_of_articles):
-        self.keyword = keyword
-        self.num_of_articles = num_of_articles
+    keyword: str
+    num_of_articles: int
 
-    def pubmed(self):
-        print(
-            f"Starting data extraction of {self.num_of_articles} articles from Pubmed using the keyword: {self.keyword}"
+@celery.task(serializer='json')
+def pubmed(extractor: Extractor):
+    print(
+        f"Starting data extraction of {extractor.num_of_articles} articles from Pubmed using the keyword: {extractor.keyword}"
         )
 
-        fetch = PubMedFetcher()
-        pmids = fetch.pmids_for_query(self.keyword, retmax=self.num_of_articles)
+    fetch = PubMedFetcher()
+    pmids = fetch.pmids_for_query(extractor.keyword, retmax=extractor.num_of_articles)
 
-        xmls = {}
-        for pmid in pmids:
-            if globals.stop_extraction:
-                print("PubMed stopped")
-                return None
+    xmls = {}
+    for pmid in pmids:
+        xmls[pmid] = fetch.article_by_pmid(pmid).xml
 
-            xmls[pmid] = fetch.article_by_pmid(pmid).xml
+    data_pubmed = pd.DataFrame()
 
-        data_pubmed = pd.DataFrame()
-
-        for key, value in xmls.items():
-            with open(f"data/xmls/{key}.xml", "wb") as f:
-                f.write(value)
-
-            dicts_out = pp.parse_medline_xml(
-                value,
-                year_info_only=False,
-                nlm_category=False,
-                author_list=False,
-                reference_list=False,
+    for value in xmls.values():
+        dicts_out = pp.parse_medline_xml(
+            value,
+            year_info_only=False,
+            nlm_category=False,
+            author_list=False,
+            reference_list=False,
             )
-            data_pubmed = pd.concat(
-                [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
-            )
+    data_pubmed = pd.concat(
+        [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
+        )
 
-        data_pubmed.to_csv("data/csv/pubmed_data.csv")
+    print("PubMed extraction done!")
 
-        print("PubMed extraction done!")
-        return data_pubmed
+    results = data_pubmed.to_json(orient = 'records')
+    parsed = loads(results)
+    
 
+    return dumps(parsed, indent=4)
+'''
     def scopus(self):
         if globals.stop_extraction:
             print("Scopus stopped")
@@ -141,3 +141,4 @@ class Extractor:
         doc_srch.results_df["pubtype"] = pubtype
 
         return doc_srch.results_df
+'''
