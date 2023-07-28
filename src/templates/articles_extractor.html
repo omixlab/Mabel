@@ -28,15 +28,16 @@ Articles Extractor
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
                     <div class="col-md-4">{{form.check_pubmed}} Pubmed</div>
-                    <div class="col-md-8">{{form.range_pubmed}}</div>
+                    <div class="col-md-4">{{form.range_pubmed(min=0, max=5000, oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-4" id="val_range_pubmed">{{ "%.0f"|format(form.range_pubmed.data)}}</div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">{{form.check_scopus}} Scopus</div>
-                    <div class="col-md-8">{{form.range_scopus}}</div>
+                    <div class="col-md-4">{{form.range_scopus}}</div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">{{form.check_scidir}} Scientific Direct</div>
-                    <div class="col-md-8">{{form.range_scidir}}</div>
+                    <div class="col-md-4">{{form.range_scidir}}</div>
                 </div>
     </div>
 
