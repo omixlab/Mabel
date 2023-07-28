@@ -9,7 +9,7 @@ login_manager = LoginManager()
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///bambu.db"
 app.config["SECRET_KEY"] = "57eea008c38612d210670283"
-celery= make_celery(app)
+celery = make_celery(app)
 db.init_app(app)
 bcrypt = Bcrypt(app)
 login_manager.init_app(app)

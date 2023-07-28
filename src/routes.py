@@ -4,34 +4,38 @@ from flask_login import login_required, login_user, logout_user
 from src import app, db
 from src.forms import LoginForm, RegisterForm, SearchArticles
 from src.models import Users
-from src.utils.extractor import Extractor, pubmed
+from src.utils.extractor import Extractor, execute
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
 
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 def articles_extractor():
     form = SearchArticles()
     if form.validate_on_submit():
-        print(form.keyword)
-        query_pubmed = Extractor(
+        query = Extractor(
                     form.keyword.data, form.range_pubmed.data
                 )
-        print(form.keyword.data, '\n' , form.range_pubmed.data)
-        data_tmp = pubmed.delay(query_pubmed.keyword)
-        #flash(data_tmp, category ='success')
-        flash(f'yours rsults is id with: {data_tmp}', category="success")
+        data_tmp = execute.delay(form.check_pubmed.data, form.check_scopus.data, form.check_scidir.data, query.keyword, 3)
+        if data_tmp.get() == 'None database selected':
+            flash(f'Your result id is: {data_tmp}, *but none database selected*', category="danger")    
+        else:
+            flash(f'Your result id is: {data_tmp}', category="success")
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
     return render_template("articles_extractor.html", form=form)
 
+
 @app.route("/articles_extractor_str/")
 @login_required
 def articles_extractor_str():
     return render_template("articles_extractor_str.html")
+
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():

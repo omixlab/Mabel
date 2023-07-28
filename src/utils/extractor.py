@@ -7,8 +7,6 @@ _ = os.getenv("NCBI_API_KEY")
 apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
 
-import json
-
 import pandas as pd
 import pubmed_parser as pp
 from elsapy.elsclient import ElsClient
@@ -17,10 +15,7 @@ from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
-#from src.celery_utils import make_celery
-
 from dataclasses import dataclass
-
 
 @dataclass
 class Extractor:
@@ -28,13 +23,14 @@ class Extractor:
     num_of_articles: int
 
 @celery.task(serializer='json')
-def pubmed(extractor: Extractor):
+def pubmed(keyword, num_of_articles):
     print(
-        f"Starting data extraction of {extractor.num_of_articles} articles from Pubmed using the keyword: {extractor.keyword}"
+        f"Starting data extraction of {num_of_articles} \
+            articles from Pubmed using the keyword: {keyword}"
         )
 
     fetch = PubMedFetcher()
-    pmids = fetch.pmids_for_query(extractor.keyword, retmax=extractor.num_of_articles)
+    pmids = fetch.pmids_for_query(keyword, retmax=num_of_articles)
 
     xmls = {}
     for pmid in pmids:
@@ -55,90 +51,113 @@ def pubmed(extractor: Extractor):
         )
 
     print("PubMed extraction done!")
-
+    #return  data_pubmed
     results = data_pubmed.to_json(orient = 'records')
     parsed = loads(results)
     
-
     return dumps(parsed, indent=4)
-'''
-    def scopus(self):
-        if globals.stop_extraction:
-            print("Scopus stopped")
-            return None
 
-        print(
-            f"Starting data extraction of {self.num_of_articles} articles from Scopus using the keyword: {self.keyword}"
+def scopus(keyword, num_of_articles):
+    print(
+            f"Starting data extraction of {num_of_articles} articles from Scopus using the keyword: {keyword}"
         )
-        client = ElsClient(apikey)
-        client.inst_token = insttoken
+    client = ElsClient(apikey)
+    client.inst_token = insttoken
 
-        doc_srch_scopus = ElsSearch(self.keyword, "scopus")
-        t = doc_srch_scopus.execute(
-            client, get_all=(self.num_of_articles == 5000)
-        )  # get_all=True <- if num_of_articles is 5000
-        print("doc_srch has", len(doc_srch_scopus.results), "results.")
+    doc_srch_scopus = ElsSearch(keyword, "scopus")
+    t = doc_srch_scopus.execute(
+        client, get_all=(num_of_articles == 5000)
+    )  # get_all=True <- if num_of_articles is 5000
+    print("doc_srch has", len(doc_srch_scopus.results), "results.")
 
-        dicts = {}
+    dicts = {}
 
-        for i in doc_srch_scopus.results_df["prism:url"]:
-            if globals.stop_extraction:
-                print("Scopus stopped")
-                return None
-
-            scp_doc = AbsDoc(uri=i)
-            if scp_doc.read(client):
-                if "dc:description" in scp_doc.data["coredata"]:
+    for i in doc_srch_scopus.results_df["prism:url"]:
+        scp_doc = AbsDoc(uri=i)
+        if scp_doc.read(client):
+            if "dc:description" in scp_doc.data["coredata"]:
                     dicts[i] = scp_doc.data["coredata"]["dc:description"]
-                else:
-                    dicts[i] = "None"
             else:
-                dicts[i] = "Failed"
+                 dicts[i] = "None"
+        else:
+             dicts[i] = "Failed"
 
         print("Scopus extraction done!")
 
-        abstracts_df = pd.DataFrame(dicts.items(), columns=["prism:url", "Abstract"])
-        doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
-            abstracts_df, on="prism:url", how="left"
+    abstracts_df = pd.DataFrame(dicts.items(), columns=["prism:url", "Abstract"])
+    doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
+         abstracts_df, on="prism:url", how="left"
+         )
+    doc_srch_scopus.results_df
+
+    return doc_srch_scopus.results_df
+
+def scidir(keyword, num_of_articles):
+    print(
+            f"Starting data extraction of {num_of_articles} articles from ScienceDirect using the keyword: {keyword}"
         )
-        doc_srch_scopus.results_df
+    
+    client = ElsClient(apikey)
+    client.inst_token = insttoken
 
-        return doc_srch_scopus.results_df
-
-    def scidir(self):
-        if globals.stop_extraction:
-            print("ScienceDirect stopped")
-            return None
-
-        print(
-            f"Starting data extraction of {self.num_of_articles} articles from ScienceDirect using the keyword: {self.keyword}"
-        )
-        client = ElsClient(apikey)
-        client.inst_token = insttoken
-
-        doc_srch = ElsSearch(self.keyword, "sciencedirect")
-        t = doc_srch.execute(
-            client, get_all=(self.num_of_articles == 5000)
+    doc_srch = ElsSearch(keyword, "sciencedirect")
+    t = doc_srch.execute(
+            client, get_all=(num_of_articles == 5000)
         )  # get_all=True <- if num_of_articles is 5000
-        print("doc_srch has", len(doc_srch.results), "results.")
+    print("doc_srch has", len(doc_srch.results), "results.")
 
-        abstract = []
-        pubtype = []
+    abstract = []
+    pubtype = []
 
-        for i in doc_srch.results_df["prism:doi"]:
-            if globals.stop_extraction:
-                print("ScienceDirect stopped")
-                return None
+    for i in doc_srch.results_df["prism:doi"]:
+        
+        doi_doc = FullDoc(doi=i)
+        if doi_doc.read(client):
+            abstract.append(doi_doc.data["coredata"]["dc:description"])
+            pubtype.append(doi_doc.data["coredata"]["pubType"])
+        else:
+            print("Read document failed.")
 
-            doi_doc = FullDoc(doi=i)
-            if doi_doc.read(client):
-                abstract.append(doi_doc.data["coredata"]["dc:description"])
-                pubtype.append(doi_doc.data["coredata"]["pubType"])
-            else:
-                print("Read document failed.")
+    doc_srch.results_df["abstract"] = abstract
+    doc_srch.results_df["pubtype"] = pubtype
 
-        doc_srch.results_df["abstract"] = abstract
-        doc_srch.results_df["pubtype"] = pubtype
+    return doc_srch.results_df
 
-        return doc_srch.results_df
-'''
+@celery.task(serializer='json')
+def execute(check_pubmed=False, check_scopus=False, check_scidir=False, 
+            keywords='Cancer Prostata', num_of_articles=10): 
+    
+    if check_pubmed and check_scopus and check_scidir is True:
+        response_pubmed = pubmed(keywords, num_of_articles)
+        response_scopus = scopus(keywords, num_of_articles)
+        response_scidir = scidir(keywords, num_of_articles)
+        return print(response_pubmed, response_scopus, response_scidir)
+    
+    elif check_pubmed and check_scopus is True:
+        response_pubmed = pubmed(keywords, num_of_articles)
+        response_scopus = scopus(keywords, num_of_articles)
+        return print(response_pubmed, response_scopus)
+    
+    elif check_pubmed and check_scidir is True:
+        response_pubmed = pubmed(keywords, num_of_articles)
+        response_scidir = scidir(keywords, num_of_articles)
+        return print(response_pubmed, response_scidir)
+    
+    elif check_scopus and check_scidir is True:
+        response_scopus = scopus(keywords, num_of_articles)
+        response_scidir = scidir(keywords, num_of_articles)
+        return print(response_scopus, response_scidir)
+    
+    elif check_pubmed is True:
+        response_pubmed = pubmed(keywords, num_of_articles)
+        return print(response_pubmed)
+    
+    elif check_scopus is True:
+        response_scopus = scopus(keywords, num_of_articles)
+        return print(response_scopus)
+    
+    elif check_scidir is True:
+        response_scidir = scidir(keywords, num_of_articles)
+        return print(response_scidir)
+    else:
+        return 'None database selected'
