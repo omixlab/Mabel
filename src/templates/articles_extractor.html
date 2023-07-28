@@ -45,12 +45,6 @@ Articles Extractor
         {{ form.submit(class="btn btn-md btn-primary") }}
     </div>
     <br>
-    <div>
-        {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-        {% endfor %}
-    </div>
     </form>
     </div>
 </body>

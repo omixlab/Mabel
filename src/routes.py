@@ -23,7 +23,7 @@ def articles_extractor():
             form.check_scopus.data,
             form.check_scidir.data,
             query.keyword,
-            form.range_pubmed.data,
+            3,
         )
         if data_tmp.get() == "None database selected":
             flash(

@@ -17,14 +17,11 @@ from src import celery
 from json import loads, dumps
 from dataclasses import dataclass
 
-
 @dataclass
 class Extractor:
     keyword: str
     num_of_articles: int
 
-
-@celery.task(serializer="json")
 def pubmed(keyword, num_of_articles):
     print(
         f"Starting data extraction of {num_of_articles} \
@@ -56,7 +53,6 @@ def pubmed(keyword, num_of_articles):
     parsed = loads(results)
 
     return dumps(parsed, indent=4)
-
 
 def scopus(keyword, num_of_articles):
     print(
@@ -92,7 +88,6 @@ def scopus(keyword, num_of_articles):
     doc_srch_scopus.results_df
 
     return doc_srch_scopus.results_df
-
 
 def scidir(keyword, num_of_articles):
     print(
@@ -134,38 +129,21 @@ def execute(
     keywords="Cancer Prostata",
     num_of_articles=10,
 ):
-
-    if check_pubmed and check_scopus and check_scidir is True:
+    n_sources = 0
+    if check_pubmed:
+        n_sources += 1
         response_pubmed = pubmed(keywords, num_of_articles)
+    
+    if check_scopus:
+        n_sources += 1
         response_scopus = scopus(keywords, num_of_articles)
+
+    if check_scidir:
+        n_sources += 1
         response_scidir = scidir(keywords, num_of_articles)
-        return print(response_pubmed, response_scopus, response_scidir)
-
-    elif check_pubmed and check_scopus is True:
-        response_pubmed = pubmed(keywords, num_of_articles)
-        response_scopus = scopus(keywords, num_of_articles)
-        return print(response_pubmed, response_scopus)
-
-    elif check_pubmed and check_scidir is True:
-        response_pubmed = pubmed(keywords, num_of_articles)
-        response_scidir = scidir(keywords, num_of_articles)
-        return print(response_pubmed, response_scidir)
-
-    elif check_scopus and check_scidir is True:
-        response_scopus = scopus(keywords, num_of_articles)
-        response_scidir = scidir(keywords, num_of_articles)
-        return print(response_scopus, response_scidir)
-
-    elif check_pubmed is True:
-        response_pubmed = pubmed(keywords, num_of_articles)
-        return print(response_pubmed)
-
-    elif check_scopus is True:
-        response_scopus = scopus(keywords, num_of_articles)
-        return print(response_scopus)
-
-    elif check_scidir is True:
-        response_scidir = scidir(keywords, num_of_articles)
-        return print(response_scidir)
-    else:
+    
+    if n_sources == 0:
         return "None database selected"
+
+    else:
+        return print(response_pubmed, response_scidir, response_scopus)
