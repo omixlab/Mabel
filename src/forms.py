@@ -86,7 +86,7 @@ class SearchArticles(FlaskForm):
     check_pubmed = BooleanField("check_pubmed")
     range_pubmed = IntegerRangeField(
         default=100,
-        validators=[DataRequired(), NumberRange(min=0, max=5000)],
+        validators=[DataRequired()],
         render_kw={"cols": "60"},
     )
     check_scopus = BooleanField("scopus")
