@@ -1,5 +1,56 @@
 {% extends 'base.html' %}
-
+{% block title %}
+Articles Extractor
+{% endblock %}
 {% block content %}
-    <iframe src="http://localhost:8501" width="100%" height="550"></iframe>
+
+<body class="text-center">
+    <div class="ml-3 container" style="float:left;">
+        <h2 class="h3 mb-2 font-weight-normal">
+            Search Articles
+        </h2>
+        <form method="POST" class="form-signin; mt-5" style="color:black">
+            {{form.hidden_tag()}}
+            
+            <div class="row">
+                <div class="col-md-4">{{ form.tags}}</div>
+                <div class="col-md-6">{{ form.keyword(class='form-control', placeholder='Keyword') }}</div>
+                <div class="col-md-2">{{ form.connective}}</div>
+            </div>
+            <div class="text-center">{{form.open_access}} Open access</div>
+            <div class="text-justify">
+                {{form.pubmed_query(placeholder = 'Pubmed Query')}}
+            </div>
+            <br>
+            <div class="text-justify">{{form.pubmed_query(placeholder = 'Elsevier Query')}}</div>
+            <br>
+            <div class="text-justify">
+                <h5 class="text-justify">Select your desired databases</h5>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_pubmed}} Pubmed</div>
+                    <div class="col-md-8">{{form.range_pubmed}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_scopus}} Scopus</div>
+                    <div class="col-md-8">{{form.range_scopus}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">{{form.check_scidir}} Scientific Direct</div>
+                    <div class="col-md-8">{{form.range_scidir}}</div>
+                </div>
+    </div>
+
+    <div class="d-grid">
+        {{ form.submit(class="btn btn-md btn-primary") }}
+    </div>
+    <br>
+    <div>
+        {% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+        {% endfor %}
+    </div>
+    </form>
+    </div>
+</body>
 {% endblock %}

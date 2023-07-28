@@ -1,6 +1,31 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
+from wtforms import (
+    BooleanField,
+    IntegerRangeField,
+    PasswordField,
+    RadioField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+)
+
+# from wtforms.fields import html5 as h5fields
+# from wtforms.widgets import html5 as h5widgets
+# Sfrom wtforms.widgets import TextArea
+
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    Length,
+    ValidationError,
+    InputRequired,
+    Optional,
+    NumberRange,
+)
+
+import src.utils.dicts_tuples.basic_tuple as basic_tuples
 from src.models import Users
 
 
@@ -41,3 +66,35 @@ class LoginForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
+
+
+class SearchArticles(FlaskForm):
+    tags = SelectField(
+        "option", choices=basic_tuples.tags, validators=[InputRequired()], default=1
+    )
+    keyword = StringField(label="Keyword:", validators=[Length(min=2)])
+    connective = SelectField("connective", choices=[(1, "AND"), (2, "OR"), (3, "NOT")])
+    open_access = BooleanField("open_access", validators=[Optional()], default=False)
+    pubmed_query = TextAreaField(
+        "pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
+    )
+    elsevier_query = TextAreaField(
+        "elsevier_query",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()],
+    )
+    check_pubmed = BooleanField("check_pubmed")
+    range_pubmed = IntegerRangeField(
+        default=100,
+        validators=[DataRequired(), NumberRange(min=0, max=5000)],
+        render_kw={"cols": "60"},
+    )
+    check_scopus = BooleanField("scopus")
+    range_scopus = IntegerRangeField(
+        default=100, validators=[DataRequired(), NumberRange(min=0, max=5000)]
+    )
+    check_scidir = BooleanField("scidir")
+    range_scidir = IntegerRangeField(
+        default=100, validators=[DataRequired(), NumberRange(min=0, max=5000)]
+    )
+    submit = SubmitField(label="Search")

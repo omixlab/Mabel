@@ -1,9 +1,10 @@
-from src import app
-from flask import render_template, redirect, url_for, flash
+from flask import flash, redirect, render_template, url_for
+from flask_login import login_required, login_user, logout_user
+
+from src import app, db
+from src.forms import LoginForm, RegisterForm, SearchArticles
 from src.models import Users
-from src.forms import RegisterForm, LoginForm
-from src import db
-from flask_login import login_user, logout_user, login_required
+from src.utils.extractor import Extractor, execute
 
 
 @app.route("/")
@@ -11,10 +12,29 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/articles_extractor/")
+@app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 def articles_extractor():
-    return render_template("articles_extractor.html")
+    form = SearchArticles()
+    if form.validate_on_submit():
+        query = Extractor(
+                    form.keyword.data, form.range_pubmed.data
+                )
+        data_tmp = execute.delay(form.check_pubmed.data, form.check_scopus.data, form.check_scidir.data, query.keyword, 3)
+        if data_tmp.get() == 'None database selected':
+            flash(f'Your result id is: {data_tmp}, *but none database selected*', category="danger")    
+        else:
+            flash(f'Your result id is: {data_tmp}', category="success")
+    if form.errors != {}:
+        for err in form.errors.values():
+            flash(f"Error user register {err}", category="danger")
+    return render_template("articles_extractor.html", form=form)
+
+
+@app.route("/articles_extractor_str/")
+@login_required
+def articles_extractor_str():
+    return render_template("articles_extractor_str.html")
 
 
 @app.route("/register/", methods=["GET", "POST"])
