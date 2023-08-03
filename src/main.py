@@ -94,7 +94,9 @@ def main():
         # SCISPACY
         if request["scispacy_param"]:
             with st.spinner(f'Analyzing with ScispaCy'):
-                unified_df = spacy.scispacy(unified_df, request["scispacy_param"])
+                unified_df = spacy.genes(unified_df)
+            with st.spinner(f'Filtering genes'):
+                unified_df = spacy.filter_genes(unified_df)
 
         st.session_state.dataframes["unified_df"] = unified_df
 
