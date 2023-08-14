@@ -4,8 +4,8 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
-from src.utils.extractor import Extractor, execute
-from src.utils.dicts_tuples.basic_tuple import to_pubmed
+from src.utils.extractor import Extractor, query_constructor, execute
+
 
 
 @app.route("/")
@@ -21,44 +21,35 @@ def articles_extractor():
 
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            tag = query_form.tags.data
-            keyword = query_form.keyword.data
-            connective = query_form.connective.data
-            open_access = query_form.open_access.data
-
-
-            # PubMed query constructor
-            if not form.pubmed_query.data:
-                form.pubmed_query.data = f"({keyword}{to_pubmed[tag]})"
-            else:
-                form.pubmed_query.data += f" {connective} ({keyword}{to_pubmed[tag]})"
-
-            # Elsevier query constructor
-            if not form.elsevier_query.data:
-                form.elsevier_query.data = f'{tag}({keyword})'
-            else:
-                form.elsevier_query.data += f' {connective} {tag}({keyword})'
-
-            # Filter
-            if open_access and 'ffrft[Filter]' not in form.pubmed_query.data:
-                form.pubmed_query.data += ' AND (ffrft[Filter])'
-            if open_access and 'OPENACCESS(1)' not in form.elsevier_query.data:
-                form.elsevier_query.data += ' AND OPENACCESS(1)'
+            # Query constructor
+            form.pubmed_query.data, form.elsevier_query.data = query_constructor(
+                form.pubmed_query.data, 
+                form.elsevier_query.data,
+                query_form.tags.data,
+                query_form.keyword.data,
+                query_form.connective.data,
+                query_form.open_access.data
+            )
+            
             
             
 
         if 'submit_query' in request.form:
-            query = Extractor(query_form.keyword.data, form.range_pubmed.data)
+            #query = Extractor(form.pubmed_query.data, form.elsevier_query.data, form.range_pubmed.data)
             data_tmp = execute.delay(
+                #query.keyword,
+                form.pubmed_query.data,
+                form.elsevier_query.data,
                 form.check_pubmed.data,
                 form.check_scopus.data,
                 form.check_scidir.data,
-                query.keyword,
                 form.range_pubmed.data,
+                form.range_scopus.data,
+                form.range_scidir.data,
             )
             if data_tmp.get() == "None database selected":
                 flash(
-                    f"Your result id is: {data_tmp}, *but no database was selected*",
+                    f"Your result id is: {data_tmp}, *but no databases were selected*",
                     category="danger",
                 )
             else:
