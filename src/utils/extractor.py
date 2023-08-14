@@ -133,7 +133,7 @@ def execute(
     if check_pubmed:
         n_sources += 1
         response_pubmed = pubmed(keywords, num_of_articles)
-    
+
     if check_scopus:
         n_sources += 1
         response_scopus = scopus(keywords, num_of_articles)
@@ -145,5 +145,6 @@ def execute(
     if n_sources == 0:
         return "None database selected"
 
+    # aqui só vai funcionar se todos estiverem selecionados
     else:
-        return print(response_pubmed, response_scidir, response_scopus)
+        return print(response_pubmed, response_scopus, response_scidir)
