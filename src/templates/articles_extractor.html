@@ -34,23 +34,26 @@ Articles Extractor
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
                     <div class="col-md-2">{{form.check_pubmed}} Pubmed</div>
-                    <div class="col-md-4">{{form.range_pubmed(min=0, max=5000, oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-3">{{form.range_pubmed(min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
                     <div class="col-md-1" id="val_range_pubmed">{{ "%.0f"|format(form.range_pubmed.data)}}</div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">{{form.check_scopus}} Scopus</div>
-                    <div class="col-md-4">{{form.range_scopus}}</div>
+                    <div class="col-md-3">{{form.range_scopus(min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                    <div class="col-md-1" id="val_range_scopus">{{ "%.0f"|format(form.range_scopus.data)}}</div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">{{form.check_scidir}} Scientific Direct</div>
-                    <div class="col-md-4">{{form.range_scidir}}</div>
+                    <div class="col-md-3">{{form.range_scidir(min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                    <div class="col-md-1" id="val_range_scidir">{{ "%.0f"|format(form.range_scidir.data)}}</div>
                 </div>
     </div>
-
     <br>
     <div>
         <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
     </div>
+
+    
     <br>
     <div>
         {% for table in tables %}
@@ -60,5 +63,23 @@ Articles Extractor
     </div>
     </form>
     </div>
+
+    <script>
+        // Recebe range input element e output element
+        var rangeInput = document.getElementById('range_pubmed');
+        var outputElement = document.getElementById('val_range_pubmed');
+
+        var rangeScopus = document.getElementById('range_scopus');
+        var outputScopus = document.getElementById('val_range_scopus');
+        
+        var rangeScidir = document.getElementById('range_scidir');
+        var outputScidir = document.getElementById('val_range_scidir');
+        
+        // Adiciona event listener que atualiza o número
+        rangeInput.addEventListener('input', function() {outputElement.textContent = rangeInput.value;});
+        rangeScopus.addEventListener('input', function() {outputScopus.textContent = rangeScopus.value;});
+        rangeScidir.addEventListener('input', function() {outputScidir.textContent = rangeScidir.value;});
+    </script>
+
 </body>
 {% endblock %}
