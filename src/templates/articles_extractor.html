@@ -28,7 +28,7 @@ Articles Extractor
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
                     <div class="col-md-4">{{form.check_pubmed}} Pubmed</div>
-                    <div class="col-md-4">{{form.range_pubmed(min=0, max=5000, oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-4">{{form.range_pubmed(min=0, max=5000, id='range_pubmed',oninput="outputUpdate(range_pubmed.value)")}}</div>
                     <div class="col-md-4" id="val_range_pubmed">{{ "%.0f"|format(form.range_pubmed.data)}}</div>
                 </div>
                 <div class="row">
@@ -40,11 +40,8 @@ Articles Extractor
                     <div class="col-md-4">{{form.range_scidir}}</div>
                 </div>
     </div>
-
-    <div class="d-grid">
-        {{ form.submit(class="btn btn-md btn-primary") }}
-    </div>
-    <br>
+    <div class="d-grid">{{ form.submit(class="btn btn-md btn-primary") }}</div>
+    <a class="btn btn-success" href="{{url_for('download')}}">Download</a>
     </form>
     </div>
 </body>

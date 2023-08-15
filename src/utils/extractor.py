@@ -17,10 +17,12 @@ from src import celery
 from json import loads, dumps
 from dataclasses import dataclass
 
+
 @dataclass
 class Extractor:
     keyword: str
     num_of_articles: int
+
 
 def pubmed(keyword, num_of_articles):
     print(
@@ -53,6 +55,7 @@ def pubmed(keyword, num_of_articles):
     parsed = loads(results)
 
     return dumps(parsed, indent=4)
+
 
 def scopus(keyword, num_of_articles):
     print(
@@ -88,6 +91,7 @@ def scopus(keyword, num_of_articles):
     doc_srch_scopus.results_df
 
     return doc_srch_scopus.results_df
+
 
 def scidir(keyword, num_of_articles):
     print(
@@ -141,10 +145,10 @@ def execute(
     if check_scidir:
         n_sources += 1
         response_scidir = scidir(keywords, num_of_articles)
-    
+
     if n_sources == 0:
         return "None database selected"
 
     # aqui só vai funcionar se todos estiverem selecionados
     else:
-        return print(response_pubmed, response_scopus, response_scidir)
+        return response_pubmed

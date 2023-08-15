@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 
 from src import bcrypt, db, login_manager
+from datetime import datetime
 
 
 @login_manager.user_loader
@@ -34,4 +35,12 @@ class Tokens(db.Model):
     NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
     X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
     X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
-    user = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+
+class Results(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    celery_id = db.Column(db.String(length=100), nullable=False)
+    result_json = db.Column(db.String())
+    created_date = db.Column(db.DateTime, default=datetime.utcnow())

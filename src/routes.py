@@ -1,9 +1,10 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for, Response
 from flask_login import login_required, login_user, logout_user
+import pandas as pd
 
 from src import app, db
 from src.forms import LoginForm, RegisterForm, SearchArticles
-from src.models import Users
+from src.models import Users, Results
 from src.utils.extractor import Extractor, execute
 
 
@@ -32,6 +33,12 @@ def articles_extractor():
             )
         else:
             flash(f"Your result id is: {data_tmp}", category="success")
+            print(data_tmp.id)
+            results = Results(
+                user_id=1, celery_id=data_tmp.id, result_json=data_tmp.get()
+            )
+            db.session.add(results)
+            db.session.commit()
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
@@ -42,6 +49,19 @@ def articles_extractor():
 @login_required
 def articles_extractor_str():
     return render_template("articles_extractor_str.html")
+
+
+@app.route("/download/")
+@login_required
+def download():
+    result = Results.query.get(9)
+    result_df = pd.read_json(result.result_json)
+    return Response(
+        result_df.to_csv(),
+        mimetype="txt/csv",
+        headers={"Content-disposition": "attachment; filename=result.csv"},
+    )
+
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
