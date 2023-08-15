@@ -1,10 +1,11 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for, request
+from src.models import Users
 from flask_login import login_required, login_user, logout_user
 
 from src import app, db
-from src.forms import LoginForm, RegisterForm, SearchArticles
-from src.models import Users
-from src.utils.extractor import Extractor, execute
+from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
+from src.utils.extractor import query_constructor, execute
+
 
 
 @app.route("/")
@@ -15,27 +16,49 @@ def home():
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 def articles_extractor():
+    query_form = SearchQuery()
     form = SearchArticles()
-    if form.validate_on_submit():
-        query = Extractor(form.keyword.data, form.range_pubmed.data)
-        data_tmp = execute.delay(
-            form.check_pubmed.data,
-            form.check_scopus.data,
-            form.check_scidir.data,
-            query.keyword,
-            form.range_pubmed.data,
-        )
-        if data_tmp.get() == "None database selected":
-            flash(
-                f"Your result id is: {data_tmp}, *but none database selected*",
-                category="danger",
+
+    if request.method == 'POST':
+        if 'add_keyword' in request.form:
+            # Query constructor
+            form.pubmed_query.data, form.elsevier_query.data = query_constructor(
+                form.pubmed_query.data, 
+                form.elsevier_query.data,
+                query_form.tags.data,
+                query_form.keyword.data,
+                query_form.connective.data,
+                query_form.open_access.data
             )
-        else:
-            flash(f"Your result id is: {data_tmp}", category="success")
+            
+            
+            
+
+        if 'submit_query' in request.form:
+            # query = Extractor(form.pubmed_query.data, form.elsevier_query.data, form.range_pubmed.data)
+            data_tmp = execute.delay(
+                #query.keyword,
+                form.pubmed_query.data,
+                form.elsevier_query.data,
+                form.check_pubmed.data,
+                form.check_scopus.data,
+                form.check_scidir.data,
+                int(form.pm_num_of_articles.data),
+                int(form.sc_num_of_articles.data),
+                int(form.sd_num_of_articles.data),
+            )
+            if data_tmp.get() == "None database selected":
+                flash(
+                    f"Your result id is: {data_tmp}, *but no databases were selected*",
+                    category="danger",
+                )
+            else:
+                flash(f"Your result id is: {data_tmp}", category="success")
+
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
-    return render_template("articles_extractor.html", form=form)
+    return render_template("articles_extractor.html", form=form, query_form=query_form)
 
 
 @app.route("/articles_extractor_str/")

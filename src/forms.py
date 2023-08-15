@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
     IntegerRangeField,
+    IntegerField,
     PasswordField,
     RadioField,
     SelectField,
@@ -68,33 +69,45 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Log In")
 
 
-class SearchArticles(FlaskForm):
+class SearchQuery(FlaskForm):
     tags = SelectField(
         "option", choices=basic_tuples.tags, validators=[InputRequired()], default=1
     )
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    connective = SelectField("connective", choices=[(1, "AND"), (2, "OR"), (3, "NOT")])
+    connective = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
+class SearchArticles(FlaskForm):
     pubmed_query = TextAreaField(
-        "pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
+        "pubmed_query", 
+        render_kw={"rows": "4", "cols": "100"}, 
+        validators=[Optional()]
     )
     elsevier_query = TextAreaField(
         "elsevier_query",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
+
     check_pubmed = BooleanField("check_pubmed")
     range_pubmed = IntegerRangeField(
-        default=100,
-        validators=[DataRequired()],
+        default=25,
+        validators=[DataRequired(), NumberRange(min=0, max=5000)],
         render_kw={"cols": "60"},
     )
+    pm_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+
     check_scopus = BooleanField("scopus")
     range_scopus = IntegerRangeField(
-        default=100, validators=[DataRequired(), NumberRange(min=0, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
+    sc_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+
     check_scidir = BooleanField("scidir")
     range_scidir = IntegerRangeField(
-        default=100, validators=[DataRequired(), NumberRange(min=0, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    submit = SubmitField(label="Search")
+    sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+
