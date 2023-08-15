@@ -19,9 +19,9 @@ Articles Extractor
             </div>
            
             <div class="row">
-                <div class="col-md-2">{{query_form.open_access}} Open access</div>
+                <div class="col-md-2">{{query_form.open_access(class='mt-3')}} Open access</div>
                 <div class="col-md-7 text-right">
-                    <button type="submit" name="add_keyword" class="btn btn-primary"> Add </button>
+                    <button type="submit" name="add_keyword" class="btn btn-primary mt-2"> Add </button>
                 </div>
             </div>
             <br>
@@ -33,19 +33,21 @@ Articles Extractor
             <div class="text-justify">
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_pubmed}} Pubmed</div>
-                    <div class="col-md-3">{{form.range_pubmed(min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
-                    <div class="col-md-1" id="val_range_pubmed">{{ "%.0f"|format(form.range_pubmed.data)}}</div>
+                    <div class="col-md-2">{{form.check_pubmed(class='mt-2')}} Pubmed</div>
+                    <div class="col-md-4">{{form.range_pubmed(class='form-control', min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-1">{{form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_scopus}} Scopus</div>
-                    <div class="col-md-3">{{form.range_scopus(min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
-                    <div class="col-md-1" id="val_range_scopus">{{ "%.0f"|format(form.range_scopus.data)}}</div>
+                    <div class="col-md-2">{{form.check_scopus(class='mt-2')}} Scopus</div>
+                    <div class="col-md-4">{{form.range_scopus(class='form-control', min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                    <div class="col-md-1">{{form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_scidir}} Scientific Direct</div>
-                    <div class="col-md-3">{{form.range_scidir(min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
-                    <div class="col-md-1" id="val_range_scidir">{{ "%.0f"|format(form.range_scidir.data)}}</div>
+                    <div class="col-md-2">{{form.check_scidir(class='mt-2')}} Scientific Direct</div>
+                    <div class="col-md-4">{{form.range_scidir(class='form-control', min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                    <div class="col-md-1">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
                 </div>
     </div>
     <br>
@@ -55,30 +57,32 @@ Articles Extractor
 
     
     <br>
-    <div>
-        {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-        {% endfor %}
-    </div>
     </form>
     </div>
 
     <script>
-        // Recebe range input element e output element
-        var rangeInput = document.getElementById('range_pubmed');
-        var outputElement = document.getElementById('val_range_pubmed');
+        function updateTextField(input, textField) {
+        textField.value = input.value;
+        }
+
+        var rangePubmed = document.getElementById('range_pubmed');
+        var textFieldPubmed = document.getElementById('pm_num_of_articles');
 
         var rangeScopus = document.getElementById('range_scopus');
-        var outputScopus = document.getElementById('val_range_scopus');
+        var textFieldScopus = document.getElementById('sc_num_of_articles');
+
+        var rangeSciDir = document.getElementById('range_scidir');
+        var textFieldSciDir = document.getElementById('sd_num_of_articles');
         
-        var rangeScidir = document.getElementById('range_scidir');
-        var outputScidir = document.getElementById('val_range_scidir');
-        
-        // Adiciona event listener que atualiza o número
-        rangeInput.addEventListener('input', function() {outputElement.textContent = rangeInput.value;});
-        rangeScopus.addEventListener('input', function() {outputScopus.textContent = rangeScopus.value;});
-        rangeScidir.addEventListener('input', function() {outputScidir.textContent = rangeScidir.value;});
+        rangePubmed.addEventListener('input', function() {
+            updateTextField(rangePubmed, textFieldPubmed);
+        });
+        rangeScopus.addEventListener('input', function() {
+            updateTextField(rangeScopus, textFieldScopus);
+        });
+        rangeSciDir.addEventListener('input', function() {
+            updateTextField(rangeSciDir, textFieldSciDir);
+        });
     </script>
 
 </body>

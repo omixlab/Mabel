@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
     IntegerRangeField,
+    IntegerField,
     PasswordField,
     RadioField,
     SelectField,
@@ -94,13 +95,19 @@ class SearchArticles(FlaskForm):
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
         render_kw={"cols": "60"},
     )
+    pm_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+
     check_scopus = BooleanField("scopus")
     range_scopus = IntegerRangeField(
         default=25, 
-        validators=[DataRequired(), NumberRange(min=0, max=5000)]
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
+    sc_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+
     check_scidir = BooleanField("scidir")
     range_scidir = IntegerRangeField(
         default=25, 
-        validators=[DataRequired(), NumberRange(min=0, max=5000)]
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
+    sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
+

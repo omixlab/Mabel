@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
-from src.utils.extractor import Extractor, query_constructor, execute
+from src.utils.extractor import query_constructor, execute
 
 
 
@@ -35,7 +35,7 @@ def articles_extractor():
             
 
         if 'submit_query' in request.form:
-            #query = Extractor(form.pubmed_query.data, form.elsevier_query.data, form.range_pubmed.data)
+            # query = Extractor(form.pubmed_query.data, form.elsevier_query.data, form.range_pubmed.data)
             data_tmp = execute.delay(
                 #query.keyword,
                 form.pubmed_query.data,
@@ -43,9 +43,9 @@ def articles_extractor():
                 form.check_pubmed.data,
                 form.check_scopus.data,
                 form.check_scidir.data,
-                form.range_pubmed.data,
-                form.range_scopus.data,
-                form.range_scidir.data,
+                int(form.pm_num_of_articles.data),
+                int(form.sc_num_of_articles.data),
+                int(form.sd_num_of_articles.data),
             )
             if data_tmp.get() == "None database selected":
                 flash(
