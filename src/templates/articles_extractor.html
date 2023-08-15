@@ -34,20 +34,20 @@ Articles Extractor
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
                     <div class="col-md-2">{{form.check_pubmed(class='mt-2')}} Pubmed</div>
-                    <div class="col-md-4">{{form.range_pubmed(class='form-control', min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
-                    <div class="col-md-1">{{form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
+                    <div class="col-md-6">{{form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-2">{{form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
                 </div>
                 <br>
                 <div class="row">
                     <div class="col-md-2">{{form.check_scopus(class='mt-2')}} Scopus</div>
-                    <div class="col-md-4">{{form.range_scopus(class='form-control', min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
-                    <div class="col-md-1">{{form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
+                    <div class="col-md-6">{{form.range_scopus(class='form-control', step=5, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                    <div class="col-md-2">{{form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
                 </div>
                 <br>
                 <div class="row">
                     <div class="col-md-2">{{form.check_scidir(class='mt-2')}} Scientific Direct</div>
-                    <div class="col-md-4">{{form.range_scidir(class='form-control', min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
-                    <div class="col-md-1">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
+                    <div class="col-md-6">{{form.range_scidir(class='form-control', min=0, max=5000, step=5, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                    <div class="col-md-2">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
                 </div>
     </div>
     <br>
