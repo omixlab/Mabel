@@ -1,10 +1,11 @@
-from flask import flash, redirect, render_template, url_for, request
-from src.models import Users
+from flask import flash, redirect, render_template, url_for, request, Response
+import pandas as pd
 from flask_login import login_required, login_user, logout_user
 
 from src import app, db
+from src.models import Users, Results
 from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
-from src.utils.extractor import Extractor, query_constructor, execute
+from src.utils.extractor import query_constructor, execute
 
 
 
@@ -31,11 +32,7 @@ def articles_extractor():
                 query_form.open_access.data
             )
             
-            
-            
-
         if 'submit_query' in request.form:
-            #query = Extractor(form.pubmed_query.data, form.elsevier_query.data, form.range_pubmed.data)
             data_tmp = execute.delay(
                 #query.keyword,
                 form.pubmed_query.data,
@@ -53,12 +50,30 @@ def articles_extractor():
                     category="danger",
                 )
             else:
+                print(data_tmp.get())
                 flash(f"Your result id is: {data_tmp}", category="success")
+                results = Results(
+                user_id=1, celery_id=data_tmp.id, result_json=data_tmp.get()
+            )
+                db.session.add(results)
+                db.session.commit()
 
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
     return render_template("articles_extractor.html", form=form, query_form=query_form)
+
+
+@app.route("/download/")
+@login_required
+def download():
+    result = Results.query.get(2)
+    result_df = pd.read_json(result.result_json)
+    return Response(
+        result_df.to_csv(),
+        mimetype="txt/csv",
+        headers={"Content-disposition": "attachment; filename=result.csv"},
+    )
 
 
 @app.route("/articles_extractor_str/")

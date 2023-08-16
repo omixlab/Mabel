@@ -47,7 +47,6 @@ def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
     return pm_query, els_query
 
 
-@celery.task(serializer="json")
 def pubmed(keyword, num_of_articles):
     print(
         f"Starting data extraction of {num_of_articles} articles from Pubmed using the keyword: {keyword}"
@@ -170,7 +169,7 @@ def execute(
         if check_scidir:
             response_scidir = scidir(elsevier_query, sd_num_of_articles)
             results.append(response_scidir)
-
+        #ta retornando null por conta do print aqui 
         return print(results)
 
     else:

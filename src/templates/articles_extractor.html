@@ -51,19 +51,12 @@ Articles Extractor
     <br>
     <div>
         <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
+        <a class="btn btn-md btn-success" href="{{url_for('download')}}">Download</a>
     </div>
 
-    
     <br>
-    <div>
-        {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-        {% endfor %}
-    </div>
     </form>
     </div>
-
     <script>
         // Recebe range input element e output element
         var rangeInput = document.getElementById('range_pubmed');
