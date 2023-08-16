@@ -3,7 +3,7 @@ logs
 .env
 data
 default
-src/__pycache__
+__pycache__
 dump.json
 version_old
-__pycache__
+dump.rdb

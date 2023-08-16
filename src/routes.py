@@ -62,7 +62,6 @@ def download():
         headers={"Content-disposition": "attachment; filename=result.csv"},
     )
 
-
 @app.route("/register/", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
