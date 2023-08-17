@@ -67,10 +67,11 @@ def articles_extractor():
 @app.route("/download/")
 @login_required
 def download():
-    result = Results.query.get(2)
-    result_df = pd.read_json(result.result_json)
+    result = Results.query.get(10)
+    #result_df = pd.read_json(result.celery_id)
+    print(f'{result}')
     return Response(
-        result_df.to_csv(),
+        pd.DataFrame({'A': [result]}, index=[0]).to_csv(),
         mimetype="txt/csv",
         headers={"Content-disposition": "attachment; filename=result.csv"},
     )

@@ -170,7 +170,7 @@ def execute(
             response_scidir = scidir(elsevier_query, sd_num_of_articles)
             results.append(response_scidir)
         #ta retornando null por conta do print aqui 
-        return print(results)
+        return 1
 
     else:
         return "None database selected"
