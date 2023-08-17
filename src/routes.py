@@ -1,5 +1,6 @@
 from flask import flash, redirect, render_template, url_for, request, Response
 import pandas as pd
+import json
 from flask_login import login_required, login_user, logout_user
 
 from src import app, db
@@ -34,7 +35,6 @@ def articles_extractor():
             
         if 'submit_query' in request.form:
             data_tmp = execute.delay(
-                #query.keyword,
                 form.pubmed_query.data,
                 form.elsevier_query.data,
                 form.check_pubmed.data,
@@ -50,7 +50,6 @@ def articles_extractor():
                     category="danger",
                 )
             else:
-                print(data_tmp.get())
                 flash(f"Your result id is: {data_tmp}", category="success")
                 results = Results(
                 user_id=1, celery_id=data_tmp.id, result_json=data_tmp.get()
@@ -67,15 +66,13 @@ def articles_extractor():
 @app.route("/download/")
 @login_required
 def download():
-    result = Results.query.get(10)
-    #result_df = pd.read_json(result.celery_id)
-    print(f'{result}')
+    result = Results.query.get(32)
+    result_df = pd.read_json(result.result_json)
     return Response(
-        pd.DataFrame({'A': [result]}, index=[0]).to_csv(),
+        result_df.to_csv(),
         mimetype="txt/csv",
         headers={"Content-disposition": "attachment; filename=result.csv"},
     )
-
 
 @app.route("/articles_extractor_str/")
 @login_required

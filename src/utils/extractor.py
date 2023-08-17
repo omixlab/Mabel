@@ -17,13 +17,13 @@ from src import celery
 from json import loads, dumps
 from dataclasses import dataclass
 from src.utils.dicts_tuples.basic_tuple import to_pubmed
+import json
 
 @dataclass
 class Extractor:
     pubmed_query: str
     elsevier_query: str
     num_of_articles: int
-
 
 def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
     # PubMed query
@@ -62,14 +62,16 @@ def pubmed(keyword, num_of_articles):
     data_pubmed = pd.DataFrame()
 
     for value in xmls.values():
-        dicts_out = pp.parse_medline_xml(
-            value,
-            year_info_only=False,
-            nlm_category=False,
-            author_list=False,
-            reference_list=False,
-        )
-    data_pubmed = pd.concat([data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True)
+            dicts_out = pp.parse_medline_xml(
+                value,
+                year_info_only=False,
+                nlm_category=False,
+                author_list=False,
+                reference_list=False,
+            )
+            data_pubmed = pd.concat(
+                [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
+            )
 
     print("PubMed extraction done!")
     # return  data_pubmed
@@ -77,7 +79,6 @@ def pubmed(keyword, num_of_articles):
     parsed = loads(results)
 
     return dumps(parsed, indent=4)
-
 
 def scopus(keyword, num_of_articles):
     print(
@@ -110,9 +111,11 @@ def scopus(keyword, num_of_articles):
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
         abstracts_df, on="prism:url", how="left"
     )
-    doc_srch_scopus.results_df
+   
+    results = doc_srch_scopus.results_df.to_json(orient="records")
+    parsed = loads(results)
 
-    return doc_srch_scopus.results_df
+    return dumps(parsed, indent=4)
 
 
 def scidir(keyword, num_of_articles):
@@ -144,9 +147,11 @@ def scidir(keyword, num_of_articles):
     doc_srch.results_df["abstract"] = abstract
     doc_srch.results_df["pubtype"] = pubtype
 
-    return doc_srch.results_df
+    results = doc_srch.results_df.to_json(orient="records")
+    parsed = loads(results)
 
-
+    return dumps(parsed, indent=4)
+    
 @celery.task(serializer="json")
 def execute(
     pubmed_query="Cancer Prostata",
@@ -170,7 +175,7 @@ def execute(
             response_scidir = scidir(elsevier_query, sd_num_of_articles)
             results.append(response_scidir)
         #ta retornando null por conta do print aqui 
-        return 1
-
+        return response_pubmed
+   
     else:
         return "None database selected"

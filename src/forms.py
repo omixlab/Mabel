@@ -88,11 +88,10 @@ class SearchArticles(FlaskForm):
         validators=[Optional()],
     )
 
-    check_pubmed = BooleanField("check_pubmed")
+    check_pubmed = BooleanField("check")
     range_pubmed = IntegerRangeField(
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
-        render_kw={"cols": "60"},
     )
     check_scopus = BooleanField("scopus")
     range_scopus = IntegerRangeField(

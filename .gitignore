@@ -3,6 +3,6 @@ logs
 .env
 data
 default
-dump.json
 version_old
 __pycache__
+dump.*
