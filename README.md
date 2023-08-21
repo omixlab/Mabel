@@ -11,7 +11,7 @@ Start redis `redis-server`
 ### Step 4: 
 Start celery `celery -A src.celery worker --loglevel=info` 
 ### Step 5: 
-Open application in flask `flask --app src run --debugger`]
+Open application in flask `flask --app src run --debugger`
 
 ## .env setup is required
 .env file example:
