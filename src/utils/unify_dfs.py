@@ -1,8 +1,6 @@
 import json
-
 import numpy as np
 import pandas as pd
-
 
 def unify(dfs):
     formated_dfs = []
@@ -10,7 +8,6 @@ def unify(dfs):
     # PUBMED
     if "pm" in dfs:
         pubmed = dfs["pm"]
-
         # Formatação de alguns elementos
         pm_formated_auth = []
         for row in pubmed["authors"]:
@@ -129,4 +126,6 @@ def unify(dfs):
         )
 
     # Concatenação dos dataframes
-    return pd.concat(formated_dfs)
+    unified_dataframes = pd.concat(formated_dfs)
+    print("Dataframes unified succesfully")
+    return (unified_dataframes)
