@@ -1,11 +1,22 @@
 Bambu Systematic Review
 ==========================
 
-### Step 1: 
-create env `conda create --name systematic-review`
+### Step 1:
+clone repository `git@github.com:omixlab/bambu-systematic-review.git`
+open folder `cd bambu-systematic-review`
 ### Step 2: 
-install pip `conda install pip` 
+create env `conda env create`
 ### Step 3: 
-install libs `pip install -r requirements.txt` 
+Start redis `redis-server` 
 ### Step 4: 
-Open application in streamlit `streamlit run src/main.py`
+Start celery `celery -A src.celery worker --loglevel=info` 
+### Step 5: 
+Open application in flask `flask --app src run --debugger`]
+
+## .env setup is required
+.env file example:
+```
+NCBI_API_KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+X_ELS_APIKey='YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+X_ELS_Insttoken='ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'
+```
