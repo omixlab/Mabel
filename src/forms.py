@@ -89,11 +89,10 @@ class SearchArticles(FlaskForm):
         validators=[Optional()],
     )
 
-    check_pubmed = BooleanField("check_pubmed")
+    check_pubmed = BooleanField("check")
     range_pubmed = IntegerRangeField(
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
-        render_kw={"cols": "60"},
     )
     pm_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 

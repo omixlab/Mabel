@@ -17,13 +17,14 @@ from src import celery
 from json import loads, dumps
 from dataclasses import dataclass
 from src.utils.dicts_tuples.basic_tuple import to_pubmed
+from src.utils.unify_dfs import unify
+import json
 
 #@dataclass
 #class Extractor:
 #    pubmed_query: str
 #    elsevier_query: str
 #    num_of_articles: int
-
 
 def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
     # PubMed query
@@ -47,7 +48,6 @@ def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
     return pm_query, els_query
 
 
-@celery.task(serializer="json")
 def pubmed(keyword, num_of_articles):
     print(
         f"Starting data extraction of {num_of_articles} articles from Pubmed using the keyword: {keyword}"
@@ -63,22 +63,23 @@ def pubmed(keyword, num_of_articles):
     data_pubmed = pd.DataFrame()
 
     for value in xmls.values():
-        dicts_out = pp.parse_medline_xml(
-            value,
-            year_info_only=False,
-            nlm_category=False,
-            author_list=False,
-            reference_list=False,
-        )
-    data_pubmed = pd.concat([data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True)
+            dicts_out = pp.parse_medline_xml(
+                value,
+                year_info_only=False,
+                nlm_category=False,
+                author_list=False,
+                reference_list=False,
+            )
+            data_pubmed = pd.concat(
+                [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
+            )
 
     print("PubMed extraction done!")
-    # return  data_pubmed
-    results = data_pubmed.to_json(orient="records")
-    parsed = loads(results)
+    return  data_pubmed
+    #results = data_pubmed.to_json(orient="records")
+    #parsed = loads(results)
 
-    return dumps(parsed, indent=4)
-
+    #return dumps(parsed, indent=4)
 
 def scopus(keyword, num_of_articles):
     print(
@@ -111,9 +112,12 @@ def scopus(keyword, num_of_articles):
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
         abstracts_df, on="prism:url", how="left"
     )
-    doc_srch_scopus.results_df
-
+   
     return doc_srch_scopus.results_df
+    #results = doc_srch_scopus.results_df.to_json(orient="records")
+    #parsed = loads(results)
+
+    #return dumps(parsed, indent=4)
 
 
 def scidir(keyword, num_of_articles):
@@ -146,8 +150,11 @@ def scidir(keyword, num_of_articles):
     doc_srch.results_df["pubtype"] = pubtype
 
     return doc_srch.results_df
+    #results = doc_srch.results_df.to_json(orient="records")
+    #parsed = loads(results)
 
-
+    #return dumps(parsed, indent=4)
+    
 @celery.task(serializer="json")
 def execute(
     pubmed_query="Cancer Prostata",
@@ -160,18 +167,23 @@ def execute(
     sd_num_of_articles=25,
 ):
     if check_pubmed or check_scopus or check_scidir:
-        results = []
+        results = {}
         if check_pubmed:
             response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
-            results.append(response_pubmed)
+            results["pm"] = response_pubmed
         if check_scopus:
             response_scopus = scopus(elsevier_query, sc_num_of_articles)
-            results.append(response_scopus)
+            results["sc"] = response_scopus
         if check_scidir:
             response_scidir = scidir(elsevier_query, sd_num_of_articles)
-            results.append(response_scidir)
+            results["sd"] = response_scidir
 
-        return print(results)
+        # Unify 3 results in a single dataframe
+        unified_df = unify(results)
 
+        # Return as json
+        result_json = unified_df.to_json(orient='records', indent=4)
+        return result_json
+   
     else:
         return "None database selected"
