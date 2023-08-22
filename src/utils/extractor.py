@@ -15,9 +15,9 @@ from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
-from dataclasses import dataclass
 from src.utils.dicts_tuples.basic_tuple import to_pubmed
 from src.utils.unify_dfs import unify
+from src.utils.spacy import genes
 import json
 
 #@dataclass
@@ -76,10 +76,6 @@ def pubmed(keyword, num_of_articles):
 
     print("PubMed extraction done!")
     return  data_pubmed
-    #results = data_pubmed.to_json(orient="records")
-    #parsed = loads(results)
-
-    #return dumps(parsed, indent=4)
 
 def scopus(keyword, num_of_articles):
     print(
@@ -114,10 +110,6 @@ def scopus(keyword, num_of_articles):
     )
    
     return doc_srch_scopus.results_df
-    #results = doc_srch_scopus.results_df.to_json(orient="records")
-    #parsed = loads(results)
-
-    #return dumps(parsed, indent=4)
 
 
 def scidir(keyword, num_of_articles):
@@ -150,10 +142,6 @@ def scidir(keyword, num_of_articles):
     doc_srch.results_df["pubtype"] = pubtype
 
     return doc_srch.results_df
-    #results = doc_srch.results_df.to_json(orient="records")
-    #parsed = loads(results)
-
-    #return dumps(parsed, indent=4)
     
 @celery.task(serializer="json")
 def execute(
@@ -165,6 +153,7 @@ def execute(
     pm_num_of_articles=25,
     sc_num_of_articles=25,
     sd_num_of_articles=25,
+    check_scispacy=False
 ):
     if check_pubmed or check_scopus or check_scidir:
         results = {}
@@ -181,9 +170,13 @@ def execute(
         # Unify 3 results in a single dataframe
         unified_df = unify(results)
 
-        # Return as json
-        result_json = unified_df.to_json(orient='records', indent=4)
-        return result_json
+        if check_scispacy:
+            result = genes(unified_df)
+            return result.to_json(orient='records', indent=4)
+        else:
+            # Return as json
+            result_json = unified_df.to_json(orient='records', indent=4)
+            return result_json
    
     else:
         return "None database selected"

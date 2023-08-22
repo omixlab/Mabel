@@ -6,6 +6,7 @@ clone repository `git@github.com:omixlab/bambu-systematic-review.git`
 open folder `cd bambu-systematic-review`
 ### Step 2: 
 create env `conda env create`
+install scispacy model `pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_ner_bionlp13cg_md-0.5.1.tar.gz`
 ### Step 3: 
 Start redis `redis-server` 
 ### Step 4: 
