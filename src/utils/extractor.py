@@ -20,11 +20,11 @@ from src.utils.dicts_tuples.basic_tuple import to_pubmed
 from src.utils.unify_dfs import unify
 import json
 
-@dataclass
-class Extractor:
-    pubmed_query: str
-    elsevier_query: str
-    num_of_articles: int
+#@dataclass
+#class Extractor:
+#    pubmed_query: str
+#    elsevier_query: str
+#    num_of_articles: int
 
 def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
     # PubMed query

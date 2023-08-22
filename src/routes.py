@@ -40,9 +40,9 @@ def articles_extractor():
                 form.check_pubmed.data,
                 form.check_scopus.data,
                 form.check_scidir.data,
-                form.range_pubmed.data,
-                form.range_scopus.data,
-                form.range_scidir.data,
+                int(form.pm_num_of_articles.data),
+                int(form.sc_num_of_articles.data),
+                int(form.sd_num_of_articles.data),
             )
             if data_tmp.get() == "None database selected":
                 flash(
