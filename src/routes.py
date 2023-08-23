@@ -1,6 +1,5 @@
 from flask import flash, redirect, render_template, url_for, request, Response
 import pandas as pd
-import json
 from flask_login import login_required, login_user, logout_user
 
 from src import app, db
@@ -8,12 +7,9 @@ from src.models import Users, Results
 from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
 from src.utils.extractor import query_constructor, execute
 
-
-
 @app.route("/")
 def home():
     return render_template("index.html")
-
 
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
@@ -24,6 +20,7 @@ def articles_extractor():
     if request.method == 'POST':
         if 'add_keyword' in request.form:
             # Query constructor
+            
             form.pubmed_query.data, form.elsevier_query.data = query_constructor(
                 form.pubmed_query.data, 
                 form.elsevier_query.data,
@@ -50,9 +47,10 @@ def articles_extractor():
                     category="danger",
                 )
             else:
-                flash(f"Your result id is: {data_tmp}", category="success")
+                flash(f"Your result id is: {data_tmp.id}", category="success")
                 results = Results(
-                user_id=1, celery_id=data_tmp.id, result_json=data_tmp.get()
+                user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
+                elsevier_query=form.elsevier_query.data, result_json=data_tmp.get()
             )
                 db.session.add(results)
                 db.session.commit()
@@ -62,22 +60,29 @@ def articles_extractor():
             flash(f"Error user register {err}", category="danger")
     return render_template("articles_extractor.html", form=form, query_form=query_form)
 
-
-@app.route("/download/")
-@login_required
-def download():
-    result = Results.query.get(32)
-    result_df = pd.read_json(result.result_json)
-    return Response(
-        result_df.to_csv(),
-        mimetype="txt/csv",
-        headers={"Content-disposition": "attachment; filename=result.csv"},
-    )
-
 @app.route("/articles_extractor_str/")
 @login_required
 def articles_extractor_str():
     return render_template("articles_extractor_str.html")
+
+@app.route("/user_area/")
+@login_required
+def user_area():
+    results = Results.query.all()
+    return render_template("user_area.html", results=results)
+
+@app.route("/download/<result_id>")
+@login_required
+def download(result_id):
+    result = Results.query.get(result_id)
+    print(result)
+    if result:
+        result_df = pd.read_json(result.result_json)
+        return Response(
+            result_df.to_csv(),
+            mimetype="txt/csv",
+            headers={"Content-disposition": "attachment; filename=result.csv"},
+        )
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():

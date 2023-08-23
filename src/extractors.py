@@ -58,8 +58,6 @@ def extractor_pubmed(keyword, num_of_articles):
     print('Extraction done!')
     return data_pubmed
 
-
-
 # Elsevier Extractor
 ELSEVIER_API_KEY = os.getenv('ELSEVIER_API_KEY')
 X_ELS_Insttoken = os.getenv('X_ELS_Insttoken')
