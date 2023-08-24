@@ -10,7 +10,7 @@ def genes(unified_df):
     nlp = spacy.load("en_ner_bionlp13cg_md")
 
     genes_column = []
-    for row in unified_df['Abstract']:
+    for row in unified_df['Abstract'].astype(str):
         doc = nlp(row)
 
         genes = []
@@ -23,24 +23,24 @@ def genes(unified_df):
 
 
     # Filter only genes
-    script_dir = os.path.dirname(os.path.abspath(__file__))
 
     pickle_file_path =  os.environ.get('FLASHTEXT_MODEL')
 
-    if pickle_file_path:
-        with open(pickle_file_path, 'rb') as reader:
-            kp = pickle.loads(reader.read())
+    with open(pickle_file_path, 'rb') as reader:
+        kp = pickle.loads(reader.read())
 
     def process_keywords(text):
         return set(kp.extract_keywords(text))
     
+    filtered_column = []
     for row in genes_column:
         if not isinstance(row, float):
-            row = ', '.join(genes)
+            genes = process_keywords(row)
+            filtered_column.append(', '.join(genes))
         else:
-            row = np.nan
+            filtered_column.append(np.nan)
 
-    unified_df.insert(10, 'Genes', genes_column)
+    unified_df.insert(10, 'Genes', filtered_column)
     unified_df.to_csv('/home/gabrielliston/Desktop/with_flashtext.csv', index=False)
 
     print('Success: genes filtered')

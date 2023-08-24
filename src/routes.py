@@ -81,7 +81,7 @@ def result_view(result_id):
     result = Results.query.get(result_id)
     if result:
         df = pd.read_json(result.result_json)
-        return render_template("result_view.html", tables=[df.to_html(classes='data')], titles=df.columns.values)
+        return render_template("result_view.html", df=df)
     else:
         flash(f"Invalid ID", category="danger")
         return redirect(url_for("user_area"))

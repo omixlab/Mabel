@@ -173,17 +173,17 @@ def execute(
         # Unify 3 results in a single dataframe
         unified_df = unify(results)
 
+        # Scispacy
         if check_scispacy:
-            result = genes(unified_df)
-            return result.to_json(orient='records', indent=4)
-        else:
-            # Return as json
-            result_json = unified_df.to_json(orient='records', indent=4)
-            result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-            result.status = 'DONE'
-            result.result_json = result_json
-            db.session.commit()
-            return result_json
+            unified_df = genes(unified_df)
+
+        # Return as json
+        result_json = unified_df.to_json(orient='records', indent=4)
+        result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
+        result.status = 'DONE'
+        result.result_json = result_json
+        db.session.commit()
+        return result_json
    
     else:
         return "None database selected"
