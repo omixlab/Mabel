@@ -1,5 +1,7 @@
 import os
 
+from .. import db
+from ..models import Results
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -143,8 +145,9 @@ def scidir(keyword, num_of_articles):
 
     return doc_srch.results_df
     
-@celery.task(serializer="json")
+@celery.task(bind=True, serializer="json")
 def execute(
+    self,
     pubmed_query="Cancer Prostata",
     elsevier_query="Prostate Cancer",
     check_pubmed=False,
@@ -176,6 +179,10 @@ def execute(
         else:
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)
+            result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
+            result.status = 'DONE'
+            result.result_json = result_json
+            db.session.commit()
             return result_json
    
     else:

@@ -40,6 +40,7 @@ class Tokens(db.Model):
 class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    status = db.Column(db.String, nullable=True)
     celery_id = db.Column(db.String(length=100), nullable=False)
     pubmed_query = db.Column(db.String())
     elsevier_query = db.Column(db.String())

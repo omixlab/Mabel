@@ -31,7 +31,7 @@ def articles_extractor():
             )
             
         if 'submit_query' in request.form:
-            data_tmp = execute.delay(
+            data_tmp = execute.apply_async((
                 form.pubmed_query.data,
                 form.elsevier_query.data,
                 form.check_pubmed.data,
@@ -40,25 +40,28 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
-                form.check_genes.data,
+                form.check_genes.data)
             )
-            if data_tmp.get() == "None database selected":
-                flash(
-                    f"Your result id is: {data_tmp}, *but no databases were selected*",
-                    category="danger",
-                )
-            else:
-                flash(f"Your result id is: {data_tmp.id}", category="success")
-                results = Results(
+
+            #if data_tmp.get() == "None database selected":
+            #    flash(
+            #        f"Your result id is: {data_tmp}, *but no databases were selected*",
+            #        category="danger",
+            #    )
+            #else:
+            
+            flash(f"Your result id is: {data_tmp.id}", category="success")
+            results = Results(
                 user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
-                elsevier_query=form.elsevier_query.data, result_json=data_tmp.get()
-            )
-                db.session.add(results)
-                db.session.commit()
+                elsevier_query=form.elsevier_query.data)
+            results.status = 'QUEUED'
+            db.session.add(results)
+            db.session.commit()
 
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
+    
     return render_template("articles_extractor.html", form=form, query_form=query_form)
 
 @app.route("/articles_extractor_str/")
