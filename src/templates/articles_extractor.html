@@ -2,8 +2,8 @@
 {% block title %}
 Articles Extractor
 {% endblock %}
-{% block content %}
 
+{% block content %}
 <body class="text-center">
     <div class="ml-3 container" style="float:left;">
         <h2 class="h3 mb-2 font-weight-normal">
@@ -13,44 +13,75 @@ Articles Extractor
             {{form.hidden_tag()}}
             
             <div class="row">
-                <div class="col-md-4">{{ form.tags}}</div>
-                <div class="col-md-6">{{ form.keyword(class='form-control', placeholder='Keyword') }}</div>
-                <div class="col-md-2">{{ form.connective}}</div>
+                <div class="col-md-2">{{ query_form.tags(class='form-control custom-select')}}</div>
+                <div class="col-md-6">{{ query_form.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
+                <div class="col-md-2">{{ query_form.connective(class='form-control custom-select')}}</div>
             </div>
-            <div class="text-center">{{form.open_access}} Open access</div>
-            <div class="text-justify">
-                {{form.pubmed_query(placeholder = 'Pubmed Query')}}
+           
+            <div class="row">
+                <div class="col-md-2">{{query_form.open_access(class='mt-3')}} Open access</div>
+                <div class="col-md-7 text-right">
+                    <button type="submit" name="add_keyword" class="btn btn-primary mt-2"> Add </button>
+                </div>
             </div>
             <br>
-            <div class="text-justify">{{form.pubmed_query(placeholder = 'Elsevier Query')}}</div>
+            <div class="text-justify">{{form.pubmed_query(placeholder = 'Pubmed Query')}}</div>
             <br>
+            <div class="text-justify">{{form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
+            <br>
+
             <div class="text-justify">
                 <h5 class="text-justify">Select your desired databases</h5>
                 <div class="row">
-                    <div class="col-md-4">{{form.check_pubmed}} Pubmed</div>
-                    <div class="col-md-8">{{form.range_pubmed}}</div>
+                    <div class="col-md-2">{{form.check_pubmed(class='mt-2')}} Pubmed</div>
+                    <div class="col-md-6">{{form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-2">{{form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-md-4">{{form.check_scopus}} Scopus</div>
-                    <div class="col-md-8">{{form.range_scopus}}</div>
+                    <div class="col-md-2">{{form.check_scopus(class='mt-2')}} Scopus</div>
+                    <div class="col-md-6">{{form.range_scopus(class='form-control', step=5, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                    <div class="col-md-2">{{form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
                 </div>
+                <br>
                 <div class="row">
-                    <div class="col-md-4">{{form.check_scidir}} Scientific Direct</div>
-                    <div class="col-md-8">{{form.range_scidir}}</div>
+                    <div class="col-md-2">{{form.check_scidir(class='mt-2')}} Scientific Direct</div>
+                    <div class="col-md-6">{{form.range_scidir(class='form-control', min=0, max=5000, step=5, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                    <div class="col-md-2">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
                 </div>
-    </div>
-
-    <div class="d-grid">
-        {{ form.submit(class="btn btn-md btn-primary") }}
     </div>
     <br>
     <div>
-        {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-        {% endfor %}
+        <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
     </div>
+
+    <br>
     </form>
     </div>
+    <script>
+        function updateTextField(input, textField) {
+        textField.value = input.value;
+        }
+
+        var rangePubmed = document.getElementById('range_pubmed');
+        var textFieldPubmed = document.getElementById('pm_num_of_articles');
+
+        var rangeScopus = document.getElementById('range_scopus');
+        var textFieldScopus = document.getElementById('sc_num_of_articles');
+
+        var rangeSciDir = document.getElementById('range_scidir');
+        var textFieldSciDir = document.getElementById('sd_num_of_articles');
+        
+        rangePubmed.addEventListener('input', function() {
+            updateTextField(rangePubmed, textFieldPubmed);
+        });
+        rangeScopus.addEventListener('input', function() {
+            updateTextField(rangeScopus, textFieldScopus);
+        });
+        rangeSciDir.addEventListener('input', function() {
+            updateTextField(rangeSciDir, textFieldSciDir);
+        });
+    </script>
+
 </body>
 {% endblock %}
