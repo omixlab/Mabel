@@ -40,6 +40,7 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
+                form.check_genes.data,
             )
             if data_tmp.get() == "None database selected":
                 flash(

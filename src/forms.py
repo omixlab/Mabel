@@ -110,3 +110,4 @@ class SearchArticles(FlaskForm):
     )
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
+    check_genes = BooleanField("genes")
