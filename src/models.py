@@ -41,5 +41,7 @@ class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     celery_id = db.Column(db.String(length=100), nullable=False)
+    pubmed_query = db.Column(db.String())
+    elsevier_query = db.Column(db.String())
     result_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
