@@ -49,7 +49,7 @@ def articles_extractor():
             #        category="danger",
             #    )
             #else:
-            
+
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
                 user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
@@ -74,6 +74,17 @@ def articles_extractor_str():
 def user_area():
     results = Results.query.all()
     return render_template("user_area.html", results=results)
+
+@app.route("/result/<result_id>")
+@login_required
+def result_view(result_id):
+    result = Results.query.get(result_id)
+    if result:
+        df = pd.read_json(result.result_json)
+        return render_template("result_view.html", tables=[df.to_html(classes='data')], titles=df.columns.values)
+    else:
+        flash(f"Invalid ID", category="danger")
+        return redirect(url_for("user_area"))
 
 @app.route("/download/<result_id>")
 @login_required
