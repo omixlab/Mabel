@@ -1,31 +1,62 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style> .container {margin-left: 0;} </style>
+<style> 
+.container {margin-left: 0;}
+.scrollable-content {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow: auto;
+    white-space: pre-wrap; /* Allow line breaks */}
+.table {
+    width: 250%;
+}
+</style>
 
 <h2>Result</h2>
 <hr>
-<table class="table table-hover table-bordered mx-0" >
+<table class="table table-hover table-bordered" >
     <thead>
         <tr>
             {% for column_name in df.columns %}
-                <th space="col">{{column_name}}</th>
+                <th space="col" class="wide-cell">{{column_name}}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
         {% for index, row in df.iterrows() %}
         <tr>
-            <td>{{row["Title"]}}</td>
-            <td>{{row["Abstract"]}}</td>
-            <td>{{row["Pages"]}}</td>
-            <td>{{row["Journal"]}}</td>
-            <td>{{row["Authors"]}}</td>
-            <td>{{row["Date"]}}</td>
-            <td>{{row["Type"]}}</td>
-            <td>{{row["DOI"]}}</td>
-            <td>{{row["Affiliations"]}}</td>
-            <td>{{row["MeSH Terms"]}}</td>
+            <td style="width: 10%;">
+                {{row["Title"]}}
+            </td>
+            <td style="width: 30%;">
+                <div class="scrollable-content" >{{row["Abstract"]}}</div>
+            </td>
+            <td>
+                {{row["Pages"]}}
+            </td>
+            <td>
+                {{row["Journal"]}}
+            </td>
+            <td> 
+                {% if row["Authors"] %}
+                    {{(row["Authors"]).replace(";", ";\n")}} 
+                {% endif %}
+            </td>
+            <td>
+                {{row["Date"]}}
+            </td>
+            <td>
+                {{row["Type"]}}
+            </td>
+            <td>
+                {{row["DOI"]}}
+            </td>
+            <td>
+                <div class="scrollable-content" >{{row["Affiliations"]}}</div>
+            </td>
+            <td>
+                {{row["MeSH Terms"]}}
+            </td>
             
             {% if "Genes" in df.columns %}
                 <td>{{row["Genes"]}}</td>
