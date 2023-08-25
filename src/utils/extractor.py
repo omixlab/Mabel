@@ -17,7 +17,7 @@ from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
-from src.utils.dicts_tuples.basic_tuple import to_pubmed
+from src.utils.dicts_tuples.flasky_tuples import to_pubmed
 from src.utils.unify_dfs import unify
 from src.utils.spacy import genes
 import json

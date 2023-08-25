@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery
 from src.utils.extractor import query_constructor, execute
 
 @app.route("/")
@@ -67,7 +67,18 @@ def articles_extractor():
 @app.route("/articles_extractor_str/")
 @login_required
 def articles_extractor_str():
-    return render_template("articles_extractor_str.html")
+    pm_query_form = AdvancedPubMedQuery()
+    els_query_form = AdvancedElsevierQuery()
+    search_form = SearchArticles()
+
+    if request.method == 'POST':
+        pass
+
+    if search_form.errors != {}:
+        for err in search_form.errors.values():
+            flash(f"Error user register {err}", category="danger")
+
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form)
 
 @app.route("/user_area/")
 @login_required
