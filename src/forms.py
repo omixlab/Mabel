@@ -74,8 +74,24 @@ class SearchQuery(FlaskForm):
         "option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1
     )
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    connective = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    connective = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
+class AdvancedPubMedQuery(FlaskForm):
+    fields_pm = SelectField(
+        "option", choices=flasky_tuples.pm_tags, default=1
+    )
+    keyword_pm = StringField(label="Keyword:", validators=[Length(min=2)])
+    boolean_pm = SelectField("connective", choices=flasky_tuples.boolean_operators)
+
+class AdvancedElsevierQuery(FlaskForm):
+    fields_els = SelectField(
+        "option", choices=flasky_tuples.els_tags, default=1
+    )
+    keyword_els = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
 
 class SearchArticles(FlaskForm):
     pubmed_query = TextAreaField(
@@ -111,19 +127,3 @@ class SearchArticles(FlaskForm):
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
     check_genes = BooleanField("genes")
-
-
-class AdvancedPubMedQuery(FlaskForm):
-    fields_pm = SelectField(
-        "option", choices=flasky_tuples.pm_tags, validators=[InputRequired()], default=1
-    )
-    keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
-
-class AdvancedElsevierQuery(FlaskForm):
-    fields_els = SelectField(
-        "option", choices=flasky_tuples.els_tags, validators=[InputRequired()], default=1
-    )
-    keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
-    open_access = BooleanField("open_access", validators=[Optional()], default=False)

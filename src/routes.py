@@ -5,7 +5,8 @@ from flask_login import login_required, login_user, logout_user
 from src import app, db
 from src.models import Users, Results
 from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery
-from src.utils.extractor import query_constructor, execute
+import src.utils.extractor as extractor
+import src.utils.query_constructor as query_constructor
 
 @app.route("/")
 def home():
@@ -20,8 +21,7 @@ def articles_extractor():
     if request.method == 'POST':
         if 'add_keyword' in request.form:
             # Query constructor
-            
-            form.pubmed_query.data, form.elsevier_query.data = query_constructor(
+            form.pubmed_query.data, form.elsevier_query.data = query_constructor.basic(
                 form.pubmed_query.data, 
                 form.elsevier_query.data,
                 query_form.tags.data,
@@ -31,7 +31,7 @@ def articles_extractor():
             )
             
         if 'submit_query' in request.form:
-            data_tmp = execute.apply_async((
+            data_tmp = extractor.execute.apply_async((
                 form.pubmed_query.data,
                 form.elsevier_query.data,
                 form.check_pubmed.data,
@@ -64,7 +64,7 @@ def articles_extractor():
     
     return render_template("articles_extractor.html", form=form, query_form=query_form)
 
-@app.route("/articles_extractor_str/")
+@app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 def articles_extractor_str():
     pm_query_form = AdvancedPubMedQuery()
@@ -72,7 +72,44 @@ def articles_extractor_str():
     search_form = SearchArticles()
 
     if request.method == 'POST':
-        pass
+        if 'pm_add_keyword' in request.form:
+            search_form.pubmed_query.data = query_constructor.pubmed(
+                search_form.pubmed_query.data,
+                pm_query_form.fields_pm.data,
+                pm_query_form.keyword_pm.data,
+                pm_query_form.boolean_pm.data,
+            )
+
+        if 'els_add_keyword' in request.form:
+            search_form.elsevier_query.data = query_constructor.elsevier(
+                search_form.elsevier_query.data,
+                els_query_form.fields_els.data,
+                els_query_form.keyword_els.data,
+                els_query_form.boolean_els.data,
+                els_query_form.open_access.data
+            )
+
+        if 'submit_query' in request.form:
+
+            data_tmp = extractor.execute.apply_async((
+                search_form.pubmed_query.data,
+                search_form.elsevier_query.data,
+                search_form.check_pubmed.data,
+                search_form.check_scopus.data,
+                search_form.check_scidir.data,
+                int(search_form.pm_num_of_articles.data),
+                int(search_form.sc_num_of_articles.data),
+                int(search_form.sd_num_of_articles.data),
+                search_form.check_genes.data)
+            )
+
+            flash(f"Your result id is: {data_tmp.id}", category="success")
+            results = Results(
+                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                elsevier_query=search_form.elsevier_query.data)
+            results.status = 'QUEUED'
+            db.session.add(results)
+            db.session.commit()
 
     if search_form.errors != {}:
         for err in search_form.errors.values():

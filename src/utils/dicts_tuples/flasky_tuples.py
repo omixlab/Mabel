@@ -1,3 +1,5 @@
+boolean_operators = [("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")]
+
 # BASIC
 tags = [
     ('ALL', "All Fields"),

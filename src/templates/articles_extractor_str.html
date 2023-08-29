@@ -12,6 +12,7 @@ Articles Extractor
         <form method="POST" class="form-signin; mt-5" style="color:black">
             {{search_form.hidden_tag()}}
             
+
             <div class="row">
                 <h3>PubMed</h3>
                 <div class="col-md-2">Number of articles:</div>
@@ -21,13 +22,11 @@ Articles Extractor
                 <div class="col-md-6">{{search_form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
                 <div class="col-md-2">{{search_form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
             </div>
-
             <br>
-
             <div class="row">
                 <div class="col-md-2">{{ pm_query.fields_pm(class='form-control custom-select')}}</div>
-                <div class="col-md-6">{{ pm_query.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
-                <div class="col-md-2">{{ pm_query.boolean(class='form-control custom-select')}}</div>
+                <div class="col-md-6">{{ pm_query.keyword_pm(class='form-control', placeholder='Keyword') }}</div>
+                <div class="col-md-2">{{ pm_query.boolean_pm(class='form-control custom-select')}}</div>
             </div>
             <div class="row">
                 <div class="col-md-10 text-right">
@@ -37,7 +36,9 @@ Articles Extractor
             <br>
             <div class="text-justify">{{search_form.pubmed_query(placeholder = 'Pubmed Query')}}</div>
 
+
             <br>
+
 
             <div class="row">
                 <h3>Elsevier</h3>
@@ -56,8 +57,8 @@ Articles Extractor
             <br>
             <div class="row">
                 <div class="col-md-2">{{ els_query.fields_els(class='form-control custom-select')}}</div>
-                <div class="col-md-6">{{ els_query.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
-                <div class="col-md-2">{{ els_query.boolean(class='form-control custom-select')}}</div>
+                <div class="col-md-6">{{ els_query.keyword_els(class='form-control', placeholder='Keywords') }}</div>
+                <div class="col-md-2">{{ els_query.boolean_els(class='form-control custom-select')}}</div>
             </div>
             
             <div class="row">
