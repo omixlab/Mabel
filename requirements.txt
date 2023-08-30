@@ -7,11 +7,11 @@ flask_sqlalchemy
 datetime
 flask_wtf
 wtforms
-#numpy
-#pandas==2.0.3
+numpy
+pandas
 wtforms
-#elsapy
-#metapub
+elsapy
+metapub
 #scispacy
 #spacy
 

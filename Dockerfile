@@ -16,6 +16,6 @@ RUN pip install -r requirements.txt
 
 EXPOSE 5001
 
-CMD [ "flask", "app", "--app", "run", "debuger"]
+CMD [ "flask", "--app", "src", "run", "--debuger"]
 
 
