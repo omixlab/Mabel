@@ -6,4 +6,6 @@ default
 version_old
 __pycache__
 dump.*
+docs/
+dump.rdb
 requirements_2.txt
