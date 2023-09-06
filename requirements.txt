@@ -14,3 +14,4 @@ flask-wtf
 wtforms
 Flask-SQLAlchemy
 flask-bcrypt
+flashtext
