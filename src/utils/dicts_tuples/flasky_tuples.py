@@ -135,7 +135,7 @@ els_tags = [
 
 # en_ner_bionlp13cg_md Labels
 scispacy = [
-    (None, 'Select NER'),
+    (None, 'Select'),
     ('genes', 'Genes'),
     ('AMINO_ACID', 'Amino acid'),
     ('ANATOMICAL_SYSTEM', 'Anatomical system'),
