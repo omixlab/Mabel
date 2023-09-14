@@ -132,3 +132,25 @@ els_tags = [
     ("VOLUME", "Volume"),
     ("WEBSITE", "Website"),
 ]
+
+# en_ner_bionlp13cg_md Labels
+scispacy = [
+    (None, 'Select NER'),
+    ('genes', 'Genes'),
+    ('AMINO_ACID', 'Amino acid'),
+    ('ANATOMICAL_SYSTEM', 'Anatomical system'),
+    ('CANCER', 'Cancer'),
+    ('CELL', 'Cell'),
+    ('CELLULAR_COMPONENT', 'Cellular component'),
+    ('DEVELOPING_ANATOMICAL_STRUCTURE', 'Developing anatomical structure'),
+    ('GENE_OR_GENE_PRODUCT', 'Gene or gene product'),
+    ('IMMATERIAL_ANATOMICAL_ENTITY', 'Immaterial anatomical entity'),
+    ('MULTI-TISSUE_STRUCTURE', 'Multi-tissue structure'),
+    ('ORGAN', 'Organ'),
+    ('ORGANISM', 'Organism'),
+    ('ORGANISM_SUBDIVISION', 'Organism subdivision'),
+    ('ORGANISM_SUBSTANCE', 'Organism substance'),
+    ('PATHOLOGICAL_FORMATION', 'Pathological formation'),
+    ('SIMPLE_CHEMICAL', 'Simple chemical'),
+    ('TISSUE', 'Tissue')
+]

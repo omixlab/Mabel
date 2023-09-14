@@ -40,7 +40,7 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
-                form.check_genes.data)
+                form.ner.data)
             )
 
             #if data_tmp.get() == "None database selected":
@@ -100,7 +100,7 @@ def articles_extractor_str():
                 int(search_form.pm_num_of_articles.data),
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
-                search_form.check_genes.data)
+                search_form.ner.data)
             )
 
             flash(f"Your result id is: {data_tmp.id}", category="success")

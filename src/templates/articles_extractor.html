@@ -50,8 +50,9 @@ Articles Extractor
                     <div class="col-md-2">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
                 </div>
                 <br>
-                <div> {{form.check_genes}} Filter genes </div>
-    </div>
+                <div> Natural Entity Recognizer (Optional) </div>
+                <div class="row col-md-4"> {{form.ner(class='form-control custom-select')}} </div>
+            </div>
     <br>
     <div>
         <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
