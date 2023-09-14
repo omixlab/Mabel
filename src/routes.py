@@ -120,7 +120,7 @@ def articles_extractor_str():
 @app.route("/user_area/")
 @login_required
 def user_area():
-    results = Results.query.all()
+    results = Results.query.all()  
     return render_template("user_area.html", results=results)
 
 @app.route("/result/<result_id>")
@@ -146,6 +146,14 @@ def download(result_id):
             mimetype="txt/csv",
             headers={"Content-disposition": "attachment; filename=result.csv"},
         )
+
+@app.route('/delete_record/<int:id>', methods=['POST']) # ISSO NÃO É NADA SEGURO, NÉ?
+@login_required
+def delete_record(id):
+    result = Results.query.get(id)
+    db.session.delete(result)
+    db.session.commit()
+    return redirect(url_for('user_area'))
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
