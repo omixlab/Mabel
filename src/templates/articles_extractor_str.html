@@ -72,13 +72,20 @@ Articles Extractor
             <div class="text-justify">{{search_form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
             
             <br>
+            <hr>
+
+            <div class="text-justify">
+                <div> Named-Entity Recognizer (Optional) </div>
+                <div class="row col-md-4"> {{search_form.ner(class='form-control custom-select')}} </div>
+            </div>
             
-            <div> Natural Entity Recognizer (Optional) </div>
-            <div class="row col-md-4"> {{form.ner(class='form-control custom-select')}} </div>
- 
+            <br>
+
             <div>
                 <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
             </div>
+            
+            <br>
 
         </form>
     </div>

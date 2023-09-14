@@ -22,7 +22,7 @@ def scispacy_ner(unified_df, entities):
                     print(entity.text)
             genes_column.append(', '.join(set(genes)))
             
-        unified_df.insert(10, entities, genes_column) 
+        unified_df.insert(10, 'NER', genes_column) 
         print('Success: NER with SciSpacy')
 
     else:
