@@ -131,3 +131,9 @@ class SearchArticles(FlaskForm):
     # FlahsText Models
     human = BooleanField("genes_human")
     test = BooleanField("genes_test")
+
+
+class SearchFilters(FlaskForm):
+    fha = BooleanField("Abstract")
+    ffrtf = BooleanField("Free full text")
+    fft = BooleanField("Full text")

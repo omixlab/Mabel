@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 
@@ -74,6 +74,7 @@ def articles_extractor_str():
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
     search_form = SearchArticles()
+    search_filters = SearchFilters()
 
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
@@ -93,8 +94,16 @@ def articles_extractor_str():
                 els_query_form.open_access.data
             )
 
-        if 'submit_query' in request.form:
+        if 'apply_filters' in request.form:
+            search_form.pubmed_query.data = query_constructor.pubmed_filters(
+                search_form.pubmed_query.data,
+                {search_filters.fha.name: search_filters.fha.data,
+                 search_filters.ffrtf.name: search_filters.ffrtf.data,
+                 search_filters.fft.name: search_filters.fft.data,
+                }
+            )
 
+        if 'submit_query' in request.form:
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
                 search_form.elsevier_query.data,
@@ -119,7 +128,7 @@ def articles_extractor_str():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters)
 
 @app.route("/user_area/")
 @login_required
