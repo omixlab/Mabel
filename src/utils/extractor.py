@@ -131,42 +131,42 @@ def execute(
     ner = None,
     selected_models = None
 ):
-    try:
-        if check_pubmed or check_scopus or check_scidir:
-            results = {}
-            if check_pubmed:
-                response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
-                results["pm"] = response_pubmed
-            if check_scopus:
-                response_scopus = scopus(elsevier_query, sc_num_of_articles)
-                results["sc"] = response_scopus
-            if check_scidir:
-                response_scidir = scidir(elsevier_query, sd_num_of_articles)
-                results["sd"] = response_scidir
+    #try:
+    if check_pubmed or check_scopus or check_scidir:
+        results = {}
+        if check_pubmed:
+            response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
+            results["pm"] = response_pubmed
+        if check_scopus:
+            response_scopus = scopus(elsevier_query, sc_num_of_articles)
+            results["sc"] = response_scopus
+        if check_scidir:
+            response_scidir = scidir(elsevier_query, sd_num_of_articles)
+            results["sd"] = response_scidir
 
-            # Unify 3 results in a single dataframe
-            unified_df = unify(results)
+        # Unify 3 results in a single dataframe
+        unified_df = unify(results)
 
-            # Scispacy
-            if ner:
-                if ner == "genes":
-                    print(f'Running NER for only genes entities')
-                    unified_df = only_genes_ner(unified_df, selected_models)
-                else:
-                    print(f'Running NER for {ner} entities')
-                    unified_df = scispacy_ner(unified_df, ner)
+        # Scispacy
+        if ner:
+            if ner == "genes":
+                print(f'Running NER for only genes entities')
+                unified_df = only_genes_ner(unified_df, selected_models)
+            else:
+                print(f'Running NER for {ner} entities')
+                unified_df = scispacy_ner(unified_df, ner)
 
-            # Return as json
-            result_json = unified_df.to_json(orient='records', indent=4)
-            result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-            result.status = 'DONE'
-            result.result_json = result_json
-            db.session.commit()
-            return result_json
-    
-        else:
-            return "None database selected"
-        
-    except:
+        # Return as json
+        result_json = unified_df.to_json(orient='records', indent=4)
         result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-        result.status = 'FAILED'
+        result.status = 'DONE'
+        result.result_json = result_json
+        db.session.commit()
+        return result_json
+
+    else:
+        return "None database selected"
+    
+    #except:
+     #   result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
+      #  result.status = 'FAILED'

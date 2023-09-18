@@ -42,32 +42,28 @@ def only_genes_ner(unified_df, models):
     print('Success: NER with SciSpacy')
 
     # Filter only genes
+    selected_models = [model.upper() for model in models if models.get(model)]
+    print(f'Filtering with {selected_models} models')
+
     filtered_column = []
-    for model in models:
-        print(model)
-        print(models[model])
-        if model:
-            print(1)
-            pickle_file_path = os.environ.get(f'FLASHTEXT_MODEL_{models[model]}')
-            print(pickle_file_path)
-            print(2)
+    for row in genes_column:
+        filtered_row = []
+        for model in selected_models:
+            pickle_file_path = os.environ.get(f'FLASHTEXT_MODEL_{model}')
             with open(pickle_file_path, 'rb') as reader:
-                print(22)
                 kp = pickle.loads(reader.read())
-            print(3)
 
             def process_keywords(text):
                 return set(kp.extract_keywords(text))
-            print(4)
-            
-            for row in genes_column:
-                if not isinstance(row, float):
-                    genes = process_keywords(row)
-                    filtered_column.append(', '.join(genes))
-                else:
-                    filtered_column.append(np.nan)
+        
+            if not isinstance(row, float):
+                genes = process_keywords(row)
+                filtered_row.append(', '.join(genes))
+            else:
+                filtered_row.append(np.nan)
 
-    print(5)
+        filtered_column.append(', '.join(set(filtered_row)))
+
     unified_df.insert(10, 'Genes', filtered_column)
     print('Success: genes filtered')
     return unified_df
