@@ -9,53 +9,61 @@ def scispacy_ner(unified_df, entities):
     # NER for entities in abstract
     nlp = spacy.load("en_ner_bionlp13cg_md")
 
-    if entities != 'genes':
-        # Default scispacy process
-        genes_column = []
-        for row in unified_df['Abstract'].astype(str):
-            doc = nlp(row)
+    genes_column = []
+    for row in unified_df['Abstract'].astype(str):
+        doc = nlp(row)
 
-            genes = []
-            for entity in doc.ents:
-                if entity.label_ == entities and entity.text:
-                    genes.append(entity.text)
-                    print(entity.text)
-            genes_column.append(', '.join(set(genes)))
-            
-        unified_df.insert(10, 'NER', genes_column) 
-        print('Success: NER with SciSpacy')
-
-    else:
-        # Filter only genes
-        genes_column = []
-        for row in unified_df['Abstract'].astype(str):
-            doc = nlp(row)
-
-            genes = []
-            for entity in doc.ents:
-                if entity.label_ == 'GENE_OR_GENE_PRODUCT' and entity.text:
-                    genes.append(entity.text)
-            genes_column.append(', '.join(set(genes)))
-
-        print('Success: NER with SciSpacy')
-
-        pickle_file_path =  os.environ.get('FLASHTEXT_MODEL')
-
-        with open(pickle_file_path, 'rb') as reader:
-            kp = pickle.loads(reader.read())
-
-        def process_keywords(text):
-            return set(kp.extract_keywords(text))
+        genes = []
+        for entity in doc.ents:
+            if entity.label_ == entities and entity.text:
+                genes.append(entity.text)
+                print(entity.text)
+        genes_column.append(', '.join(set(genes)))
         
-        filtered_column = []
-        for row in genes_column:
+    unified_df.insert(10, 'NER', genes_column) 
+    print('Success: NER with SciSpacy')
+    return unified_df
+
+
+def only_genes_ner(unified_df, models):
+    # NER for entities in abstract
+    nlp = spacy.load("en_ner_bionlp13cg_md")
+
+    genes_column = []
+    for row in unified_df['Abstract'].astype(str):
+        doc = nlp(row)
+
+        genes = []
+        for entity in doc.ents:
+            if entity.label_ == 'GENE_OR_GENE_PRODUCT' and entity.text:
+                genes.append(entity.text)
+        genes_column.append(', '.join(set(genes)))
+
+    print('Success: NER with SciSpacy')
+
+    # Filter only genes
+    selected_models = [model.upper() for model in models if models.get(model)]
+    print(f'Filtering with {selected_models} models')
+
+    filtered_column = []
+    for row in genes_column:
+        filtered_row = []
+        for model in selected_models:
+            pickle_file_path = os.environ.get(f'FLASHTEXT_MODEL_{model}')
+            with open(pickle_file_path, 'rb') as reader:
+                kp = pickle.loads(reader.read())
+
+            def process_keywords(text):
+                return set(kp.extract_keywords(text))
+        
             if not isinstance(row, float):
                 genes = process_keywords(row)
-                filtered_column.append(', '.join(genes))
+                filtered_row.append(', '.join(genes))
             else:
-                filtered_column.append(np.nan)
+                filtered_row.append(np.nan)
 
-        unified_df.insert(10, 'Genes', filtered_column)
+        filtered_column.append(', '.join(set(filtered_row)))
 
-        print('Success: genes filtered')
+    unified_df.insert(10, 'Genes', filtered_column)
+    print('Success: genes filtered')
     return unified_df

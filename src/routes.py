@@ -40,7 +40,11 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
-                form.ner.data)
+                form.ner.data,
+                {
+                form.human.name: form.human.data, 
+                form.test.name: form.test.data,
+                 })
             )
 
             #if data_tmp.get() == "None database selected":
