@@ -18,7 +18,7 @@ from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
 from src.utils.unify_dfs import unify
-from src.utils.spacy import scispacy_ner, only_genes_ner
+from src.utils.spacy import scispacy_ner
 import json
 
 
@@ -128,8 +128,7 @@ def execute(
     pm_num_of_articles=25,
     sc_num_of_articles=25,
     sd_num_of_articles=25,
-    ner = None,
-    selected_models = None
+    ner = None
 ):
     try:
         if check_pubmed or check_scopus or check_scidir:
@@ -149,12 +148,8 @@ def execute(
 
             # Scispacy
             if ner:
-                if ner == "genes":
-                    print(f'Running NER for only genes entities')
-                    unified_df = only_genes_ner(unified_df, selected_models)
-                else:
-                    print(f'Running NER for {ner} entities')
-                    unified_df = scispacy_ner(unified_df, ner)
+                print(f'Running NER for {ner} entities')
+                unified_df = scispacy_ner(unified_df, entities=ner)
 
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)

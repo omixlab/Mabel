@@ -20,5 +20,5 @@ Open application in flask `flask --app src run --debugger`
 NCBI_API_KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 X_ELS_APIKey='YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 X_ELS_Insttoken='ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'
-FLASHTEXT_MODEL_HUMAN='data/models/flash_text_model_human.pickle'
+FLASHTEXT_MODEL='data/models/flash_text_model.pickle'
 ```
