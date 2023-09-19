@@ -131,7 +131,16 @@ Articles Extractor
 
             <div class="text-justify">
                 <div> Named-Entity Recognizer (Optional) </div>
-                <div class="row col-md-4"> {{search_form.ner(class='form-control custom-select')}} </div>
+                <div class="row">
+                    <div class="col-md-4"> {{search_form.ner(class='form-control custom-select', id='ner', oninput="outputUpdate(ner.value)")}} </div>
+                    
+                    <div class="col-md-5" id="gene_models" style="display: none"> 
+                        <div>Select models</div>
+                        <div>{{search_form.human(class='mt-2')}} Human genes</div>
+                        <div>{{search_form.test(class='mt-2')}} Test model</div>
+                    </div>
+                    
+                </div>
             </div>
             
             <br>
@@ -169,6 +178,18 @@ Articles Extractor
         rangeSciDir.addEventListener('input', function() {
             updateTextField(rangeSciDir, textFieldSciDir);
         });
+
+        // Show or Hide models when Genes are selected as NER
+        const selectElement = document.getElementById('ner');
+        const genesDiv = document.getElementById('gene_models');
+
+        selectElement.addEventListener('change', function () {
+            const selectedValue = selectElement.value;
+            if (selectedValue === "genes") {
+                genesDiv.style.display = "block"; }   
+            else {
+                genesDiv.style.display = "none"; }
+            })
     </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

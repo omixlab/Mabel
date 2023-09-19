@@ -136,7 +136,11 @@ def articles_extractor_str():
                 int(search_form.pm_num_of_articles.data),
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
-                search_form.ner.data)
+                search_form.ner.data,
+                {
+                search_form.human.name:search_form.human.data, 
+                search_form.test.name: search_form.test.data,
+                 })
             )
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
