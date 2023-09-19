@@ -7,6 +7,7 @@ from src.models import Users, Results
 from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
+import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
 
 @app.route("/")
 def home():
@@ -95,12 +96,34 @@ def articles_extractor_str():
             )
 
         if 'apply_filters' in request.form:
+            filters_tags = dicts_and_tuples.pm_filters
+            available_filters = [
+                    search_filters.abstract,
+                    search_filters.free_full_text,
+                    search_filters.full_text,
+                    search_filters.booksdocs,
+                    search_filters.clinicaltrial,
+                    search_filters.meta_analysis,
+                    search_filters.randomizedcontrolledtrial,
+                    search_filters.review,
+                    search_filters.systematicreview,
+                    search_filters.humans,
+                    search_filters.animal,
+                    search_filters.male,
+                    search_filters.female,
+                    search_filters.english,
+                    search_filters.portuguese,
+                    search_filters.spanish,
+                    search_filters.data,
+                    search_filters.excludepreprints,
+                    search_filters.medline,
+                    ]
+            
+            selected_filters = [filters_tags[f.name] for f in available_filters if f.data]
+            
             search_form.pubmed_query.data = query_constructor.pubmed_filters(
                 search_form.pubmed_query.data,
-                {search_filters.fha.name: search_filters.fha.data,
-                 search_filters.ffrtf.name: search_filters.ffrtf.data,
-                 search_filters.fft.name: search_filters.fft.data,
-                }
+                selected_filters
             )
 
         if 'submit_query' in request.form:

@@ -46,21 +46,41 @@ Articles Extractor
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
                           <button class="nav-link active" id="nav-availability-tab" data-bs-toggle="tab" data-bs-target="#nav-availability" type="button" role="tab" aria-controls="nav-availability" aria-selected="true">Availability</button>
                           <button class="nav-link" id="nav-type-tab" data-bs-toggle="tab" data-bs-target="#nav-type" type="button" role="tab" aria-controls="nav-type" aria-selected="false">Type</button>
-                          <button class="nav-link" id="nav-age-tab" data-bs-toggle="tab" data-bs-target="#nav-age" type="button" role="tab" aria-controls="nav-age" aria-selected="false">Age</button>
+                          <button class="nav-link" id="nav-organism-tab" data-bs-toggle="tab" data-bs-target="#nav-organism" type="button" role="tab" aria-controls="nav-organism" aria-selected="false">Age</button>
                           <button class="nav-link" id="nav-language-tab" data-bs-toggle="tab" data-bs-target="#nav-language" type="button" role="tab" aria-controls="nav-language" aria-selected="false">Language</button>
                           <button class="nav-link" id="nav-others-tab" data-bs-toggle="tab" data-bs-target="#nav-others" type="button" role="tab" aria-controls="nav-others" aria-selected="false">Others</button>
                         </div>
                       </nav>
                       <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-availability" role="tabpanel" aria-labelledby="nav-availability-tab">
-                            <div class="text-left">{{search_filters.fha(class='mt-2')}} Abstract</div>
-                            <div class="text-left">{{search_filters.ffrtf(class='mt-2')}} Free full text</div>
-                            <div class="text-left">{{search_filters.fft(class='mt-2')}} Full text</div>
+                            <div class="text-left">{{search_filters.abstract(class="mt-2")}} Abstract</div>
+                            <div class="text-left">{{search_filters.free_full_text(class="mt-2")}} Free full text</div>
+                            <div class="text-left">{{search_filters.full_text(class="mt-2")}} Full text</div>
                         </div>
-                        <div class="tab-pane fade" id="nav-type" role="tabpanel" aria-labelledby="nav-type-tab">...</div>
-                        <div class="tab-pane fade" id="nav-age" role="tabpanel" aria-labelledby="nav-age-tab">...</div>
-                        <div class="tab-pane fade" id="nav-language" role="tabpanel" aria-labelledby="nav-language-tab">...</div>
-                        <div class="tab-pane fade" id="nav-others" role="tabpanel" aria-labelledby="nav-others-tab">...</div>
+                        <div class="tab-pane fade" id="nav-type" role="tabpanel" aria-labelledby="nav-type-tab">
+                            <div class="text-left">{{search_filters.booksdocs(class="mt-2")}} Books and documents</div>
+                            <div class="text-left">{{search_filters.clinicaltrial(class="mt-2")}} Clinical trial</div>
+                            <div class="text-left">{{search_filters.meta_analysis(class="mt-2")}} Meta-Analysis</div>
+                            <div class="text-left">{{search_filters.randomizedcontrolledtrial(class="mt-2")}} Randomized Controlled Trial</div>
+                            <div class="text-left">{{search_filters.review(class="mt-2")}} Review</div>
+                            <div class="text-left">{{search_filters.systematicreview(class="mt-2")}} Systematic Review</div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-organism" role="tabpanel" aria-labelledby="nav-organism-tab">
+                            <div class="text-left">{{search_filters.humans(class="mt-2")}} Humans</div>
+                            <div class="text-left">{{search_filters.animal(class="mt-2")}} Other Animals</div>
+                            <div class="text-left">{{search_filters.male(class="mt-2")}} Male</div>
+                            <div class="text-left">{{search_filters.female(class="mt-2")}} Female</div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-language" role="tabpanel" aria-labelledby="nav-language-tab">
+                            <div class="text-left">{{search_filters.english(class="mt-2")}} English</div>
+                            <div class="text-left">{{search_filters.portuguese(class="mt-2")}} Portuguese</div>
+                            <div class="text-left">{{search_filters.spanish(class="mt-2")}} Spanish</div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-others" role="tabpanel" aria-labelledby="nav-others-tab">
+                            <div class="text-left">{{search_filters.data(class="mt-2")}} Associated data</div>
+                            <div class="text-left">{{search_filters.excludepreprints(class="mt-2")}} Exclude preprints</div>
+                            <div class="text-left">{{search_filters.medline(class="mt-2")}} MEDLINE</div>
+                        </div>
                         <br>
                         <div class="text-left">
                             <button type="submit" name="apply_filters" class="btn btn-primary mt-2 "> Apply filters </button>

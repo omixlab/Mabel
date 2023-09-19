@@ -1,5 +1,7 @@
 .ipynb_checkpoints
 logs
+data/csv
+data/xmls
 .env
 default
 version_old

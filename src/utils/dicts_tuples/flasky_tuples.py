@@ -133,6 +133,29 @@ els_tags = [
     ("WEBSITE", "Website"),
 ]
 
+# PubMed Filters
+pm_filters = {
+    "abstract": "fha",
+    "free_full_text": "ffrft",
+    "full_text": "fft",
+    "booksdocs": "pubt.booksdocs",
+    "clinicaltrial": "pubt.clinicaltrial",
+    "meta_analysis": "pubt.meta-analysis",
+    "randomizedcontrolledtrial": "pubt.randomizedcontrolledtrial",
+    "review": "pubt.review",
+    "systematicreview": "pubt.systematicreview",
+    "humans": "hum_ani.humans",
+    "animal": "hum_ani.animal",
+    "male": "sex.male",
+    "female": "sex.female",
+    "english": "lang.english",
+    "portuguese": "lang.portuguese",
+    "spanish": "lang.spanish",
+    "data": "articleattr.data",
+    "excludepreprints": "other.excludepreprints",
+    "medline": "other.medline",
+}
+
 # en_ner_bionlp13cg_md Labels
 scispacy = [
     (None, 'Select'),
