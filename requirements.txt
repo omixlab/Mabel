@@ -3,7 +3,7 @@ celery==5.1.2
 redis==3.5.3
 flask_bcrypt
 flask_login
-flask_sqlalchemy
+Flask-SQLAlchemy
 datetime
 flask_wtf
 wtforms
@@ -12,6 +12,11 @@ pandas
 wtforms
 elsapy
 metapub
-#scispacy
+SQLAlchemy==1.4
+email-validator==2.0.0.post2
+python-dotenv==1.0.0
+pubmed-parser==0.3.1
+#https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_ner_bionlp13cg_md-0.5.1.tar.gz
+scispacy
 #spacy
 

@@ -3,11 +3,12 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from src.celery_utils import make_celery
+import os
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///bambu.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config["SECRET_KEY"] = "57eea008c38612d210670283"
 celery = make_celery(app)
 db.init_app(app)

@@ -21,7 +21,6 @@ def genes(unified_df):
 
     print('Success: read with SciSpacy')
 
-
     # Filter only genes
 
     pickle_file_path =  os.environ.get('FLASHTEXT_MODEL')
