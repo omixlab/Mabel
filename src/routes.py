@@ -187,10 +187,10 @@ def download(result_id):
             headers={"Content-disposition": "attachment; filename=result.csv"},
         )
 
-@app.route('/delete_record/<int:id>', methods=['POST']) # ISSO NÃO É NADA SEGURO, NÉ?
+@app.route('/delete_record/<id>', methods=['POST']) # ISSO NÃO É NADA SEGURO, NÉ?
 @login_required
 def delete_record(id):
-    result = Results.query.get(id)
+    result = Results.query.filter_by(celery_id=id).first()
     db.session.delete(result)
     db.session.commit()
     return redirect(url_for('user_area'))
