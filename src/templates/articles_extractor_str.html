@@ -53,33 +53,33 @@ Articles Extractor
                       </nav>
                       <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-availability" role="tabpanel" aria-labelledby="nav-availability-tab">
-                            <div class="text-left">{{search_filters.abstract(class="mt-2")}} Abstract</div>
-                            <div class="text-left">{{search_filters.free_full_text(class="mt-2")}} Free full text</div>
-                            <div class="text-left">{{search_filters.full_text(class="mt-2")}} Full text</div>
+                            <div class="text-left">{{search_filters.abstract(class="mt-2")}} <label class="form-check-label" for="abstract">Abstract</label></div>
+                            <div class="text-left">{{search_filters.free_full_text(class="mt-2")}} <label class="form-check-label" for="free_full_text">Free full text</label></div>
+                            <div class="text-left">{{search_filters.full_text(class="mt-2")}} <label class="form-check-label" for="full_text">Full text</label></div>
                         </div>
                         <div class="tab-pane fade" id="nav-type" role="tabpanel" aria-labelledby="nav-type-tab">
-                            <div class="text-left">{{search_filters.booksdocs(class="mt-2")}} Books and documents</div>
-                            <div class="text-left">{{search_filters.clinicaltrial(class="mt-2")}} Clinical trial</div>
-                            <div class="text-left">{{search_filters.meta_analysis(class="mt-2")}} Meta-Analysis</div>
-                            <div class="text-left">{{search_filters.randomizedcontrolledtrial(class="mt-2")}} Randomized Controlled Trial</div>
-                            <div class="text-left">{{search_filters.review(class="mt-2")}} Review</div>
-                            <div class="text-left">{{search_filters.systematicreview(class="mt-2")}} Systematic Review</div>
+                            <div class="text-left">{{search_filters.booksdocs(class="mt-2")}} <label class="form-check-label" for="booksdocs">Books and documents</label></div>
+                            <div class="text-left">{{search_filters.clinicaltrial(class="mt-2")}} <label class="form-check-label" for="clinicaltrial">Clinical trial</label></div>
+                            <div class="text-left">{{search_filters.meta_analysis(class="mt-2")}} <label class="form-check-label" for="meta_analysis">Meta-Analysis</label></div>
+                            <div class="text-left">{{search_filters.randomizedcontrolledtrial(class="mt-2")}} <label class="form-check-label" for="randomizedcontrolledtrial">Randomized Controlled Trial</label></div>
+                            <div class="text-left">{{search_filters.review(class="mt-2")}} <label class="form-check-label" for="review">Review</label></div>
+                            <div class="text-left">{{search_filters.systematicreview(class="mt-2")}} <label class="form-check-label" for="systematicreview">Systematic Review</label></div>
                         </div>
                         <div class="tab-pane fade" id="nav-organism" role="tabpanel" aria-labelledby="nav-organism-tab">
-                            <div class="text-left">{{search_filters.humans(class="mt-2")}} Humans</div>
-                            <div class="text-left">{{search_filters.animal(class="mt-2")}} Other Animals</div>
-                            <div class="text-left">{{search_filters.male(class="mt-2")}} Male</div>
-                            <div class="text-left">{{search_filters.female(class="mt-2")}} Female</div>
+                            <div class="text-left">{{search_filters.humans(class="mt-2")}} <label class="form-check-label" for="humans">Humans</label></div>
+                            <div class="text-left">{{search_filters.animal(class="mt-2")}} <label class="form-check-label" for="animal">Other Animals</label></div>
+                            <div class="text-left">{{search_filters.male(class="mt-2")}} <label class="form-check-label" for="male">Male</label></div>
+                            <div class="text-left">{{search_filters.female(class="mt-2")}} <label class="form-check-label" for="female">Female</label></div>
                         </div>
                         <div class="tab-pane fade" id="nav-language" role="tabpanel" aria-labelledby="nav-language-tab">
-                            <div class="text-left">{{search_filters.english(class="mt-2")}} English</div>
-                            <div class="text-left">{{search_filters.portuguese(class="mt-2")}} Portuguese</div>
-                            <div class="text-left">{{search_filters.spanish(class="mt-2")}} Spanish</div>
+                            <div class="text-left">{{search_filters.english(class="mt-2")}} <label class="form-check-label" for="english">English</label></div>
+                            <div class="text-left">{{search_filters.portuguese(class="mt-2")}} <label class="form-check-label" for="portuguese">Portuguese</label></div>
+                            <div class="text-left">{{search_filters.spanish(class="mt-2")}} <label class="form-check-label" for="spanish">Spanish</label></div>
                         </div>
                         <div class="tab-pane fade" id="nav-others" role="tabpanel" aria-labelledby="nav-others-tab">
-                            <div class="text-left">{{search_filters.data(class="mt-2")}} Associated data</div>
-                            <div class="text-left">{{search_filters.excludepreprints(class="mt-2")}} Exclude preprints</div>
-                            <div class="text-left">{{search_filters.medline(class="mt-2")}} MEDLINE</div>
+                            <div class="text-left">{{search_filters.data(class="mt-2")}} <label class="form-check-label" for="data">Associated data</label></div>
+                            <div class="text-left">{{search_filters.excludepreprints(class="mt-2")}} <label class="form-check-label" for="excludepreprints">Exclude preprints</label></div>
+                            <div class="text-left">{{search_filters.medline(class="mt-2")}} <label class="form-check-label" for="medline">MEDLINE</label></div>
                         </div>
                         <br>
                         <div class="text-left">
@@ -134,10 +134,13 @@ Articles Extractor
                 <div class="row">
                     <div class="col-md-4"> {{search_form.ner(class='form-control custom-select', id='ner', oninput="outputUpdate(ner.value)")}} </div>
                     
-                    <div class="col-md-5" id="gene_models" style="display: none"> 
-                        <div>Select models</div>
-                        <div>{{search_form.human(class='mt-2')}} Human genes</div>
-                        <div>{{search_form.test(class='mt-2')}} Test model</div>
+                    <div class="collapse" id="collapseModels">
+                        <br>
+                        <div class="card card-body col-md-6">
+                                <div>Select models</div>
+                                <div>{{search_form.human(class='mt-2')}} Human genes</div>
+                                <div>{{search_form.test(class='mt-2')}} Test model</div>
+                        </div> 
                     </div>
                     
                 </div>
@@ -181,14 +184,14 @@ Articles Extractor
 
         // Show or Hide models when Genes are selected as NER
         const selectElement = document.getElementById('ner');
-        const genesDiv = document.getElementById('gene_models');
+        const modelsDiv = document.getElementById('collapseModels');
 
         selectElement.addEventListener('change', function () {
             const selectedValue = selectElement.value;
             if (selectedValue === "genes") {
-                genesDiv.style.display = "block"; }   
+                modelsDiv.collapse.show; }   
             else {
-                genesDiv.style.display = "none"; }
+                modelsDiv.collapse; }
             })
     </script>
 
