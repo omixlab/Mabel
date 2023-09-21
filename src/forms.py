@@ -126,7 +126,24 @@ class SearchArticles(FlaskForm):
     )
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
-    ner = SelectField("Named-Entity Recognizer", choices=flasky_tuples.scispacy)
+    # SciSpacy entities
+    genes = BooleanField("genes")
+    amino_acid = BooleanField("AMINO_ACID")
+    anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
+    cancer = BooleanField("CANCER")
+    cell = BooleanField("CELL")
+    cellular_component = BooleanField("CELLULAR_COMPONENT")
+    developing_anatomical_structure = BooleanField("DEVELOPING_ANATOMICAL_STRUCTURE")
+    gene_or_gene_product = BooleanField("GENE_OR_GENE_PRODUCT")
+    immaterial_anatomical_entity = BooleanField("IMMATERIAL_ANATOMICAL_ENTITY")
+    multi_tissue_structure = BooleanField("MULTI-TISSUE_STRUCTURE")
+    organ = BooleanField("ORGAN")
+    organism = BooleanField("ORGANISM")
+    organism_subdivision = BooleanField("ORGANISM_SUBDIVISION")
+    organism_substance = BooleanField("ORGANISM_SUBSTANCE")
+    pathological_formation = BooleanField("PATHOLOGICAL_FORMATION")
+    simple_chemical = BooleanField("SIMPLE_CHEMICAL")
+    tissue = BooleanField("TISSUE")
 
     # FlahsText Models
     human = BooleanField("genes_human")

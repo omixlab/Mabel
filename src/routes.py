@@ -77,6 +77,23 @@ def articles_extractor_str():
     search_form = SearchArticles()
     search_filters = SearchFilters()
 
+    available_entities = [search_form.genes,
+                search_form.amino_acid,
+                search_form.anatomical_system,
+                search_form.cancer,
+                search_form.cell,
+                search_form.cellular_component,
+                search_form.developing_anatomical_structure,
+                search_form.gene_or_gene_product,
+                search_form.immaterial_anatomical_entity,
+                search_form.organ,
+                search_form.organism,
+                search_form.organism_subdivision,
+                search_form.organism_substance,
+                search_form.pathological_formation,
+                search_form.simple_chemical,
+                search_form.tissue]
+
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
             search_form.pubmed_query.data = query_constructor.pubmed(
@@ -127,6 +144,8 @@ def articles_extractor_str():
             )
 
         if 'submit_query' in request.form:
+            selected_entities = [e for e in available_entities if e.data]
+
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
                 search_form.elsevier_query.data,
@@ -136,7 +155,7 @@ def articles_extractor_str():
                 int(search_form.pm_num_of_articles.data),
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
-                search_form.ner.data,
+                selected_entities,
                 {
                 search_form.human.name:search_form.human.data, 
                 search_form.test.name: search_form.test.data,
@@ -155,7 +174,7 @@ def articles_extractor_str():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities)
 
 @app.route("/user_area/")
 @login_required

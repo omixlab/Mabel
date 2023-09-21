@@ -130,19 +130,31 @@ Articles Extractor
             <hr>
 
             <div class="text-justify">
-                <div> Named-Entity Recognizer (Optional) </div>
-                <div class="row">
-                    <div class="col-md-4"> {{search_form.ner(class='form-control custom-select', id='ner', oninput="outputUpdate(ner.value)")}} </div>
-                    
-                    <div class="collapse" id="collapseModels">
-                        <br>
-                        <div class="card card-body col-md-6">
+                <div>More features:</div> 
+                <button class="btn btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModels" aria-expanded="false" aria-controls="collapseModels">
+                    Named-Entity Recognizer (Optional)
+                </button>
+                
+                <div class="collapse" id="collapseModels"><br>
+                    <div class="card card-body col-md-12">
+                        <div class="row">
+                            <div class="list-group mr-5">
+                                {% for entity in entities %}
+                                <div class="list-group-item">{{entity(class="mt-2")}} 
+                                    <label class="form-check-label" for="entity.name">{{entity.name.title().replace("_", " ")}}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            
+                        
+                            <div class="card card-body col-md-6">
                                 <div>Select models</div>
                                 <div>{{search_form.human(class='mt-2')}} Human genes</div>
                                 <div>{{search_form.test(class='mt-2')}} Test model</div>
-                        </div> 
+                            </div>
+                        </div>
                     </div>
-                    
                 </div>
             </div>
             
@@ -181,18 +193,6 @@ Articles Extractor
         rangeSciDir.addEventListener('input', function() {
             updateTextField(rangeSciDir, textFieldSciDir);
         });
-
-        // Show or Hide models when Genes are selected as NER
-        const selectElement = document.getElementById('ner');
-        const modelsDiv = document.getElementById('collapseModels');
-
-        selectElement.addEventListener('change', function () {
-            const selectedValue = selectElement.value;
-            if (selectedValue === "genes") {
-                modelsDiv.collapse.show; }   
-            else {
-                modelsDiv.collapse; }
-            })
     </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
