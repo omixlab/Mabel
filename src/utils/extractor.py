@@ -149,7 +149,7 @@ def execute(
 
         # Scispacy
         if ner:
-            if ner == "genes":
+            if ner == ["genes"]:
                 print(f'Running NER for only genes entities')
                 unified_df = only_genes_ner(unified_df, selected_models)
             else:

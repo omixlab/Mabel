@@ -9,19 +9,19 @@ def scispacy_ner(unified_df, entities):
     # NER for entities in abstract
     nlp = spacy.load("en_ner_bionlp13cg_md")
 
-    genes_column = []
-    for row in unified_df['Abstract'].astype(str):
-        doc = nlp(row)
+    for selected_entity in entities:
+        new_column = []
+        for row in unified_df['Abstract'].astype(str):
+            doc = nlp(row)
 
-        genes = []
-        for entity in doc.ents:
-            if entity.label_ == entities and entity.text:
-                genes.append(entity.text)
-                print(entity.text)
-        genes_column.append(', '.join(set(genes)))
-        
-    unified_df.insert(10, 'NER', genes_column) 
-    print('Success: NER with SciSpacy')
+            recognized_list = []
+            for entity in doc.ents:
+                if entity.label_ == selected_entity and entity.text:
+                    recognized_list.append(entity.text)
+            new_column.append(', '.join(set(recognized_list)))
+            
+        unified_df.insert(len(unified_df.columns), f'{selected_entity}', new_column) 
+        print(f'Success: NER for {selected_entity} with SciSpacy')
     return unified_df
 
 

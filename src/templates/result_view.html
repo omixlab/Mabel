@@ -57,9 +57,9 @@
             <td>
                 {{row["MeSH Terms"]}}
             </td>
-            {% for entity in ('Genes', 'AMINO_ACID', 'ANATOMICAL_SYSTEM', 'CANCER', 'CELL', 'CELLULAR_COMPONENT', 'DEVELOPING_ANATOMICAL_STRUCTURE', 'GENE_OR_GENE_PRODUCT', 'IMMATERIAL_ANATOMICAL_ENTITY', 'MULTI-TISSUE_STRUCTURE', 'ORGAN', 'ORGANISM', 'ORGANISM_SUBDIVISION', 'ORGANISM_SUBSTANCE', 'PATHOLOGICAL_FORMATION', 'SIMPLE_CHEMICAL', 'TISSUE') %}
-                {% if entity in df.columns %}
-                    <td>{{row[entity]}}</td>
+            {% for column_name in df.columns %}
+                {% if column_name in ('Genes', 'AMINO_ACID', 'ANATOMICAL_SYSTEM', 'CANCER', 'CELL', 'CELLULAR_COMPONENT', 'DEVELOPING_ANATOMICAL_STRUCTURE', 'GENE_OR_GENE_PRODUCT', 'IMMATERIAL_ANATOMICAL_ENTITY', 'MULTI-TISSUE_STRUCTURE', 'ORGAN', 'ORGANISM', 'ORGANISM_SUBDIVISION', 'ORGANISM_SUBSTANCE', 'PATHOLOGICAL_FORMATION', 'SIMPLE_CHEMICAL', 'TISSUE') %}
+                    <td>{{row[column_name]}}</td>
                 {% endif %}
             {% endfor %}
         </tr>

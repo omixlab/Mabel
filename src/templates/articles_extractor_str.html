@@ -138,10 +138,10 @@ Articles Extractor
                 <div class="collapse" id="collapseModels"><br>
                     <div class="card card-body col-md-12">
                         <div class="row">
-                            <div class="list-group mr-5">
+                            <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-offset="0" class="scrollspy-example" tabindex="0">
                                 {% for entity in entities %}
-                                <div class="list-group-item">{{entity(class="mt-2")}} 
-                                    <label class="form-check-label" for="entity.name">{{entity.name.title().replace("_", " ")}}</label>
+                                <div class="text-left">{{entity(class="mt-2")}} 
+                                    <label class="form-check-label" for={{entity.name}}>{{entity.name.title().replace("_", " ")}}</label>
                                 </div>
                                 {% endfor %}
                             </div>

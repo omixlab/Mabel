@@ -41,7 +41,7 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
-                form.ner.data,
+                
                 {
                 form.human.name: form.human.data, 
                 form.test.name: form.test.data,
@@ -144,7 +144,7 @@ def articles_extractor_str():
             )
 
         if 'submit_query' in request.form:
-            selected_entities = [e for e in available_entities if e.data]
+            selected_entities = [e.name.upper() for e in available_entities if e.data]
 
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
