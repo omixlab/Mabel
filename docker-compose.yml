@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: bambu-db
+    environment:
+      - MYSQL_DATABASE=bambu
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "3306:3306"
+    expose:
+      - '3306'
+    networks:
+      - app_net
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app_net
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  celery:
+    build:
+      context: ./src
+    container_name: celery
+    command: celery -A celery worker --loglevel=info
+    depends_on:
+      - redis
+    networks:
+      - app_net
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0  # URL para conexão com o Redis
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  web:
+    container_name: web
+    build: ./src
+    ports:
+      - "5000:5000"
+    links:
+      - redis
+      - mysql
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      - FLASK_ENV=src
+      - FLASK_APP=__init__.py  
+  
+networks:
+  app_net:
+   driver: bridge 
