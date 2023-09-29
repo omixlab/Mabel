@@ -6,11 +6,9 @@ services:
     build: ./src
     ports:
       - "5000:5000"
-    links:
-      - redis
-      - mysql
     depends_on:
       - redis
+      - mysql
     environment:
       - FLASK_ENV=src
       - FLASK_APP=__init__.py  
