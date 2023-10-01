@@ -17,14 +17,35 @@ def home():
 @login_required
 def articles_extractor():
     query_form = SearchQuery()
-    form = SearchArticles()
+    search_form = SearchArticles()
+
+    available_entities = [
+                        search_form.amino_acid,
+                        search_form.anatomical_system,
+                        search_form.cancer,
+                        search_form.cell,
+                        search_form.cellular_component,
+                        search_form.developing_anatomical_structure,
+                        search_form.gene_or_gene_product,
+                        search_form.immaterial_anatomical_entity,
+                        search_form.organ,
+                        search_form.organism,
+                        search_form.organism_subdivision,
+                        search_form.organism_substance,
+                        search_form.pathological_formation,
+                        search_form.simple_chemical,
+                        search_form.tissue]
+    
+    available_models = [search_form.genes_human,
+                        search_form.genes_danio_rerio]
+    
 
     if request.method == 'POST':
         if 'add_keyword' in request.form:
             # Query constructor
-            form.pubmed_query.data, form.elsevier_query.data = query_constructor.basic(
-                form.pubmed_query.data, 
-                form.elsevier_query.data,
+            search_form.pubmed_query.data, search_form.elsevier_query.data = query_constructor.basic(
+                search_form.pubmed_query.data, 
+                search_form.elsevier_query.data,
                 query_form.tags.data,
                 query_form.keyword.data,
                 query_form.connective.data,
@@ -32,20 +53,21 @@ def articles_extractor():
             )
             
         if 'submit_query' in request.form:
+            selected_entities = [e.name.upper() for e in available_entities if e.data]
+            selected_models = [m.name for m in available_models if m.data]
+
             data_tmp = extractor.execute.apply_async((
-                form.pubmed_query.data,
-                form.elsevier_query.data,
-                form.check_pubmed.data,
-                form.check_scopus.data,
-                form.check_scidir.data,
-                int(form.pm_num_of_articles.data),
-                int(form.sc_num_of_articles.data),
-                int(form.sd_num_of_articles.data),
-                
-                {
-                form.human.name: form.human.data, 
-                form.test.name: form.test.data,
-                 })
+                search_form.pubmed_query.data,
+                search_form.elsevier_query.data,
+                search_form.check_pubmed.data,
+                search_form.check_scopus.data,
+                search_form.check_scidir.data,
+                int(search_form.pm_num_of_articles.data),
+                int(search_form.sc_num_of_articles.data),
+                int(search_form.sd_num_of_articles.data),
+                selected_entities,
+                selected_models,
+                )
             )
 
             #if data_tmp.get() == "None database selected":
@@ -57,45 +79,46 @@ def articles_extractor():
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
-                user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
-                elsevier_query=form.elsevier_query.data)
+                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                elsevier_query=search_form.elsevier_query.data)
             results.status = 'QUEUED'
             db.session.add(results)
             db.session.commit()
 
-    if form.errors != {}:
-        for err in form.errors.values():
+    if search_form.errors != {}:
+        for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
     
-    return render_template("articles_extractor.html", form=form, query_form=query_form)
+    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities)
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 def articles_extractor_str():
+    query_form = SearchQuery()
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
-    search_form = SearchArticles()
     search_filters = SearchFilters()
+    search_form = SearchArticles()
 
     available_entities = [
-                search_form.amino_acid,
-                search_form.anatomical_system,
-                search_form.cancer,
-                search_form.cell,
-                search_form.cellular_component,
-                search_form.developing_anatomical_structure,
-                search_form.gene_or_gene_product,
-                search_form.immaterial_anatomical_entity,
-                search_form.organ,
-                search_form.organism,
-                search_form.organism_subdivision,
-                search_form.organism_substance,
-                search_form.pathological_formation,
-                search_form.simple_chemical,
-                search_form.tissue]
+                        search_form.amino_acid,
+                        search_form.anatomical_system,
+                        search_form.cancer,
+                        search_form.cell,
+                        search_form.cellular_component,
+                        search_form.developing_anatomical_structure,
+                        search_form.gene_or_gene_product,
+                        search_form.immaterial_anatomical_entity,
+                        search_form.organ,
+                        search_form.organism,
+                        search_form.organism_subdivision,
+                        search_form.organism_substance,
+                        search_form.pathological_formation,
+                        search_form.simple_chemical,
+                        search_form.tissue]
     
     available_models = [search_form.genes_human,
-                         search_form.genes_danio_rerio]
+                        search_form.genes_danio_rerio]
 
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:

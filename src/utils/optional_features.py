@@ -53,7 +53,6 @@ def flashtext_kp(df, models):
             else:
                 filtered_row.append(np.nan)
 
-            print(filtered_row)
             filtered_column.append(', '.join(set(filtered_row)))
 
         new_column_name = selected_model.title().replace("_", " ")

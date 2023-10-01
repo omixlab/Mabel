@@ -10,7 +10,7 @@ Articles Extractor
             Search Articles
         </h2>
         <form method="POST" class="form-signin; mt-5" style="color:black">
-            {{form.hidden_tag()}}
+            {{search_form.hidden_tag()}}
             
             <div class="row">
                 <div class="col-md-2">{{ query_form.tags(class='form-control custom-select')}}</div>
@@ -25,29 +25,29 @@ Articles Extractor
                 </div>
             </div>
             <br>
-            <div class="text-justify">{{form.pubmed_query(placeholder = 'Pubmed Query')}}</div>
+            <div class="text-justify">{{search_form.pubmed_query(placeholder = 'Pubmed Query')}}</div>
             <br>
-            <div class="text-justify">{{form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
+            <div class="text-justify">{{search_form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
             <br>
 
             <div class="text-justify">
                 <h5 class="text-justify">Select desired databases and number of articles</h5>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_pubmed(class='mt-2')}} <label class="form-check-label" for="check_pubmed">PubMed</label></div>
-                    <div class="col-md-6">{{form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
-                    <div class="col-md-2">{{form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
+                    <div class="col-md-2">{{search_form.check_pubmed(class='mt-2')}} <label class="form-check-label" for="check_pubmed">PubMed</label></div>
+                    <div class="col-md-6">{{search_form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
+                    <div class="col-md-2">{{search_form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_scopus(class='mt-2')}} <label class="form-check-label" for="check_scopus">Scopus</label></div>
-                    <div class="col-md-6">{{form.range_scopus(class='form-control', step=5, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
-                    <div class="col-md-2">{{form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
+                    <div class="col-md-2">{{search_form.check_scopus(class='mt-2')}} <label class="form-check-label" for="check_scopus">Scopus</label></div>
+                    <div class="col-md-6">{{search_form.range_scopus(class='form-control', step=5, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                    <div class="col-md-2">{{search_form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-md-2">{{form.check_scidir(class='mt-2')}} <label class="form-check-label" for="check_scidir">ScienceDirect</label></div>
-                    <div class="col-md-6">{{form.range_scidir(class='form-control', min=0, max=5000, step=5, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
-                    <div class="col-md-2">{{form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
+                    <div class="col-md-2">{{search_form.check_scidir(class='mt-2')}} <label class="form-check-label" for="check_scidir">ScienceDirect</label></div>
+                    <div class="col-md-6">{{search_form.range_scidir(class='form-control', min=0, max=5000, step=5, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                    <div class="col-md-2">{{search_form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
                 </div>
                 
                 <br>
@@ -55,6 +55,44 @@ Articles Extractor
                 
             </div>
             
+            <div class="text-justify">
+                <h4>Optional features:</h4> 
+                <button class="btn btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModels" aria-expanded="false" aria-controls="collapseModels">
+                    Named-Entity Recognizer
+                </button>
+                
+                <div class="collapse" id="collapseModels"><br>
+                    <div class="row">
+                        
+                        <div class="card card-body col-md-4 mr-4" style="max-height: 300px; overflow-y: auto;">
+                            {% for entity in entities %}
+                            <div class="text-left">{{entity(class="mt-2")}} 
+                                <label class="form-check-label" for={{entity.name}}>{{entity.name.title().replace("_", " ")}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    
+                        <div class="accordion col-md-6" id="accordionFlashtext">
+                            <div class="accordion-item">
+                              <h2 class="accordion-header" id="headingFlash">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlash" aria-expanded="true" aria-controls="collapseFlash">
+                                  Filter with FlashText
+                                </button>
+                              </h2>
+                              <div id="collapseFlash" class="accordion-collapse collapse" aria-labelledby="headingFlash" data-bs-parent="#accordionFlash">
+                                <div class="accordion-body">
+                                    <h3>Genes models</h3>
+                                    <div>{{search_form.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
+                                    <div>{{search_form.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <br>
             
             <div>
@@ -92,6 +130,9 @@ Articles Extractor
         });
 
     </script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 {% endblock %}
