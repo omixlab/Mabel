@@ -93,4 +93,41 @@
     crossorigin="anonymous"></script>
 </body>
 
+<style> 
+.accordion-item {
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+}
+
+.accordion-header {
+  margin-bottom: 0;
+}
+
+.accordion-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1.2rem;
+  color: #212529;
+  text-align: left;
+  background-color: #e0e0e0;
+  border: 0;
+  border-radius: 0;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  overflow-anchor: none;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,border-radius .15s ease;
+}
+.accordion-button:focus {
+  outline: 0;
+  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}
+
+.accordion-body {
+  padding: 1rem 1.25rem;
+}
+</style>
+
 </html>

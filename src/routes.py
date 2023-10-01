@@ -77,7 +77,7 @@ def articles_extractor_str():
     search_form = SearchArticles()
     search_filters = SearchFilters()
 
-    available_entities = [search_form.genes,
+    available_entities = [
                 search_form.amino_acid,
                 search_form.anatomical_system,
                 search_form.cancer,
@@ -93,6 +93,9 @@ def articles_extractor_str():
                 search_form.pathological_formation,
                 search_form.simple_chemical,
                 search_form.tissue]
+    
+    available_models = [search_form.genes_human,
+                         search_form.genes_danio_rerio]
 
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
@@ -145,6 +148,7 @@ def articles_extractor_str():
 
         if 'submit_query' in request.form:
             selected_entities = [e.name.upper() for e in available_entities if e.data]
+            selected_models = [m.name for m in available_models if m.data]
 
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
@@ -156,10 +160,8 @@ def articles_extractor_str():
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
                 selected_entities,
-                {
-                search_form.human.name:search_form.human.data, 
-                search_form.test.name: search_form.test.data,
-                 })
+                selected_models,
+                )
             )
 
             flash(f"Your result id is: {data_tmp.id}", category="success")

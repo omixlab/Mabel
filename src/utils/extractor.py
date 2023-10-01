@@ -18,7 +18,7 @@ from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
 from src.utils.unify_dfs import unify
-from src.utils.spacy import scispacy_ner, only_genes_ner
+from src.utils.optional_features import scispacy_ner, flashtext_kp
 import json
 
 
@@ -129,7 +129,7 @@ def execute(
     sc_num_of_articles=25,
     sd_num_of_articles=25,
     ner = None,
-    selected_models = None
+    kp = None
 ):
     try:
         if check_pubmed or check_scopus or check_scidir:
@@ -154,14 +154,15 @@ def execute(
                 db.session.commit()
                 return "No results"
 
-            # Scispacy
+            # Scispacy NER
             if ner:
-                if ner == ["genes"]:
-                    print(f'Running NER for only genes entities')
-                    unified_df = only_genes_ner(unified_df, selected_models)
-                else:
-                    print(f'Running NER for {ner} entities')
-                    unified_df = scispacy_ner(unified_df, ner)
+                print(f'Running NER for {ner} entities')
+                unified_df = scispacy_ner(unified_df, ner)
+
+            # Flashtext Keyword Processor
+            if kp:
+                print(f'Filtering {kp} with Flashtext')
+                unified_df = flashtext_kp(unified_df, kp)
 
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)

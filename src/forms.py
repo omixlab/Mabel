@@ -127,7 +127,6 @@ class SearchArticles(FlaskForm):
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
     # SciSpacy entities
-    genes = BooleanField("genes")
     amino_acid = BooleanField("AMINO_ACID")
     anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
     cancer = BooleanField("CANCER")
@@ -145,9 +144,9 @@ class SearchArticles(FlaskForm):
     simple_chemical = BooleanField("SIMPLE_CHEMICAL")
     tissue = BooleanField("TISSUE")
 
-    # FlahsText Models
-    human = BooleanField("genes_human")
-    test = BooleanField("genes_test")
+    # FlashText Models
+    genes_human = BooleanField("genes_human")
+    genes_danio_rerio = BooleanField("genes_danio_rerio")
 
 
 class SearchFilters(FlaskForm):
