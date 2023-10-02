@@ -4,6 +4,7 @@ import spacy
 import pickle
 import numpy as np
 import os
+from flashtext import KeywordProcessor
 
 def scispacy_ner(df, entities):
     # NER for entities in abstract
@@ -60,3 +61,44 @@ def flashtext_kp(df, models):
     
     print('Success: Keywords proccessed')
     return df
+
+
+def flashtext_model_create(tsv_file, name, type):
+    # Convert data into gene dict and list    
+    genes_dict = {}
+    genes_list = []
+
+    with open(tsv_file, 'r') as file:
+        next(file) #skip head
+
+        for line in file:
+            values = line.strip().split('\t') # Split by tabs
+
+            #gene_id = values[2]
+            symbol = values[5]
+            aliases = values[6]
+            #description = values[7]
+            #other_designation = values[8]
+
+            if aliases:
+                designations = aliases.split(', ')
+                designations.insert(0, symbol)
+                genes_dict[symbol] = designations
+            else:
+                genes_list.append(symbol)
+
+
+    # Write model
+    kp = KeywordProcessor(case_sensitive=True)
+
+    kp.add_keywords_from_dict(genes_dict)
+    kp.add_keywords_from_list(genes_list)
+
+    # Save with pickle
+    if type:
+        path = f'/data/flashtext_models/{name}_{type}.pickle'
+    else: 
+        path = f'/data/flashtext_models/{name}.pickle'
+
+    with open(path, 'wb') as writer:
+        writer.write(pickle.dumps(kp))
