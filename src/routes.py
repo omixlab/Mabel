@@ -1,6 +1,8 @@
 from flask import flash, redirect, render_template, url_for, request, Response
-import pandas as pd
 from flask_login import login_required, login_user, logout_user
+
+import pandas as pd
+import os
 
 from src import app, db
 from src.models import Users, Results
@@ -8,6 +10,7 @@ from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, Adva
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
+from src.utils.optional_features import flashtext_model_create
 
 @app.route("/")
 def home():
@@ -238,6 +241,18 @@ def delete_record(id):
     db.session.delete(result)
     db.session.commit()
     return redirect(url_for('user_area'))
+
+
+@app.route('/user_models/', methods=["GET", "POST"])
+@login_required
+def user_models():
+    user_models = os.listdir('./data/flashtext_models/')
+    return render_template('user_models.html', user_models=user_models)
+
+@app.route('/delete_model/', methods=["POST"])
+@login_required
+def delete_model():
+    pass
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
