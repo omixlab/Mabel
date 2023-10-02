@@ -74,20 +74,20 @@ Articles Extractor
                     
                         <div class="accordion col-md-6" id="accordionFlashtext">
                             <div class="accordion-item">
-                              <h2 class="accordion-header" id="headingFlash">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlash" aria-expanded="true" aria-controls="collapseFlash">
-                                  Filter with FlashText
-                                </button>
-                              </h2>
-                              <div id="collapseFlash" class="accordion-collapse collapse" aria-labelledby="headingFlash" data-bs-parent="#accordionFlash">
-                                <div class="accordion-body">
-                                    <h3>Genes models</h3>
-                                    <div>{{search_form.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
-                                    <div>{{search_form.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                <h2 class="accordion-header" id="headingFlash">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlash" aria-expanded="true" aria-controls="collapseFlash">
+                                        Filter with FlashText
+                                    </button>
+                                </h2>
+                                <div id="collapseFlash" class="accordion-collapse collapse" aria-labelledby="headingFlash" data-bs-parent="#accordionFlashtext">
+                                    <div class="accordion-body">
+                                        <h3>Genes models</h3>
+                                        <div>{{search_form.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
+                                        <div>{{search_form.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
-                        </div>
+                        </div>                        
 
                     </div>
                 </div>
