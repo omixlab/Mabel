@@ -144,10 +144,6 @@ class SearchArticles(FlaskForm):
     simple_chemical = BooleanField("SIMPLE_CHEMICAL")
     tissue = BooleanField("TISSUE")
 
-    # FlashText Models
-    genes_human = BooleanField("genes_human")
-    genes_danio_rerio = BooleanField("genes_danio_rerio")
-
 
 class SearchFilters(FlaskForm):
     abstract = BooleanField("Abstract")
@@ -169,3 +165,11 @@ class SearchFilters(FlaskForm):
     data = BooleanField("Associated data")
     excludepreprints = BooleanField("Exclude preprints")
     medline = BooleanField("MEDLINE")
+
+
+class FlashtextModels(FlaskForm):
+    radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    keywords_string = StringField("Keywords", name="aaa", description="bbb")
+    
+    genes_human = BooleanField("genes_human")
+    genes_danio_rerio = BooleanField("genes_danio_rerio")

@@ -6,7 +6,7 @@ import os
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextModels
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
@@ -21,6 +21,7 @@ def home():
 def articles_extractor():
     query_form = SearchQuery()
     search_form = SearchArticles()
+    flashtext = FlashtextModels()
 
     available_entities = [
                         search_form.amino_acid,
@@ -37,10 +38,10 @@ def articles_extractor():
                         search_form.organism_substance,
                         search_form.pathological_formation,
                         search_form.simple_chemical,
-                        search_form.tissue]
-    
-    available_models = [search_form.genes_human,
-                        search_form.genes_danio_rerio]
+                        search_form.tissue]  
+    available_models = [
+                        flashtext.genes_human,
+                        flashtext.genes_danio_rerio]
     
 
     if request.method == 'POST':
@@ -92,7 +93,7 @@ def articles_extractor():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
     
-    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities)
+    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, flashtext=flashtext)
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
@@ -102,6 +103,7 @@ def articles_extractor_str():
     els_query_form = AdvancedElsevierQuery()
     search_filters = SearchFilters()
     search_form = SearchArticles()
+    flashtext = FlashtextModels()
 
     available_entities = [
                         search_form.amino_acid,
@@ -120,8 +122,8 @@ def articles_extractor_str():
                         search_form.simple_chemical,
                         search_form.tissue]
     
-    available_models = [search_form.genes_human,
-                        search_form.genes_danio_rerio]
+    available_models = [flashtext.genes_human,
+                        flashtext.genes_danio_rerio]
 
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
@@ -202,7 +204,7 @@ def articles_extractor_str():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, flashtext=flashtext)
 
 @app.route("/user_area/")
 @login_required
@@ -246,7 +248,7 @@ def delete_record(id):
 @app.route('/user_models/', methods=["GET", "POST"])
 @login_required
 def user_models():
-    user_models = os.listdir('./data/flashtext_models/')
+    user_models = os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS'))
     return render_template('user_models.html', user_models=user_models)
 
 @app.route('/delete_model/', methods=["POST"])
