@@ -169,13 +169,16 @@ Articles Extractor
                                     </div>
                                     
                                     <div id="keywordDiv" style="display: none;">
-                                        <label>Keyword</label>
+                                        <label>Keyword:</label>
                                         {{ flashtext.keywords_string(class='mt-2 form-control', placeholder="ex: Cancer, Prostate") }}
                                     </div>
                                     <div id="modelsDiv" style="display: none;">
                                         <h5>Genes models</h5>
                                         <div>{{flashtext.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
                                         <div>{{flashtext.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                        
+                                        <br>
+                                        <a href="{{ url_for('user_models') }}" class="btn btn-link" style="padding: 0;">My models</a>
                                     </div>
                                 </div>
                             </div>
