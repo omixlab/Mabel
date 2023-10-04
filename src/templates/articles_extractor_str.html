@@ -5,11 +5,11 @@ Articles Extractor
 
 {% block content %}
 <body class="text-center">
-    <div class="ml-3 container" style="float:left;">
+    <div class="container">
         <h2 class="h3 mb-2 font-weight-normal">
             Advanced search
         </h2>
-        <form method="POST" class="form-signin; mt-5" style="color:black">
+        <form method="POST" class="form-signin; mt-5" style="color:black; padding-left: 8%;">
             {{search_form.hidden_tag()}}
             
 
@@ -19,13 +19,13 @@ Articles Extractor
             </div>
             <div class="row">
                 <div class="col-md-2 text-left" >{{search_form.check_pubmed(class='mt-2')}} <label class="form-check-label" for="check_pubmed">Enabled</label></div>
-                <div class="col-md-6">{{search_form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
+                <div class="col-md-7">{{search_form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
                 <div class="col-md-2">{{search_form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
             </div>
             <br>
             <div class="row">
                 <div class="col-md-2">{{ pm_query.fields_pm(class='form-control custom-select')}}</div>
-                <div class="col-md-6">{{ pm_query.keyword_pm(class='form-control', placeholder='Keyword') }}</div>
+                <div class="col-md-7">{{ pm_query.keyword_pm(class='form-control', placeholder='Keyword') }}</div>
                 <div class="col-md-2">{{ pm_query.boolean_pm(class='form-control custom-select')}}</div>
             </div>
             <div class="row">
@@ -34,8 +34,8 @@ Articles Extractor
                         Filters
                     </button>
                 </div>
-                
-                <div class="col-md-9 text-right">
+                <div class="col-md-8"></div>
+                <div class="col-md-2 text-left">
                     <button type="submit" name="pm_add_keyword" class="btn btn-primary mt-2"> Add </button>
                 </div>
             </div>
@@ -101,24 +101,25 @@ Articles Extractor
             </div>
             <div class="row">
                 <div class="col-md-2 text-left">{{search_form.check_scopus(class='mt-2')}} <label class="form-check-label" for="check_scopus">Scopus</label></div>
-                <div class="col-md-6">{{search_form.range_scopus(class='form-control', step=25, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
+                <div class="col-md-7">{{search_form.range_scopus(class='form-control', step=25, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
                 <div class="col-md-2">{{search_form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
             </div>
             <div class="row">
                 <div class="col-md-2 text-left">{{search_form.check_scidir(class='mt-2')}} <label class="form-check-label" for="check_scidir">ScienceDirect</label></div>
-                <div class="col-md-6">{{search_form.range_scidir(class='form-control', step=25, min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
+                <div class="col-md-7">{{search_form.range_scidir(class='form-control', step=25, min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
                 <div class="col-md-2">{{search_form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
             </div>
             <br>
             <div class="row">
                 <div class="col-md-2">{{ els_query.fields_els(class='form-control custom-select')}}</div>
-                <div class="col-md-6">{{ els_query.keyword_els(class='form-control', placeholder='Keywords') }}</div>
+                <div class="col-md-7">{{ els_query.keyword_els(class='form-control', placeholder='Keywords') }}</div>
                 <div class="col-md-2">{{ els_query.boolean_els(class='form-control custom-select')}}</div>
             </div>
             
             <div class="row">
                 <div class="col-md-2">{{els_query.open_access(class='mt-3')}} <label class="form-check-label" for="open_access">Open Access</label></div>
-                <div class="col-md-8 text-right">
+                <div class="col-md-6"></div>
+                <div class="col-md-2 text-right">
                     <button type="submit" name="els_add_keyword" class="btn btn-primary mt-2"> Add </button>
                 </div>
             </div>
