@@ -3,10 +3,11 @@ from flask_login import login_required, login_user, logout_user
 
 import pandas as pd
 import os
+from werkzeug.utils import secure_filename
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextModels
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextModels, CreateFlashtextModel
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
@@ -245,11 +246,29 @@ def delete_record(id):
     return redirect(url_for('user_area'))
 
 
-@app.route('/user_models/', methods=["GET", "POST"])
+@app.route("/user_models/", methods=["GET", "POST"])
 @login_required
 def user_models():
+    form = CreateFlashtextModel()
     user_models = os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS'))
-    return render_template('user_models.html', user_models=user_models)
+
+    if form.validate_on_submit():
+        file_path = os.path.join(os.environ.get('UPLOAD_FILES'), secure_filename(f'{form.name.data}.txt'))
+        form.tsv.data.save(file_path)
+
+        flashtext_model_create(
+            name=form.name.data,
+            type=form.type.data,
+            tsv_file= file_path
+        )
+        flash("Model created succesfully", category="success")
+        return redirect(url_for("user_models"))
+
+    if form.errors != {}:
+        for err in form.errors.values():
+            flash(err, category="danger")
+
+    return render_template('user_models.html', user_models=user_models, form=form)
 
 @app.route('/delete_model/', methods=["POST"])
 @login_required

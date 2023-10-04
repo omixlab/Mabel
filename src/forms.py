@@ -9,6 +9,7 @@ from wtforms import (
     StringField,
     SubmitField,
     TextAreaField,
+    FileField
 )
 
 # from wtforms.fields import html5 as h5fields
@@ -25,6 +26,7 @@ from wtforms.validators import (
     Optional,
     NumberRange,
 )
+from flask_wtf.file import FileAllowed
 
 import src.utils.dicts_tuples.flasky_tuples as flasky_tuples
 from src.models import Users
@@ -173,3 +175,9 @@ class FlashtextModels(FlaskForm):
     
     genes_human = BooleanField("genes_human")
     genes_danio_rerio = BooleanField("genes_danio_rerio")
+
+class CreateFlashtextModel(FlaskForm):
+    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty")])
+    type = SelectField("Type", choices=flasky_tuples.scispacy)
+    tsv = FileField(".txt file", validators=[FileAllowed(['txt'], "Only .txt files are allowed"), InputRequired(message='File is required')])
+    submit = SubmitField(label="Create model")

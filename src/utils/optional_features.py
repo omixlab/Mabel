@@ -63,7 +63,7 @@ def flashtext_kp(df, models):
     return df
 
 
-def flashtext_model_create(tsv_file, name, type):
+def flashtext_model_create(name, type, tsv_file):
     # Convert data into gene dict and list    
     genes_dict = {}
     genes_list = []
@@ -96,9 +96,10 @@ def flashtext_model_create(tsv_file, name, type):
 
     # Save with pickle
     if type:
-        path = f'/data/flashtext_models/{name}_{type}.pickle'
+        path = f"./{os.environ.get(f'FLASHTEXT_USER_MODELS')}{name}_{type}.pickle"
     else: 
-        path = f'/data/flashtext_models/{name}.pickle'
+        path = f"./{os.environ.get(f'FLASHTEXT_USER_MODELS')}{name}.pickle"
 
+    print(path)
     with open(path, 'wb') as writer:
         writer.write(pickle.dumps(kp))

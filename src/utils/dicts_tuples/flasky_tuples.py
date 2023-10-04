@@ -158,8 +158,7 @@ pm_filters = {
 
 # en_ner_bionlp13cg_md Labels
 scispacy = [
-    (None, 'Select'),
-    ('genes', 'Genes'),
+    (None, 'None'),
     ('AMINO_ACID', 'Amino acid'),
     ('ANATOMICAL_SYSTEM', 'Anatomical system'),
     ('CANCER', 'Cancer'),

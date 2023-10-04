@@ -3,7 +3,8 @@
 {% block content %}
 <br>
 
-<table class="table table-hover table-hover ms-0">
+<div class="container">
+  <table class="table table-hover table-hover ms-0">
     <thead>
         <tr>
             <th space="col"><h3>FlashText models</h3></th>
@@ -25,12 +26,19 @@
         </tr>
         {% endfor %}
     </tbody>
-</table>
+  </table>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flashtextModal">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flashtextModal">
     New model
-</button>
-<div class="modal fade" id="flashtextModal" tabindex="-1" aria-labelledby="flashtextModalLabel" aria-hidden="true">
+  </button>
+
+</div>
+
+
+
+<form method="POST" class="form-signin" enctype="multipart/form-data">
+{{form.hidden_tag()}}
+  <div class="modal fade" id="flashtextModal" tabindex="-1" aria-labelledby="flashtextModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -39,17 +47,28 @@
             Help
           </a>
         </div>
+        
         <div class="modal-body">
-          <div>Name</div>
-          <div>Type</div>
-          <div>.tsv file</div>
+          <div class="row">
+            <div class="col-md-6">Name:</div> <div class="col-md-4">Type (Optional)</div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">{{form.name(class="form-control")}}</div>
+            <div class="col-md-4">{{form.type(class="form-control")}}</div>
+          </div>
+          <br>
+          <div>File (.txt)</div>
+          <div>{{ form.tsv(accept=".txt")}}</div>
         </div>
+          
         <div class="modal-footer">
+          {{ form.submit(class="btn btn-success") }}
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
-</div>
+  </div>
+</form>
 
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
