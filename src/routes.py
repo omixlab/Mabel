@@ -6,7 +6,7 @@ import os
 from werkzeug.utils import secure_filename
 
 from src import app, db
-from src.models import Users, Results
+from src.models import Users, Results, FlashtextModels
 from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
@@ -256,14 +256,24 @@ def user_models():
     user_models = os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS'))
 
     if form.validate_on_submit():
-        file_path = os.path.join(os.environ.get('UPLOAD_FILES'), secure_filename(f'{form.name.data}.txt'))
-        form.tsv.data.save(file_path)
+        tsv_path = os.path.join(os.environ.get('UPLOAD_FILES'), secure_filename(f'{form.name.data}.txt'))
+        form.tsv.data.save(tsv_path)
+
+        model_path = os.path.join(os.environ.get('FLASHTEXT_USER_MODELS'), secure_filename(f'{form.name.data}.pickle'))
 
         flashtext_model_create(
             name=form.name.data,
-            type=form.type.data,
-            tsv_file= file_path
+            tsv_file= tsv_path,
+            path=model_path
         )
+
+        model = FlashtextModels(
+            user_id=current_user.id, 
+            name=form.name.data,
+            type=form.type.data,
+            path=model_path
+            )
+        
         flash("Model created succesfully", category="success")
         return redirect(url_for("user_models"))
 

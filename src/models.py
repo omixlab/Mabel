@@ -46,3 +46,12 @@ class Results(db.Model):
     elsevier_query = db.Column(db.String())
     result_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
+
+
+class FlashtextModels(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow())
+    name = db.Column(db.String(64))
+    type = db.Column(db.String(24))
+    path = db.Column(db.String(255))

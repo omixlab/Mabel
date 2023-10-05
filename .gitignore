@@ -2,7 +2,6 @@
 logs
 data/csv
 data/xmls
-data/flashtext_models/users_models
 data/uploads
 .env
 default
