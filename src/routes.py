@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextModels, CreateFlashtextModel
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
@@ -22,7 +22,8 @@ def home():
 def articles_extractor():
     query_form = SearchQuery()
     search_form = SearchArticles()
-    flashtext = FlashtextModels()
+    flashtext = FlashtextDefaultModels()
+    user_models = FlashtextUserModels()
 
     available_entities = [
                         search_form.amino_acid,
@@ -94,7 +95,7 @@ def articles_extractor():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
     
-    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, flashtext=flashtext)
+    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, flashtext=flashtext, user_models=user_models)
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
@@ -104,7 +105,7 @@ def articles_extractor_str():
     els_query_form = AdvancedElsevierQuery()
     search_filters = SearchFilters()
     search_form = SearchArticles()
-    flashtext = FlashtextModels()
+    flashtext = FlashtextDefaultModels()
 
     available_entities = [
                         search_form.amino_acid,

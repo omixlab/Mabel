@@ -1,3 +1,5 @@
+import os
+
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -146,6 +148,10 @@ class SearchArticles(FlaskForm):
     simple_chemical = BooleanField("SIMPLE_CHEMICAL")
     tissue = BooleanField("TISSUE")
 
+    # Flashtext options
+    flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    flashtext_string = StringField("Keywords", name="aaa", description="bbb")
+
 
 class SearchFilters(FlaskForm):
     abstract = BooleanField("Abstract")
@@ -169,12 +175,15 @@ class SearchFilters(FlaskForm):
     medline = BooleanField("MEDLINE")
 
 
-class FlashtextModels(FlaskForm):
-    radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
-    keywords_string = StringField("Keywords", name="aaa", description="bbb")
-    
+class FlashtextDefaultModels(FlaskForm):
     genes_human = BooleanField("genes_human")
     genes_danio_rerio = BooleanField("genes_danio_rerio")
+
+class FlashtextUserModels(FlaskForm):
+    pass
+for file_name in os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS')): 
+    setattr(FlashtextUserModels, file_name, BooleanField(file_name))
+
 
 class CreateFlashtextModel(FlaskForm):
     name = StringField("Name of the model", validators=[InputRequired("Can't leave empty")])
