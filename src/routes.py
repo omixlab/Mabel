@@ -1,5 +1,5 @@
 from flask import flash, redirect, render_template, url_for, request, Response
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 import pandas as pd
 import os
@@ -85,7 +85,7 @@ def articles_extractor():
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
-                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
                 elsevier_query=search_form.elsevier_query.data)
             results.status = 'QUEUED'
             db.session.add(results)
@@ -196,7 +196,7 @@ def articles_extractor_str():
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
-                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
                 elsevier_query=search_form.elsevier_query.data)
             results.status = 'QUEUED'
             db.session.add(results)
@@ -211,7 +211,7 @@ def articles_extractor_str():
 @app.route("/user_area/")
 @login_required
 def user_area():
-    results = Results.query.all()  
+    results = Results.query.filter_by(user_id=current_user.id).all()  
     return render_template("user_area.html", results=results)
 
 @app.route("/result/<result_id>")
@@ -242,9 +242,11 @@ def download(result_id):
 @login_required
 def delete_record(id):
     result = Results.query.filter_by(celery_id=id).first()
-    db.session.delete(result)
-    db.session.commit()
-    return redirect(url_for('user_area'))
+    print(result.user_id)
+    if current_user.id == result.user_id:
+        db.session.delete(result)
+        db.session.commit()
+        return redirect(url_for('user_area'))
 
 
 @app.route("/user_models/", methods=["GET", "POST"])
