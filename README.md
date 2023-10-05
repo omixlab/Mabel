@@ -21,6 +21,7 @@ Create .env file and fill with your credentials of NCBI and Elsevier
 NCBI_API_KEY='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 X_ELS_APIKey='YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 X_ELS_Insttoken='ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'
-FLASHTEXT_MODELS='data/flashtext_models/default/'
-FLASHTEXT_USER_MODELS='data/flashtext_models/users/'
+FLASHTEXT_MODELS='data/flashtext_models/default_models/'
+FLASHTEXT_USER_MODELS='data/flashtext_models/users_models/'
+UPLOAD_FILES='data/uploads/'
 ```
