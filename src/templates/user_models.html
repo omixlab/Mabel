@@ -4,18 +4,22 @@
 <br>
 
 <div class="container">
+  <h3>FlashText models</h3>
   <table class="table table-hover table-hover ms-0">
     <thead>
         <tr>
-            <th space="col"><h3>FlashText models</h3></th>
-            <th space="col"></th>
+            <th space="col">Name</th>
+            <th space="col">Type</th>
+            <th space="col">Date</th>
             <th space="col"></th>
         </tr>
     </thead>
     <tbody>
         {%for model in user_models %}
         <tr>
-            <td>{{model}}</td>
+            <td>{{model.name}}</td>
+            <td>{{model.type}}</td>
+            <td>{{model.created_date}}</td>
             <td>
                 <form method="POST" action="{{ url_for('delete_model') }}">
                     <button type="submit" class="btn">

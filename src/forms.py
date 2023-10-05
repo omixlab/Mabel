@@ -30,8 +30,10 @@ from wtforms.validators import (
 )
 from flask_wtf.file import FileAllowed
 
+from flask_login import current_user
+
 import src.utils.dicts_tuples.flasky_tuples as flasky_tuples
-from src.models import Users
+from src.models import Users, FlashtextModels
 
 
 class RegisterForm(FlaskForm):
@@ -181,8 +183,6 @@ class FlashtextDefaultModels(FlaskForm):
 
 class FlashtextUserModels(FlaskForm):
     pass
-for file_name in os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS')): 
-    setattr(FlashtextUserModels, file_name, BooleanField(file_name))
 
 
 class CreateFlashtextModel(FlaskForm):

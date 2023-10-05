@@ -1,5 +1,6 @@
 from flask import flash, redirect, render_template, url_for, request, Response
 from flask_login import login_required, login_user, logout_user, current_user
+from wtforms import BooleanField
 
 import pandas as pd
 import os
@@ -23,7 +24,15 @@ def articles_extractor():
     query_form = SearchQuery()
     search_form = SearchArticles()
     flashtext = FlashtextDefaultModels()
+    
+    for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
+        setattr(FlashtextUserModels, model.name, BooleanField(model.name))
+
     user_models = FlashtextUserModels()
+    for model_name, model in user_models._fields.items():
+        print(model)
+        
+    
 
     available_entities = [
                         search_form.amino_acid,
@@ -207,7 +216,7 @@ def articles_extractor_str():
             flash(f"Error user register {err}", category="danger")
 
     return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, flashtext=flashtext)
-
+ 
 @app.route("/user_area/")
 @login_required
 def user_area():
@@ -253,13 +262,14 @@ def delete_record(id):
 @login_required
 def user_models():
     form = CreateFlashtextModel()
-    user_models = os.listdir(os.environ.get(f'FLASHTEXT_USER_MODELS'))
+    user_models = FlashtextModels.query.filter_by(user_id=current_user.id).all() 
 
     if form.validate_on_submit():
         tsv_path = os.path.join(os.environ.get('UPLOAD_FILES'), secure_filename(f'{form.name.data}.txt'))
         form.tsv.data.save(tsv_path)
 
-        model_path = os.path.join(os.environ.get('FLASHTEXT_USER_MODELS'), secure_filename(f'{form.name.data}.pickle'))
+        model_path = os.path.join(os.environ.get('FLASHTEXT_USER_MODELS'), str(current_user.id), secure_filename(f'{form.name.data}.pickle'))
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
         flashtext_model_create(
             name=form.name.data,
@@ -273,6 +283,8 @@ def user_models():
             type=form.type.data,
             path=model_path
             )
+        db.session.add(model)
+        db.session.commit()
         
         flash("Model created succesfully", category="success")
         return redirect(url_for("user_models"))
