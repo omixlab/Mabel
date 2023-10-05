@@ -23,46 +23,22 @@
         </tr>
     </thead>
     <tbody>
-        {% for index, row in df.iterrows() %}
-        <tr>
-            <td style="width: 10%;">
-                {{row["Title"]}}
-            </td>
-            <td style="width: 30%;">
-                <div class="scrollable-content" >{{row["Abstract"]}}</div>
-            </td>
-            <td>
-                {{row["Pages"]}}
-            </td>
-            <td>
-                {{row["Journal"]}}
-            </td>
-            <td> 
-                {% if row["Authors"] %}
-                    {{(row["Authors"]).replace(";", ";\n")}} 
-                {% endif %}
-            </td>
-            <td>
-                {{row["Date"].date()}}
-            </td>
-            <td>
-                {{row["Type"]}}
-            </td>
-            <td>
-                {{row["DOI"]}}
-            </td>
-            <td>
-                <div class="scrollable-content" >{{row["Affiliations"]}}</div>
-            </td>
-            <td>
-                {{row["MeSH Terms"]}}
-            </td>
-            
-            {% if "Genes" in df.columns %}
-                <td>{{row["Genes"]}}</td>
-            {% endif %}
-        </tr>
-
+        {% for r, row in df.iterrows() %}
+            <tr>
+            {% for column_name in df.columns %}
+                <td>
+                    {% if column_name == "Abstract" %}
+                        <div class="scrollable-content">{{row[column_name]}}</div>
+                    {% elif column_name == "Genes" %}
+                        {% for gene in row[column_name].split(', ') %}
+                            <a href="https://www.uniprot.org/uniprotkb?query={{gene}}">{{gene}}</a><br>
+                        {% endfor %}
+                    {% else %}
+                        <div>{{row[column_name]}}</div>
+                    {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
         {% endfor %}
     </tbody>
 </table>

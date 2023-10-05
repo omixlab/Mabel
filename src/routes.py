@@ -127,6 +127,7 @@ def user_area():
 @login_required
 def result_view(result_id):
     result = Results.query.get(result_id)
+    print(result)
     if result:
         df = pd.read_json(result.result_json)
         return render_template("result_view.html", df=df)
@@ -138,7 +139,6 @@ def result_view(result_id):
 @login_required
 def download(result_id):
     result = Results.query.get(result_id)
-    print(result)
     if result:
         result_df = pd.read_json(result.result_json)
         return Response(

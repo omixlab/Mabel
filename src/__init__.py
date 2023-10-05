@@ -5,7 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, MetaData, Table
 import mysql.connector
 from src.celery_utils import make_celery
+from dotenv import load_dotenv
 import os
+import src
+
+load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()

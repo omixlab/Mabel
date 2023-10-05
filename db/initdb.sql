@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS bambu;
--- Seleciona o banco de dados criado
+
 USE bambu;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS results (
 	user_id	INTEGER,
 	status VARCHAR(20),
 	celery_id VARCHAR(100) NOT NULL,
-	pubmed_query VARCHAR(255),
-	elsevier VARCHAR(255),
+	pubmed_query VARCHAR(1024),
+	elsevier_query VARCHAR(1024),
 	result_json json,
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),
