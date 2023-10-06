@@ -105,7 +105,7 @@ def articles_extractor():
 
     if search_form.errors != {}:
         for err in search_form.errors.values():
-            flash(f"Error user register {err}", category="danger")
+            flash(f"{err}", category="danger")
     
     return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, default_models=default_models, user_models=user_models)
 
@@ -117,7 +117,11 @@ def articles_extractor_str():
     els_query_form = AdvancedElsevierQuery()
     search_filters = SearchFilters()
     search_form = SearchArticles()
-    flashtext = FlashtextDefaultModels()
+    default_models = FlashtextDefaultModels()
+
+    for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
+        setattr(FlashtextUserModels, model.name, BooleanField(model.id))
+        user_models = FlashtextUserModels()
 
     available_entities = [
                         search_form.amino_acid,
@@ -135,9 +139,6 @@ def articles_extractor_str():
                         search_form.pathological_formation,
                         search_form.simple_chemical,
                         search_form.tissue]
-    
-    available_models = [flashtext.genes_human,
-                        flashtext.genes_danio_rerio]
 
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
@@ -190,7 +191,18 @@ def articles_extractor_str():
 
         if 'submit_query' in request.form:
             selected_entities = [e.name.upper() for e in available_entities if e.data]
-            selected_models = [m.name for m in available_models if m.data]
+            if search_form.flashtext_radio.data == 'Keyword':
+                kp = search_form.flashtext_string.data
+
+            elif search_form.flashtext_radio.data == 'Model':
+                selected_default_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in default_models._fields.values()
+                                        if model.data and model.__class__.__name__ == 'BooleanField']
+                selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
+                                        if model.data and model.__class__.__name__ == 'BooleanField']
+                kp = selected_default_models + selected_user_models
+            else:
+                kp = None
+
 
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
@@ -202,7 +214,7 @@ def articles_extractor_str():
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
                 selected_entities,
-                selected_models,
+                kp,
                 )
             )
 
@@ -216,9 +228,9 @@ def articles_extractor_str():
 
     if search_form.errors != {}:
         for err in search_form.errors.values():
-            flash(f"Error user register {err}", category="danger")
+            flash(f"{err}", category="danger")
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, flashtext=flashtext)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
  
 @app.route("/user_area/")
 @login_required
