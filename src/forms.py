@@ -184,6 +184,11 @@ class FlashtextDefaultModels(FlaskForm):
 class FlashtextUserModels(FlaskForm):
     pass
 
+class CustomBooleanField(BooleanField):
+    def __init__(self, label='', model_id='', **kwargs):
+        super(CustomBooleanField, self).__init__(label, **kwargs)
+        self.model_id = model_id
+
 
 class CreateFlashtextModel(FlaskForm):
     name = StringField("Name of the model", validators=[InputRequired("Can't leave empty")])

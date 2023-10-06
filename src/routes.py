@@ -26,13 +26,8 @@ def articles_extractor():
     flashtext = FlashtextDefaultModels()
     
     for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
-        setattr(FlashtextUserModels, model.name, BooleanField(model.name))
-
+        setattr(FlashtextUserModels, model.name, BooleanField(model.id))
     user_models = FlashtextUserModels()
-    for model_name, model in user_models._fields.items():
-        print(model)
-        
-    
 
     available_entities = [
                         search_form.amino_acid,
@@ -70,6 +65,8 @@ def articles_extractor():
         if 'submit_query' in request.form:
             selected_entities = [e.name.upper() for e in available_entities if e.data]
             selected_models = [m.name for m in available_models if m.data]
+            selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
+                                    if model.data and model.__class__.__name__ == 'BooleanField']
 
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
