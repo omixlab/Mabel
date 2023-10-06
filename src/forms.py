@@ -179,8 +179,8 @@ class SearchFilters(FlaskForm):
 
 
 class FlashtextDefaultModels(FlaskForm):
-    genes_human = BooleanField("genes_human")
-    genes_danio_rerio = BooleanField("genes_danio_rerio")
+    genes_human = BooleanField(2)
+    genes_danio_rerio = BooleanField(3)
 
 class FlashtextUserModels(FlaskForm):
     pass

@@ -23,7 +23,7 @@ def home():
 def articles_extractor():
     query_form = SearchQuery()
     search_form = SearchArticles()
-    flashtext = FlashtextDefaultModels()
+    default_models = FlashtextDefaultModels()
     
     for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
         setattr(FlashtextUserModels, model.name, BooleanField(model.id))
@@ -44,10 +44,7 @@ def articles_extractor():
                         search_form.organism_substance,
                         search_form.pathological_formation,
                         search_form.simple_chemical,
-                        search_form.tissue]  
-    available_models = [
-                        flashtext.genes_human,
-                        flashtext.genes_danio_rerio]
+                        search_form.tissue]
     
 
     if request.method == 'POST':
@@ -64,9 +61,18 @@ def articles_extractor():
             
         if 'submit_query' in request.form:
             selected_entities = [e.name.upper() for e in available_entities if e.data]
-            selected_models = [m.name for m in available_models if m.data]
-            selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
-                                    if model.data and model.__class__.__name__ == 'BooleanField']
+            if search_form.flashtext_radio.data == 'Keyword':
+                kp = search_form.flashtext_string.data
+
+            elif search_form.flashtext_radio.data == 'Model':
+                selected_default_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in default_models._fields.values()
+                                        if model.data and model.__class__.__name__ == 'BooleanField']
+                selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
+                                        if model.data and model.__class__.__name__ == 'BooleanField']
+                kp = selected_default_models + selected_user_models
+            else:
+                kp = None
+
 
             data_tmp = extractor.execute.apply_async((
                 search_form.pubmed_query.data,
@@ -78,7 +84,7 @@ def articles_extractor():
                 int(search_form.sc_num_of_articles.data),
                 int(search_form.sd_num_of_articles.data),
                 selected_entities,
-                selected_models,
+                kp
                 )
             )
 
@@ -101,7 +107,7 @@ def articles_extractor():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
     
-    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, flashtext=flashtext, user_models=user_models)
+    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, default_models=default_models, user_models=user_models)
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required

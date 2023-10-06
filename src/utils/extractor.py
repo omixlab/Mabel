@@ -18,7 +18,7 @@ from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
 from src.utils.unify_dfs import unify
-from src.utils.optional_features import scispacy_ner, flashtext_kp
+from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 import json
 
 
@@ -160,7 +160,10 @@ def execute(
                 unified_df = scispacy_ner(unified_df, ner)
 
             # Flashtext Keyword Processor
-            if kp:
+            if type(kp) is str:
+                print(f'Filtering {kp} with Flashtext')
+                unified_df = flashtext_kp_string(unified_df, kp)
+            if type(kp) is list:
                 print(f'Filtering {kp} with Flashtext')
                 unified_df = flashtext_kp(unified_df, kp)
 

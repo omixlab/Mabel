@@ -85,11 +85,11 @@ Articles Extractor
                                     <div>
                                         <ul id="radio", style="padding: 0;">
                                             <div>
-                                            <input id="radio-0" name="radio" type="radio" value="Keyword">
+                                            <input id="radio-0" name="flashtext_radio" type="radio" value="Keyword">
                                             <label for="radio-0">Specify keywords</label>
                                             </div>
                                             <div>
-                                            <input id="radio-1" name="radio" type="radio" value="Model">
+                                            <input id="radio-1" name="flashtext_radio" type="radio" value="Model">
                                             <label for="radio-1">Use a model</label>
                                             </div>
                                         </ul>
@@ -101,8 +101,8 @@ Articles Extractor
                                     </div>
                                     <div id="modelsDiv" style="display: none;">
                                         <h5>Genes models</h5>
-                                        <div>{{flashtext.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
-                                        <div>{{flashtext.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                        <div>{{default_models.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
+                                        <div>{{default_models.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
                                         <br>
                                         <h5>My models</h5>
                                         {% for model_name, model in user_models._fields.items() %}
@@ -167,7 +167,7 @@ Articles Extractor
 <script>
     // jQuery script to handle radio button change events
     $(document).ready(function () {
-        $('input[name="radio"]').change(function () {
+        $('input[name="flashtext_radio"]').change(function () {
             if (this.value === 'Keyword') {
                 $('#keywordDiv').show();
                 $('#modelsDiv').hide();

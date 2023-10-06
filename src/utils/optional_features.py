@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import os
 from flashtext import KeywordProcessor
+from src.models import FlashtextModels
 
 def scispacy_ner(df, entities):
     # NER for entities in abstract
@@ -25,22 +26,44 @@ def scispacy_ner(df, entities):
         print(f'Success: NER for {selected_entity} with SciSpacy')
     return df
 
-
-def flashtext_kp(df, models):
+def flashtext_kp_string(df, string):
+    keywords = string.split(", ")
     filtered_column = []
 
+    # Write model
+    kp = KeywordProcessor(case_sensitive=True)
+    kp.add_keywords_from_list(keywords)
+
+    for row in df["Abstract"]:
+        filtered_row = []
+
+        if not isinstance(row, float):
+            processed_keywords = set(kp.extract_keywords(row))
+            filtered_row.append(', '.join(processed_keywords))
+        else:
+            filtered_row.append(np.nan)
+
+        filtered_column.append(', '.join(set(filtered_row)))
+
+    df.insert(len(df.columns), "Filtered Keywords", filtered_column)
+    print("Success: Keywords processed from string")
+    return df
+
+
+def flashtext_kp(df, models):
+
     for selected_model in models:
-        pickle_file_path = f"{os.environ.get(f'FLASHTEXT_MODELS')}{selected_model}.pickle"
-        with open(pickle_file_path, 'rb') as reader:
+        model = FlashtextModels.query.get(selected_model)
+        filtered_column = []
+
+        with open(model.path, 'rb') as reader:
             kp = pickle.loads(reader.read())
 
         # Set column and Run NER if it wasn't selected
-        if "genes" in selected_model:
-            original_column_label = "GENE_OR_GENE_PRODUCT"
-            if "GENE_OR_GENE_PRODUCT" not in df.columns:
-                df = scispacy_ner(df, ["GENE_OR_GENE_PRODUCT"])
-            else:
-                pass
+        if model.type != None:
+            original_column_label = model.type
+            if model.type not in df.columns:
+                df = scispacy_ner(df, [model.type])
 
         else:
             original_column_label = "Abstract"
@@ -56,8 +79,7 @@ def flashtext_kp(df, models):
 
             filtered_column.append(', '.join(set(filtered_row)))
 
-        new_column_name = selected_model.title().replace("_", " ")
-        df.insert(len(df.columns), new_column_name, filtered_column)
+        df.insert(len(df.columns), model.name, filtered_column)
     
     print('Success: Keywords proccessed')
     return df
