@@ -27,6 +27,7 @@ from wtforms.validators import (
     InputRequired,
     Optional,
     NumberRange,
+    Regexp,
 )
 from flask_wtf.file import FileAllowed
 
@@ -185,7 +186,7 @@ class FlashtextUserModels(FlaskForm):
     pass
 
 class CreateFlashtextModel(FlaskForm):
-    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty")])
+    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty"), Length(max=64, message='Name must be at most 64 characters long'), Regexp('^[a-zA-Z_]*$', message='Name can only contain letters or underscores')])
     type = SelectField("Type", choices=flasky_tuples.scispacy)
     tsv = FileField(".txt file", validators=[FileAllowed(['txt'], "Only .txt files are allowed"), InputRequired(message='File is required')])
     submit = SubmitField(label="Create model")

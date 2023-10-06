@@ -248,7 +248,6 @@ def download(result_id):
 @login_required
 def delete_record(id):
     result = Results.query.filter_by(celery_id=id).first()
-    print(result.user_id)
     if current_user.id == result.user_id:
         db.session.delete(result)
         db.session.commit()
@@ -292,10 +291,15 @@ def user_models():
 
     return render_template('user_models.html', user_models=user_models, form=form)
 
-@app.route('/delete_model/', methods=["POST"])
+@app.route('/delete_model/<id>', methods=["POST"])
 @login_required
-def delete_model():
-    pass
+def delete_model(id):
+    model = FlashtextModels.query.get(id)
+    if current_user.id == model.user_id:
+        db.session.delete(model)
+        db.session.commit()
+        return redirect(url_for('user_models'))
+
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
