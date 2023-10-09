@@ -1,3 +1,5 @@
+import os
+
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -9,6 +11,7 @@ from wtforms import (
     StringField,
     SubmitField,
     TextAreaField,
+    FileField
 )
 
 # from wtforms.fields import html5 as h5fields
@@ -24,10 +27,14 @@ from wtforms.validators import (
     InputRequired,
     Optional,
     NumberRange,
+    Regexp,
 )
+from flask_wtf.file import FileAllowed
+
+from flask_login import current_user
 
 import src.utils.dicts_tuples.flasky_tuples as flasky_tuples
-from src.models import Users
+from src.models import Users, FlashtextModels
 
 
 class RegisterForm(FlaskForm):
@@ -126,4 +133,60 @@ class SearchArticles(FlaskForm):
     )
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
-    check_genes = BooleanField("genes")
+    # SciSpacy entities
+    amino_acid = BooleanField("AMINO_ACID")
+    anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
+    cancer = BooleanField("CANCER")
+    cell = BooleanField("CELL")
+    cellular_component = BooleanField("CELLULAR_COMPONENT")
+    developing_anatomical_structure = BooleanField("DEVELOPING_ANATOMICAL_STRUCTURE")
+    gene_or_gene_product = BooleanField("GENE_OR_GENE_PRODUCT")
+    immaterial_anatomical_entity = BooleanField("IMMATERIAL_ANATOMICAL_ENTITY")
+    multi_tissue_structure = BooleanField("MULTI-TISSUE_STRUCTURE")
+    organ = BooleanField("ORGAN")
+    organism = BooleanField("ORGANISM")
+    organism_subdivision = BooleanField("ORGANISM_SUBDIVISION")
+    organism_substance = BooleanField("ORGANISM_SUBSTANCE")
+    pathological_formation = BooleanField("PATHOLOGICAL_FORMATION")
+    simple_chemical = BooleanField("SIMPLE_CHEMICAL")
+    tissue = BooleanField("TISSUE")
+
+    # Flashtext options
+    flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    flashtext_string = StringField("Keywords", name="aaa", description="bbb")
+
+
+class SearchFilters(FlaskForm):
+    abstract = BooleanField("Abstract")
+    free_full_text = BooleanField("Free full text")
+    full_text = BooleanField("Full text")
+    booksdocs = BooleanField("Books and documents")
+    clinicaltrial = BooleanField("Clinical trial")
+    meta_analysis = BooleanField("Meta-Analysis")
+    randomizedcontrolledtrial = BooleanField("Randomized Controlled Trial")
+    review = BooleanField("Review")
+    systematicreview = BooleanField("Systematic Review")
+    humans = BooleanField("Humans")
+    animal = BooleanField("Other Animals")
+    male = BooleanField("Male")
+    female = BooleanField("Female")
+    english = BooleanField("English")
+    portuguese = BooleanField("Portuguese")
+    spanish = BooleanField("Spanish")
+    data = BooleanField("Associated data")
+    excludepreprints = BooleanField("Exclude preprints")
+    medline = BooleanField("MEDLINE")
+
+
+class FlashtextDefaultModels(FlaskForm):
+    genes_human = BooleanField(2)
+    genes_danio_rerio = BooleanField(3)
+
+class FlashtextUserModels(FlaskForm):
+    pass
+
+class CreateFlashtextModel(FlaskForm):
+    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty"), Length(max=64, message='Name must be at most 64 characters long'), Regexp('^[a-zA-Z_]*$', message='Name can only contain letters or underscores')])
+    type = SelectField("Type", choices=flasky_tuples.scispacy)
+    tsv = FileField(".txt file", validators=[FileAllowed(['txt'], "Only .txt files are allowed"), InputRequired(message='File is required')])
+    submit = SubmitField(label="Create model")

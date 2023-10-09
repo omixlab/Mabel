@@ -27,12 +27,15 @@ def pubmed(pm_query, tag, keyword, boolean):
         pm_query = f"({keyword}{tag})"
     else:
         pm_query += f" {boolean} ({keyword}{tag})"
+    return pm_query
 
-    # Filter goes here:
-        #
-        #
-        #
-
+def pubmed_filters(pm_query, filters):
+    for filter in filters:
+        if not pm_query:
+            pm_query = f"({filter}[Filter])"
+        else:
+            if f"{filter}" not in pm_query:
+                pm_query += f" AND ({filter}[Filter])"
     return pm_query
 
 
