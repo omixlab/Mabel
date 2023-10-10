@@ -40,7 +40,6 @@ def genes(unified_df):
             filtered_column.append(np.nan)
 
     unified_df.insert(10, 'Genes', filtered_column)
-    unified_df.to_csv('/home/gabrielliston/Desktop/with_flashtext.csv', index=False)
 
     print('Success: genes filtered')
     return unified_df

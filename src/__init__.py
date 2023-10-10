@@ -5,12 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, MetaData, Table
 import mysql.connector
 from src.celery_utils import make_celery
+from dotenv import load_dotenv
 import os
+import src
+
+load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+mysqlconnector://root:123456@localhost:3307/bambu'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+mysqlconnector://root:123456@bambu-db:3306/bambu'
 app.config["SECRET_KEY"] = "57eea008c38612d210670283"
 celery = make_celery(app)
 db.init_app(app)
