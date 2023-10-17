@@ -7,3 +7,4 @@ version_old
 __pycache__
 dump.*
 requirements_2.txt
+client_secret.json
