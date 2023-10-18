@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style> 
+.container {margin-left: 0;}
+.scrollable-content {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow: auto;
+    white-space: pre-wrap; /* Allow line breaks */}
+.table {
+    width: 250%;
+}
+</style>
+
+<h2>Result</h2>
+<hr>
+<table class="table table-hover table-bordered" >
+    <thead>
+        <tr>
+            {% for column_name in df.columns %}
+                <th space="col" class="wide-cell">{{column_name}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for r, row in df.iterrows() %}
+            <tr>
+            {% for column_name in df.columns %}
+                <td>
+                    {% if column_name == "Abstract" %}
+                        <div class="scrollable-content">{{row[column_name]}}</div>
+                    {% elif column_name == "Genes" %}
+                        {% for gene in row[column_name].split(', ') %}
+                            <a href="https://www.uniprot.org/uniprotkb?query={{gene}}">{{gene}}</a><br>
+                        {% endfor %}
+                    {% else %}
+                        <div>{{row[column_name]}}</div>
+                    {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

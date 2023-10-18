@@ -3,13 +3,15 @@
 {% block content %}
 <h2 style="text-align: center;">Area users</h2>
 <hr>
-<table class="table table-hover table-hover table-bordered">
+<table class="table table-hover table-hover ms-0">
     <thead>
         <tr>
             <th space="col">task ID</th>
             <th space="col">Pubmed Query</th>
             <th space="col">Elsevier Query</th>
             <th space="col">Created Date</th>
+            <th space="col">Status</th>
+            <th space="col">Open</th>
             <th space="col">Download</th>
         </tr>
     </thead>
@@ -20,8 +22,16 @@
             <td>{{result.pubmed_query}}</td>
             <td>{{result.elsevier_query}}</td>
             <td>{{result.created_date}}</td>
+            <td>{{result.status}}</td>
             <td>
-                <a class="btn btn-md btn-success" href="{{url_for('download', result_id=result.id)}}">Download</a>
+                {% if result.status == 'DONE' %}
+                   <a class="btn btn-md btn-primary" href="{{url_for('result_view', result_id=result.id)}}">Open</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if result.status == 'DONE' %}
+                   <a class="btn btn-md btn-success" href="{{url_for('download', result_id=result.id)}}">Download</a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

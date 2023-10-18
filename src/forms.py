@@ -26,7 +26,7 @@ from wtforms.validators import (
     NumberRange,
 )
 
-import src.utils.dicts_tuples.basic_tuple as basic_tuples
+import src.utils.dicts_tuples.flasky_tuples as flasky_tuples
 from src.models import Users
 
 
@@ -71,11 +71,27 @@ class LoginForm(FlaskForm):
 
 class SearchQuery(FlaskForm):
     tags = SelectField(
-        "option", choices=basic_tuples.tags, validators=[InputRequired()], default=1
+        "option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1
     )
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    connective = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    connective = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
+class AdvancedPubMedQuery(FlaskForm):
+    fields_pm = SelectField(
+        "option", choices=flasky_tuples.pm_tags, default=1
+    )
+    keyword_pm = StringField(label="Keyword:", validators=[Length(min=2)])
+    boolean_pm = SelectField("connective", choices=flasky_tuples.boolean_operators)
+
+class AdvancedElsevierQuery(FlaskForm):
+    fields_els = SelectField(
+        "option", choices=flasky_tuples.els_tags, default=1
+    )
+    keyword_els = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
 
 class SearchArticles(FlaskForm):
     pubmed_query = TextAreaField(

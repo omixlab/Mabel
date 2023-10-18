@@ -1,10 +1,10 @@
 .ipynb_checkpoints
 logs
-.env
 data
 default
 version_old
 __pycache__
 dump.*
+docs/
+dump.rdb
 requirements_2.txt
-client_secret.json

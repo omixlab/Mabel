@@ -8,4 +8,5 @@ dependencies:
   - pip
   - nmslib
   - pip:
-    - -r requirements.txt
+    - -r requirements.txt 
+    - -e .

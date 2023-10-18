@@ -4,8 +4,9 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchArticles, SearchQuery
-from src.utils.extractor import query_constructor, execute
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery
+import src.utils.extractor as extractor
+import src.utils.query_constructor as query_constructor
 
 @app.route("/")
 def home():
@@ -20,8 +21,7 @@ def articles_extractor():
     if request.method == 'POST':
         if 'add_keyword' in request.form:
             # Query constructor
-            
-            form.pubmed_query.data, form.elsevier_query.data = query_constructor(
+            form.pubmed_query.data, form.elsevier_query.data = query_constructor.basic(
                 form.pubmed_query.data, 
                 form.elsevier_query.data,
                 query_form.tags.data,
@@ -31,7 +31,7 @@ def articles_extractor():
             )
             
         if 'submit_query' in request.form:
-            data_tmp = execute.delay(
+            data_tmp = extractor.execute.apply_async((
                 form.pubmed_query.data,
                 form.elsevier_query.data,
                 form.check_pubmed.data,
@@ -40,31 +40,82 @@ def articles_extractor():
                 int(form.pm_num_of_articles.data),
                 int(form.sc_num_of_articles.data),
                 int(form.sd_num_of_articles.data),
-                form.check_genes.data,
+                form.check_genes.data)
             )
-            if data_tmp.get() == "None database selected":
-                flash(
-                    f"Your result id is: {data_tmp}, *but no databases were selected*",
-                    category="danger",
-                )
-            else:
-                flash(f"Your result id is: {data_tmp.id}", category="success")
-                results = Results(
+
+            #if data_tmp.get() == "None database selected":
+            #    flash(
+            #        f"Your result id is: {data_tmp}, *but no databases were selected*",
+            #        category="danger",
+            #    )
+            #else:
+
+            flash(f"Your result id is: {data_tmp.id}", category="success")
+            results = Results(
                 user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
-                elsevier_query=form.elsevier_query.data, result_json=data_tmp.get()
-            )
-                db.session.add(results)
-                db.session.commit()
+                elsevier_query=form.elsevier_query.data)
+            results.status = 'QUEUED'
+            db.session.add(results)
+            db.session.commit()
 
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
+    
     return render_template("articles_extractor.html", form=form, query_form=query_form)
 
-@app.route("/articles_extractor_str/")
+@app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 def articles_extractor_str():
-    return render_template("articles_extractor_str.html")
+    pm_query_form = AdvancedPubMedQuery()
+    els_query_form = AdvancedElsevierQuery()
+    search_form = SearchArticles()
+
+    if request.method == 'POST':
+        if 'pm_add_keyword' in request.form:
+            search_form.pubmed_query.data = query_constructor.pubmed(
+                search_form.pubmed_query.data,
+                pm_query_form.fields_pm.data,
+                pm_query_form.keyword_pm.data,
+                pm_query_form.boolean_pm.data,
+            )
+
+        if 'els_add_keyword' in request.form:
+            search_form.elsevier_query.data = query_constructor.elsevier(
+                search_form.elsevier_query.data,
+                els_query_form.fields_els.data,
+                els_query_form.keyword_els.data,
+                els_query_form.boolean_els.data,
+                els_query_form.open_access.data
+            )
+
+        if 'submit_query' in request.form:
+
+            data_tmp = extractor.execute.apply_async((
+                search_form.pubmed_query.data,
+                search_form.elsevier_query.data,
+                search_form.check_pubmed.data,
+                search_form.check_scopus.data,
+                search_form.check_scidir.data,
+                int(search_form.pm_num_of_articles.data),
+                int(search_form.sc_num_of_articles.data),
+                int(search_form.sd_num_of_articles.data),
+                search_form.check_genes.data)
+            )
+
+            flash(f"Your result id is: {data_tmp.id}", category="success")
+            results = Results(
+                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                elsevier_query=search_form.elsevier_query.data)
+            results.status = 'QUEUED'
+            db.session.add(results)
+            db.session.commit()
+
+    if search_form.errors != {}:
+        for err in search_form.errors.values():
+            flash(f"Error user register {err}", category="danger")
+
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form)
 
 @app.route("/user_area/")
 @login_required
@@ -72,11 +123,22 @@ def user_area():
     results = Results.query.all()
     return render_template("user_area.html", results=results)
 
+@app.route("/result/<result_id>")
+@login_required
+def result_view(result_id):
+    result = Results.query.get(result_id)
+    print(result)
+    if result:
+        df = pd.read_json(result.result_json)
+        return render_template("result_view.html", df=df)
+    else:
+        flash(f"Invalid ID", category="danger")
+        return redirect(url_for("user_area"))
+
 @app.route("/download/<result_id>")
 @login_required
 def download(result_id):
     result = Results.query.get(result_id)
-    print(result)
     if result:
         result_df = pd.read_json(result.result_json)
         return Response(

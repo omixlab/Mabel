@@ -1,5 +1,7 @@
 import os
 
+from .. import db
+from ..models import Results
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,37 +17,9 @@ from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 from src import celery
 from json import loads, dumps
-from src.utils.dicts_tuples.basic_tuple import to_pubmed
 from src.utils.unify_dfs import unify
 from src.utils.spacy import genes
 import json
-
-#@dataclass
-#class Extractor:
-#    pubmed_query: str
-#    elsevier_query: str
-#    num_of_articles: int
-
-def query_constructor(pm_query, els_query, tag, keyword, boolean, open_access):
-    # PubMed query
-    if not pm_query:
-        pm_query = f"({keyword}{to_pubmed[tag]})"
-    else:
-        pm_query += f" {boolean} ({keyword}{to_pubmed[tag]})"
-
-    # Elsevier query
-    if not els_query:
-        els_query = f'{tag}({keyword})'
-    else:
-        els_query += f' {boolean} {tag}({keyword})'
-
-    # Filter
-    if open_access and 'ffrft[Filter]' not in pm_query:
-        pm_query += ' AND (ffrft[Filter])'
-    if open_access and 'OPENACCESS(1)' not in els_query:
-        els_query += ' AND OPENACCESS(1)'
-
-    return pm_query, els_query
 
 
 def pubmed(keyword, num_of_articles):
@@ -143,8 +117,9 @@ def scidir(keyword, num_of_articles):
 
     return doc_srch.results_df
     
-@celery.task(serializer="json")
+@celery.task(bind=True, serializer="json")
 def execute(
+    self,
     pubmed_query="Cancer Prostata",
     elsevier_query="Prostate Cancer",
     check_pubmed=False,
@@ -170,13 +145,17 @@ def execute(
         # Unify 3 results in a single dataframe
         unified_df = unify(results)
 
+        # Scispacy
         if check_scispacy:
-            result = genes(unified_df)
-            return result.to_json(orient='records', indent=4)
-        else:
-            # Return as json
-            result_json = unified_df.to_json(orient='records', indent=4)
-            return result_json
+            unified_df = genes(unified_df)
+
+        # Return as json
+        result_json = unified_df.to_json(orient='records', indent=4)
+        result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
+        result.status = 'DONE'
+        result.result_json = result_json
+        db.session.commit()
+        return result_json
    
     else:
         return "None database selected"
