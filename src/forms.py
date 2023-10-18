@@ -68,6 +68,9 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
+class RecoveryPassword(FlaskForm):
+    email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
+    submit = SubmitField(label="Log In")
 
 class SearchQuery(FlaskForm):
     tags = SelectField(

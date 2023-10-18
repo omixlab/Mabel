@@ -4,9 +4,12 @@ from flask_login import login_required, login_user, logout_user
 
 from src import app, db
 from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, \
+AdvancedPubMedQuery, AdvancedElsevierQuery, RecoveryPassword
 import src.utils.extractor as extractor
+import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
+import os
 
 @app.route("/")
 def home():
@@ -177,6 +180,21 @@ def login():
         else:
             flash(f"User or password it's wrong. Try again!", category="danger")
     return render_template("login.html", form=form)
+
+@app.route("/recovery_password", methods = ['GET', 'POST'])
+def recovery_password():
+    form = RecoveryPassword()
+    if form.validate_on_submit():
+        user_logged = Users.query.filter_by(email=form.email.data).first()
+        if user_logged: 
+            yagmail.send_mail(os.getenv('EMAIL'), form.email.data,
+             'Recovery Password',
+              f'<b>Your password is : {user_logged.password}</b><br><br>')
+            flash(f"Success! We send mail to {user_logged}", category="success")
+            return redirect(url_for("recovery_password"))
+        else:
+            flash(f"Email don't found, please review your emial", category="danger")
+    return render_template("recovery_password.html", form=form)
 
 
 @app.route("/logout")
