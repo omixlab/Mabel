@@ -69,8 +69,20 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Log In")
 
 class RecoveryPassword(FlaskForm):
+    def validate_password(self, check_password):
+        password = Users.query.filter_by(password=check_password.data).first()
+        if password:
+            raise ValidationError(
+                "Password already exists! Register another Password."
+            )
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    submit = SubmitField(label="Log In")
+    password = PasswordField(
+        label="Password:", validators=[Length(min=6), DataRequired()]
+    )
+    password_conf = PasswordField(
+        label="Confirmation Password", validators=[EqualTo("password"), DataRequired()]
+    )
+    submit = SubmitField(label="Recovery Password")
 
 class SearchQuery(FlaskForm):
     tags = SelectField(
@@ -94,7 +106,6 @@ class AdvancedElsevierQuery(FlaskForm):
     keyword_els = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
-
 
 class SearchArticles(FlaskForm):
     pubmed_query = TextAreaField(

@@ -187,10 +187,15 @@ def recovery_password():
     if form.validate_on_submit():
         user_logged = Users.query.filter_by(email=form.email.data).first()
         if user_logged: 
+            user_logged.password = user_logged.convert_password(password_clean_text=form.password.data)
+            db.session.add(user_logged)
+            db.session.commit()
             yagmail.send_mail(os.getenv('EMAIL'), form.email.data,
-             'Recovery Password',
-              f'<b>Your password is : {user_logged.password}</b><br><br>')
-            flash(f"Success! We send mail to {user_logged}", category="success")
+             'Recovery Password Succefully',
+              f'<b>Hello {user_logged.name} your password was replace succes</b><br><br>' +
+              'Some questions cantact us ' +
+              'bambuenterprise@gmail.com')
+            flash(f"Success! We send mail to {user_logged.name}", category="success")
             return redirect(url_for("recovery_password"))
         else:
             flash(f"Email don't found, please review your emial", category="danger")
