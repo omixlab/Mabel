@@ -4,9 +4,9 @@
 <style> 
 .container {margin-left: 0;}
 .scrollable-content {
-    max-height: 300px; /* Adjust the height as needed */
+    max-height: 300px;
     overflow: auto;
-    white-space: pre-wrap; /* Allow line breaks */}
+    white-space: pre-wrap;}
 .table {
     width: 250%;
 }
@@ -23,47 +23,22 @@
         </tr>
     </thead>
     <tbody>
-        {% for index, row in df.iterrows() %}
-        <tr>
-            <td style="width: 10%;">
-                {{row["Title"]}}
-            </td>
-            <td style="width: 30%;">
-                <div class="scrollable-content" >{{row["Abstract"]}}</div>
-            </td>
-            <td>
-                {{row["Pages"]}}
-            </td>
-            <td>
-                {{row["Journal"]}}
-            </td>
-            <td> 
-                {% if row["Authors"] %}
-                    {{(row["Authors"]).replace(";", ";\n")}} 
-                {% endif %}
-            </td>
-            <td>
-                {{row["Date"].date()}}
-            </td>
-            <td>
-                {{row["Type"]}}
-            </td>
-            <td>
-                {{row["DOI"]}}
-            </td>
-            <td>
-                <div class="scrollable-content" >{{row["Affiliations"]}}</div>
-            </td>
-            <td>
-                {{row["MeSH Terms"]}}
-            </td>
+        {% for r, row in df.iterrows() %}
+            <tr>
             {% for column_name in df.columns %}
-                {% if column_name not in ('Title', 'Abstract', 'Pages', 'Journal', 'Authors', 'Date', 'Type', 'DOI', 'Affiliations', 'MeSH Terms') %}
-                    <td>{{row[column_name]}}</td>
-                {% endif %}
+                <td>
+                    {% if column_name == "Abstract" %}
+                        <div class="scrollable-content">{{row[column_name]}}</div>
+                    {% elif column_name == "Genes" %}
+                        {% for gene in row[column_name].split(', ') %}
+                            <a href="https://www.uniprot.org/uniprotkb?query={{gene}}">{{gene}}</a><br>
+                        {% endfor %}
+                    {% else %}
+                        <div>{{row[column_name]}}</div>
+                    {% endif %}
+                </td>
             {% endfor %}
-        </tr>
-
+            </tr>
         {% endfor %}
     </tbody>
 </table>

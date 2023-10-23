@@ -10,7 +10,7 @@ def load_user(user_id):
 
 
 class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(length=40), nullable=False, unique=True)
     email = db.Column(db.String(length=40), nullable=False, unique=True)
     password = db.Column(db.String(length=300), nullable=False, unique=True)
@@ -31,14 +31,14 @@ class Users(db.Model, UserMixin):
 
 
 class Tokens(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
     X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
     X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
 class Results(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     status = db.Column(db.String, nullable=True)
     celery_id = db.Column(db.String(length=100), nullable=False)
@@ -46,7 +46,6 @@ class Results(db.Model):
     elsevier_query = db.Column(db.String())
     result_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
-
 
 class FlashtextModels(db.Model):
     id = db.Column(db.Integer, primary_key=True)
