@@ -50,16 +50,10 @@ class RegisterForm(FlaskForm):
                 "Password already exists! Register another user Password."
             )
 
-    name = StringField(
-        label="Username:", validators=[Length(min=2, max=30), DataRequired()]
-    )
+    name = StringField(label="Username:", validators=[Length(min=2, max=30), DataRequired()])
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    password = PasswordField(
-        label="Password:", validators=[Length(min=6), DataRequired()]
-    )
-    password_conf = PasswordField(
-        label="Confirmation Password", validators=[EqualTo("password"), DataRequired()]
-    )
+    password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
+    password_conf = PasswordField(label="Confirmation Password", validators=[EqualTo("password"), DataRequired()])
     submit = SubmitField(label="Submit")
 
 
@@ -73,15 +67,12 @@ class RecoveryPassword(FlaskForm):
         password = Users.query.filter_by(password=check_password.data).first()
         if password:
             raise ValidationError(
-                "Password already exists! Register another Password."
+                "Password already exists! Register another user Password."
             )
+
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    password = PasswordField(
-        label="Password:", validators=[Length(min=6), DataRequired()]
-    )
-    password_conf = PasswordField(
-        label="Confirmation Password", validators=[EqualTo("password"), DataRequired()]
-    )
+    password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
+    password_conf = PasswordField(label="Confirmation Password", validators=[EqualTo("password"), DataRequired()])
     submit = SubmitField(label="Recovery Password")
 
 class SearchQuery(FlaskForm):

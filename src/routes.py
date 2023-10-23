@@ -10,6 +10,9 @@ import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
 import os
+from werkzeug.security import generate_password_hash
+import bcrypt
+
 
 @app.route("/")
 def home():
@@ -185,20 +188,16 @@ def login():
 def recovery_password():
     form = RecoveryPassword()
     if form.validate_on_submit():
-        user_logged = Users.query.filter_by(email=form.email.data).first()
-        if user_logged: 
-            user_logged.password = user_logged.convert_password(password_clean_text=form.password.data)
-            db.session.add(user_logged)
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user: 
+            user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
             db.session.commit()
-            yagmail.send_mail(os.getenv('EMAIL'), form.email.data,
-             'Recovery Password Succefully',
-              f'<b>Hello {user_logged.name} your password was replace succes</b><br><br>' +
-              'Some questions cantact us ' +
-              'bambuenterprise@gmail.com')
-            flash(f"Success! We send mail to {user_logged.name}", category="success")
-            return redirect(url_for("recovery_password"))
+            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password Succefully', f'<b>Hello {user.name} your password was replace succes</b><br><br>' + 
+                              'Some questions cantact us ' + 'bambuenterprise@gmail.com')
+            flash(f"Success! We send mail to {user.name}", category="success")
+            return redirect(url_for("login"))
         else:
-            flash(f"Email don't found, please review your emial", category="danger")
+            flash(f"Email don't found, please review your e-mail", category="danger")
     return render_template("recovery_password.html", form=form)
 
 
