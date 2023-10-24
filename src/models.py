@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from datetime import datetime
 
-from src import bcrypt, db, login_manager
+from src import bcrypt, db, app, login_manager
 
 
 @login_manager.user_loader
@@ -54,3 +54,6 @@ class FlashtextModels(db.Model):
     name = db.Column(db.String(64))
     type = db.Column(db.String(24))
     path = db.Column(db.String(255))
+
+with app.app_context():
+    db.create_all()
