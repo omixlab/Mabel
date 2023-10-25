@@ -62,18 +62,20 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
-class RecoveryPassword(FlaskForm):
+class RecoveryPasswordForm(FlaskForm):
+    '''
     def validate_password(self, check_password):
         password = Users.query.filter_by(password=check_password.data).first()
         if password:
             raise ValidationError(
                 "Password already exists! Register another user Password."
             )
-
+    '''
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
+    '''password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
     password_conf = PasswordField(label="Confirmation Password", validators=[EqualTo("password"), DataRequired()])
-    submit = SubmitField(label="Recovery Password")
+    '''
+    submit = SubmitField(label="Send")
 
 class SearchQuery(FlaskForm):
     tags = SelectField(

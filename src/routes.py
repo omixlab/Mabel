@@ -3,15 +3,15 @@ import pandas as pd
 from flask_login import login_required, login_user, logout_user
 
 from src import app, db
-from src.models import Users, Results
+from src.models import Users, Results, TokensPassword
 from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, \
-AdvancedPubMedQuery, AdvancedElsevierQuery, RecoveryPassword
+AdvancedPubMedQuery, AdvancedElsevierQuery, RecoveryPasswordForm
 import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
 import os
-from werkzeug.security import generate_password_hash
 import bcrypt
+import uuid
 
 
 @app.route("/")
@@ -184,21 +184,26 @@ def login():
             flash(f"User or password it's wrong. Try again!", category="danger")
     return render_template("login.html", form=form)
 
-@app.route("/recovery_password", methods = ['GET', 'POST'])
+@app.route("/recovery_password_form", methods = ['GET', 'POST'])
 def recovery_password():
-    form = RecoveryPassword()
+    form = RecoveryPasswordForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user: 
-            user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+            uuid_id = uuid.uuid1() 
+            token_password = TokensPassword(
+                user_id=user.id, uudi=uuid_id.hex, link = f'/{uuid_id}')
+            db.session.add(token_password)
             db.session.commit()
-            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password Succefully', f'<b>Hello {user.name} your password was replace succes</b><br><br>' + 
+            #user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password', f'<b>Hello {user.name}'+
+                              f'your password can be replace in this link {token_password.link}</b><br><br>' + 
                               'Some questions cantact us ' + 'bambuenterprise@gmail.com')
             flash(f"Success! We send mail to {user.name}", category="success")
             return redirect(url_for("login"))
         else:
             flash(f"Email don't found, please review your e-mail", category="danger")
-    return render_template("recovery_password.html", form=form)
+    return render_template("recovery_password_form.html", form=form)
 
 
 @app.route("/logout")
