@@ -1,19 +1,29 @@
-from flask import flash, redirect, render_template, url_for, request, Response
+import os
+
 import pandas as pd
+from flask import Response, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
-from src import app, db
-from src.models import Users, Results
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, \
-AdvancedPubMedQuery, AdvancedElsevierQuery, RecoveryPassword
 import src.utils.extractor as extractor
-import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
-import os
+import src.utils.yagmail_utils as yagmail
+from src import app, db
+from src.forms import (
+    AdvancedElsevierQuery,
+    AdvancedPubMedQuery,
+    LoginForm,
+    RecoveryPassword,
+    RegisterForm,
+    SearchArticles,
+    SearchQuery,
+)
+from src.models import Results, Users
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
 
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
@@ -21,51 +31,57 @@ def articles_extractor():
     query_form = SearchQuery()
     form = SearchArticles()
 
-    if request.method == 'POST':
-        if 'add_keyword' in request.form:
+    if request.method == "POST":
+        if "add_keyword" in request.form:
             # Query constructor
             form.pubmed_query.data, form.elsevier_query.data = query_constructor.basic(
-                form.pubmed_query.data, 
+                form.pubmed_query.data,
                 form.elsevier_query.data,
                 query_form.tags.data,
                 query_form.keyword.data,
                 query_form.connective.data,
-                query_form.open_access.data
-            )
-            
-        if 'submit_query' in request.form:
-            data_tmp = extractor.execute.apply_async((
-                form.pubmed_query.data,
-                form.elsevier_query.data,
-                form.check_pubmed.data,
-                form.check_scopus.data,
-                form.check_scidir.data,
-                int(form.pm_num_of_articles.data),
-                int(form.sc_num_of_articles.data),
-                int(form.sd_num_of_articles.data),
-                form.check_genes.data)
+                query_form.open_access.data,
             )
 
-            #if data_tmp.get() == "None database selected":
+        if "submit_query" in request.form:
+            data_tmp = extractor.execute.apply_async(
+                (
+                    form.pubmed_query.data,
+                    form.elsevier_query.data,
+                    form.check_pubmed.data,
+                    form.check_scopus.data,
+                    form.check_scidir.data,
+                    int(form.pm_num_of_articles.data),
+                    int(form.sc_num_of_articles.data),
+                    int(form.sd_num_of_articles.data),
+                    form.check_genes.data,
+                )
+            )
+
+            # if data_tmp.get() == "None database selected":
             #    flash(
             #        f"Your result id is: {data_tmp}, *but no databases were selected*",
             #        category="danger",
             #    )
-            #else:
+            # else:
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
-                user_id=1, celery_id=data_tmp.id, pubmed_query = form.pubmed_query.data,
-                elsevier_query=form.elsevier_query.data)
-            results.status = 'QUEUED'
+                user_id=1,
+                celery_id=data_tmp.id,
+                pubmed_query=form.pubmed_query.data,
+                elsevier_query=form.elsevier_query.data,
+            )
+            results.status = "QUEUED"
             db.session.add(results)
             db.session.commit()
 
     if form.errors != {}:
         for err in form.errors.values():
             flash(f"Error user register {err}", category="danger")
-    
+
     return render_template("articles_extractor.html", form=form, query_form=query_form)
+
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
@@ -74,8 +90,8 @@ def articles_extractor_str():
     els_query_form = AdvancedElsevierQuery()
     search_form = SearchArticles()
 
-    if request.method == 'POST':
-        if 'pm_add_keyword' in request.form:
+    if request.method == "POST":
+        if "pm_add_keyword" in request.form:
             search_form.pubmed_query.data = query_constructor.pubmed(
                 search_form.pubmed_query.data,
                 pm_query_form.fields_pm.data,
@@ -83,34 +99,39 @@ def articles_extractor_str():
                 pm_query_form.boolean_pm.data,
             )
 
-        if 'els_add_keyword' in request.form:
+        if "els_add_keyword" in request.form:
             search_form.elsevier_query.data = query_constructor.elsevier(
                 search_form.elsevier_query.data,
                 els_query_form.fields_els.data,
                 els_query_form.keyword_els.data,
                 els_query_form.boolean_els.data,
-                els_query_form.open_access.data
+                els_query_form.open_access.data,
             )
 
-        if 'submit_query' in request.form:
+        if "submit_query" in request.form:
 
-            data_tmp = extractor.execute.apply_async((
-                search_form.pubmed_query.data,
-                search_form.elsevier_query.data,
-                search_form.check_pubmed.data,
-                search_form.check_scopus.data,
-                search_form.check_scidir.data,
-                int(search_form.pm_num_of_articles.data),
-                int(search_form.sc_num_of_articles.data),
-                int(search_form.sd_num_of_articles.data),
-                search_form.check_genes.data)
+            data_tmp = extractor.execute.apply_async(
+                (
+                    search_form.pubmed_query.data,
+                    search_form.elsevier_query.data,
+                    search_form.check_pubmed.data,
+                    search_form.check_scopus.data,
+                    search_form.check_scidir.data,
+                    int(search_form.pm_num_of_articles.data),
+                    int(search_form.sc_num_of_articles.data),
+                    int(search_form.sd_num_of_articles.data),
+                    search_form.check_genes.data,
+                )
             )
 
             flash(f"Your result id is: {data_tmp.id}", category="success")
             results = Results(
-                user_id=1, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
-                elsevier_query=search_form.elsevier_query.data)
-            results.status = 'QUEUED'
+                user_id=1,
+                celery_id=data_tmp.id,
+                pubmed_query=search_form.pubmed_query.data,
+                elsevier_query=search_form.elsevier_query.data,
+            )
+            results.status = "QUEUED"
             db.session.add(results)
             db.session.commit()
 
@@ -118,13 +139,20 @@ def articles_extractor_str():
         for err in search_form.errors.values():
             flash(f"Error user register {err}", category="danger")
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form)
+    return render_template(
+        "articles_extractor_str.html",
+        pm_query=pm_query_form,
+        els_query=els_query_form,
+        search_form=search_form,
+    )
+
 
 @app.route("/user_area/")
 @login_required
 def user_area():
     results = Results.query.all()
     return render_template("user_area.html", results=results)
+
 
 @app.route("/result/<result_id>")
 @login_required
@@ -138,6 +166,7 @@ def result_view(result_id):
         flash(f"Invalid ID", category="danger")
         return redirect(url_for("user_area"))
 
+
 @app.route("/download/<result_id>")
 @login_required
 def download(result_id):
@@ -149,6 +178,7 @@ def download(result_id):
             mimetype="txt/csv",
             headers={"Content-disposition": "attachment; filename=result.csv"},
         )
+
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
@@ -181,20 +211,28 @@ def login():
             flash(f"User or password it's wrong. Try again!", category="danger")
     return render_template("login.html", form=form)
 
-@app.route("/recovery_password", methods = ['GET', 'POST'])
+
+@app.route("/recovery_password", methods=["GET", "POST"])
 def recovery_password():
     form = RecoveryPassword()
     if form.validate_on_submit():
         user_logged = Users.query.filter_by(email=form.email.data).first()
-        if user_logged: 
-            user_logged.password = user_logged.convert_password(password_clean_text=form.password.data)
+        if user_logged:
+            user_logged.password = user_logged.convert_password(
+                password_clean_text=form.password.data
+            )
+            flash(f"{user_logged.password}")
+            print(user_logged.password)
             db.session.add(user_logged)
             db.session.commit()
-            yagmail.send_mail(os.getenv('EMAIL'), form.email.data,
-             'Recovery Password Succefully',
-              f'<b>Hello {user_logged.name} your password was replace succes</b><br><br>' +
-              'Some questions cantact us ' +
-              'bambuenterprise@gmail.com')
+            yagmail.send_mail(
+                os.getenv("EMAIL"),
+                form.email.data,
+                "Recovery Password Succefully",
+                f"<b>Hello {user_logged.name} your password was replace succes</b><br><br>"
+                + "Some questions cantact us "
+                + "bambuenterprise@gmail.com",
+            )
             flash(f"Success! We send mail to {user_logged.name}", category="success")
             return redirect(url_for("recovery_password"))
         else:

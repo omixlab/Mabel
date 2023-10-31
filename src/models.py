@@ -1,8 +1,6 @@
-from flask_login import UserMixin
 from datetime import datetime
-
+from flask_login import UserMixin
 from src import bcrypt, db, login_manager
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -37,6 +35,7 @@ class Tokens(db.Model):
     X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
+
 class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -46,6 +45,7 @@ class Results(db.Model):
     elsevier_query = db.Column(db.String())
     result_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
+
 
 class FlashtextModels(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,13 +1,17 @@
 import os
 
+from dotenv import load_dotenv
+
 from .. import db
 from ..models import Results
-from dotenv import load_dotenv
 
 load_dotenv()
 _ = os.getenv("NCBI_API_KEY")
 apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
+
+import json
+from json import dumps, loads
 
 import pandas as pd
 import pubmed_parser as pp
@@ -15,11 +19,10 @@ from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+
 from src import celery
-from json import loads, dumps
-from src.utils.unify_dfs import unify
 from src.utils.spacy import genes
-import json
+from src.utils.unify_dfs import unify
 
 
 def pubmed(keyword, num_of_articles):
@@ -37,19 +40,20 @@ def pubmed(keyword, num_of_articles):
     data_pubmed = pd.DataFrame()
 
     for value in xmls.values():
-            dicts_out = pp.parse_medline_xml(
-                value,
-                year_info_only=False,
-                nlm_category=False,
-                author_list=False,
-                reference_list=False,
-            )
-            data_pubmed = pd.concat(
-                [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
-            )
+        dicts_out = pp.parse_medline_xml(
+            value,
+            year_info_only=False,
+            nlm_category=False,
+            author_list=False,
+            reference_list=False,
+        )
+        data_pubmed = pd.concat(
+            [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
+        )
 
     print("PubMed extraction done!")
-    return  data_pubmed
+    return data_pubmed
+
 
 def scopus(keyword, num_of_articles):
     print(
@@ -82,7 +86,7 @@ def scopus(keyword, num_of_articles):
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
         abstracts_df, on="prism:url", how="left"
     )
-   
+
     return doc_srch_scopus.results_df
 
 
@@ -116,7 +120,8 @@ def scidir(keyword, num_of_articles):
     doc_srch.results_df["pubtype"] = pubtype
 
     return doc_srch.results_df
-    
+
+
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
@@ -128,7 +133,7 @@ def execute(
     pm_num_of_articles=25,
     sc_num_of_articles=25,
     sd_num_of_articles=25,
-    check_scispacy=False
+    check_scispacy=False,
 ):
     if check_pubmed or check_scopus or check_scidir:
         results = {}
@@ -150,12 +155,12 @@ def execute(
             unified_df = genes(unified_df)
 
         # Return as json
-        result_json = unified_df.to_json(orient='records', indent=4)
+        result_json = unified_df.to_json(orient="records", indent=4)
         result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-        result.status = 'DONE'
+        result.status = "DONE"
         result.result_json = result_json
         db.session.commit()
         return result_json
-   
+
     else:
         return "None database selected"
