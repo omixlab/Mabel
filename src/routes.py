@@ -4,20 +4,17 @@ import pandas as pd
 from flask import Response, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
-import src.utils.extractor as extractor
-import src.utils.query_constructor as query_constructor
-import src.utils.yagmail_utils as yagmail
 from src import app, db
-from src.forms import (
-    AdvancedElsevierQuery,
-    AdvancedPubMedQuery,
-    LoginForm,
-    RecoveryPassword,
-    RegisterForm,
-    SearchArticles,
-    SearchQuery,
-)
-from src.models import Results, Users
+from src.models import Users, Results, TokensPassword
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, \
+AdvancedPubMedQuery, AdvancedElsevierQuery, RecoveryPasswordForm, RecoveryPassword
+import src.utils.extractor as extractor
+import src.utils.yagmail_utils as yagmail
+import src.utils.query_constructor as query_constructor
+import os
+import bcrypt
+import uuid
+import string
 
 
 @app.route("/")
@@ -82,7 +79,6 @@ def articles_extractor():
 
     return render_template("articles_extractor.html", form=form, query_form=query_form)
 
-
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 def articles_extractor_str():
@@ -145,7 +141,6 @@ def articles_extractor_str():
         els_query=els_query_form,
         search_form=search_form,
     )
-
 
 @app.route("/user_area/")
 @login_required
@@ -212,34 +207,44 @@ def login():
     return render_template("login.html", form=form)
 
 
-@app.route("/recovery_password", methods=["GET", "POST"])
-def recovery_password():
-    form = RecoveryPassword()
+@app.route("/recovery_password_form", methods = ['GET', 'POST'])
+def recovery_passwordForm():
+    form = RecoveryPasswordForm()
     if form.validate_on_submit():
-        user_logged = Users.query.filter_by(email=form.email.data).first()
-        if user_logged:
-            user_logged.password = user_logged.convert_password(
-                password_clean_text=form.password.data
-            )
-            flash(f"{user_logged.password}")
-            print(user_logged.password)
-            db.session.add(user_logged)
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user: 
+            uuid_id = uuid.uuid1() 
+            token_password = TokensPassword(
+                user_id=user.id, uuid=uuid_id.hex, link = f'http://172.18.0.5:5000/recovery_password/{uuid_id}')
+            db.session.add(token_password)
             db.session.commit()
-            yagmail.send_mail(
-                os.getenv("EMAIL"),
-                form.email.data,
-                "Recovery Password Succefully",
-                f"<b>Hello {user_logged.name} your password was replace succes</b><br><br>"
-                + "Some questions cantact us "
-                + "bambuenterprise@gmail.com",
-            )
-            flash(f"Success! We send mail to {user_logged.name}", category="success")
-            return redirect(url_for("recovery_password"))
+            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password', f'<b>Hello'+
+                              f'your password can be replace in this link {token_password.link}</b><br><br>' + 
+                              'Some questions cantact us ' + 'bambuenterprise@gmail.com')
+            flash(f"Success! We send e-mail to {form.email.data}", category="success")
+            return redirect(url_for("login"))
         else:
-            flash(f"Email don't found, please review your emial", category="danger")
-    return render_template("recovery_password.html", form=form)
+            flash(f"Email don't found, please review your e-mail", category="danger")
+    return render_template("recovery_password_form.html", form=form)
 
+@app.route("/recovery_password/<uuid>", methods = ['GET', 'POST'])
+def recuperar_senha(uuid):
+    form = RecoveryPassword()
+    recovery_token= TokensPassword.query.filter_by(uuid=uuid).first()
 
+    if recovery_token:
+        user =Users.query.filter(id=recovery_token.users_id)
+
+        if form.validate_on_submit():
+            user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+            flash(f"Success! your password was replaced", category="success")
+            
+            db.session.delete(recovery_token)
+            db.session.commit()
+            return redirect(url_for("login"))
+
+    return render_template('recovery_password.html', form=form, uuid=uuid)
+        
 @app.route("/logout")
 def logout():
     logout_user()
