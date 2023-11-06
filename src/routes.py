@@ -215,10 +215,10 @@ def recovery_passwordForm():
         if user: 
             uuid_id = uuid.uuid1() 
             token_password = TokensPassword(
-                user_id=user.id, uuid=uuid_id.hex, link = f'http://172.18.0.5:5000/recovery_password/{uuid_id}')
+                user_id=user.id, uuid=uuid_id.hex, link = f'localhost:5000/recovery_password/{uuid_id}')
             db.session.add(token_password)
             db.session.commit()
-            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password', f'<b>Hello'+
+            yagmail.send_mail(os.getenv('EMAIL'), form.email.data, 'Recovery Password', f'<b>Hello '+
                               f'your password can be replace in this link {token_password.link}</b><br><br>' + 
                               'Some questions cantact us ' + 'bambuenterprise@gmail.com')
             flash(f"Success! We send e-mail to {form.email.data}", category="success")
@@ -228,20 +228,23 @@ def recovery_passwordForm():
     return render_template("recovery_password_form.html", form=form)
 
 @app.route("/recovery_password/<uuid>", methods = ['GET', 'POST'])
-def recuperar_senha(uuid):
+def recovery_password(uuid):
     form = RecoveryPassword()
     recovery_token= TokensPassword.query.filter_by(uuid=uuid).first()
 
     if recovery_token:
         user =Users.query.filter(id=recovery_token.users_id)
-
         if form.validate_on_submit():
             user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-            flash(f"Success! your password was replaced", category="success")
             
             db.session.delete(recovery_token)
             db.session.commit()
-            return redirect(url_for("login"))
+            flash(f"Password chaged with successfuly", category="danger")
+            return render_template("login.html", form=form)
+        else:
+            flash(f"Token expired, generate another token", category="danger")
+            return redirect(url_for("recovery_password_form.html"))
+    
 
     return render_template('recovery_password.html', form=form, uuid=uuid)
         
