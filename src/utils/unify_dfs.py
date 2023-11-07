@@ -138,6 +138,31 @@ def unify(dfs):
                 )
             )
 
+    # PREPRINTS
+    if "ppr" in dfs:
+        preprints = dfs["ppr"]
+
+        if preprints.empty:
+            pass
+        else:
+            formated_dfs.append(
+                pd.DataFrame(
+                    {
+                        "Title": preprints["title"],
+                        "Abstract": preprints["abstract"],
+                        "Pages": np.nan,
+                        "Journal": preprints["journal"],
+                        "Authors": preprints["authors"],
+                        "Date": preprints["date"],
+                        "Type": np.nan,
+                        "DOI": preprints["doi"],
+                        "Affiliations": np.nan,
+                        "MeSH Terms": np.nan,
+                    }
+                )
+            )
+
+
     # Concatenação dos dataframes
     try:
         unified_dataframes = pd.concat(formated_dfs)
@@ -146,5 +171,5 @@ def unify(dfs):
         return (unified_dataframes)
     except:
         if not formated_dfs:
-            print("No results")
+            print("Error: No results")
         return pd.DataFrame() # Gera dataframe vazio

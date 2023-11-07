@@ -99,8 +99,17 @@ class AdvancedElsevierQuery(FlaskForm):
     boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
+class AdvancedPreprintsQuery(FlaskForm):
+    fields_ppr = SelectField(
+        "option", choices=flasky_tuples.els_tags, default=1
+    )
+    keyword_ppr = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_ppr = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+
 
 class SearchArticles(FlaskForm):
+
+    # QUERY
     pubmed_query = TextAreaField(
         "pubmed_query", 
         render_kw={"rows": "4", "cols": "100"}, 
@@ -112,6 +121,13 @@ class SearchArticles(FlaskForm):
         validators=[Optional()],
     )
 
+    preprints_query = TextAreaField(
+        "preprints_query",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()],
+    )
+
+    # Check and Range
     check_pubmed = BooleanField("check")
     range_pubmed = IntegerRangeField(
         default=25,
@@ -133,23 +149,13 @@ class SearchArticles(FlaskForm):
     )
     sd_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=5000, message='Number of articles outside of supported range')])
 
-    # SciSpacy entities
-    amino_acid = BooleanField("AMINO_ACID")
-    anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
-    cancer = BooleanField("CANCER")
-    cell = BooleanField("CELL")
-    cellular_component = BooleanField("CELLULAR_COMPONENT")
-    developing_anatomical_structure = BooleanField("DEVELOPING_ANATOMICAL_STRUCTURE")
-    gene_or_gene_product = BooleanField("GENE_OR_GENE_PRODUCT")
-    immaterial_anatomical_entity = BooleanField("IMMATERIAL_ANATOMICAL_ENTITY")
-    multi_tissue_structure = BooleanField("MULTI-TISSUE_STRUCTURE")
-    organ = BooleanField("ORGAN")
-    organism = BooleanField("ORGANISM")
-    organism_subdivision = BooleanField("ORGANISM_SUBDIVISION")
-    organism_substance = BooleanField("ORGANISM_SUBSTANCE")
-    pathological_formation = BooleanField("PATHOLOGICAL_FORMATION")
-    simple_chemical = BooleanField("SIMPLE_CHEMICAL")
-    tissue = BooleanField("TISSUE")
+    check_preprints = BooleanField("preprints")
+    range_preprints = IntegerRangeField(
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
+    )
+    ppr_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=80000, message='Number of articles outside of supported range')])
+
 
     # Flashtext options
     flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
@@ -177,10 +183,27 @@ class SearchFilters(FlaskForm):
     excludepreprints = BooleanField("Exclude preprints")
     medline = BooleanField("MEDLINE")
 
+class ScispacyEntities(FlaskForm):
+    amino_acid = BooleanField("AMINO_ACID")
+    anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
+    cancer = BooleanField("CANCER")
+    cell = BooleanField("CELL")
+    cellular_component = BooleanField("CELLULAR_COMPONENT")
+    developing_anatomical_structure = BooleanField("DEVELOPING_ANATOMICAL_STRUCTURE")
+    gene_or_gene_product = BooleanField("GENE_OR_GENE_PRODUCT")
+    immaterial_anatomical_entity = BooleanField("IMMATERIAL_ANATOMICAL_ENTITY")
+    multi_tissue_structure = BooleanField("MULTI-TISSUE_STRUCTURE")
+    organ = BooleanField("ORGAN")
+    organism = BooleanField("ORGANISM")
+    organism_subdivision = BooleanField("ORGANISM_SUBDIVISION")
+    organism_substance = BooleanField("ORGANISM_SUBSTANCE")
+    pathological_formation = BooleanField("PATHOLOGICAL_FORMATION")
+    simple_chemical = BooleanField("SIMPLE_CHEMICAL")
+    tissue = BooleanField("TISSUE")
 
 class FlashtextDefaultModels(FlaskForm):
-    genes_human = BooleanField(2)
-    genes_danio_rerio = BooleanField(3)
+    genes_human = BooleanField(1)
+    genes_danio_rerio = BooleanField(2)
 
 class FlashtextUserModels(FlaskForm):
     pass

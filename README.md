@@ -24,4 +24,5 @@ X_ELS_Insttoken='ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'
 FLASHTEXT_MODELS='data/flashtext_models/default_models/'
 FLASHTEXT_USER_MODELS='data/flashtext_models/users_models/'
 UPLOAD_FILES='data/uploads/'
+DUMPS_PATH='data/dumps'
 ```

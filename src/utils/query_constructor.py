@@ -49,3 +49,11 @@ def elsevier(els_query, tag, keyword, boolean, open_access):
         els_query += ' AND OPENACCESS(1)'
 
     return els_query
+
+def preprints(ppr_query, keyword):
+    if not ppr_query:
+        ppr_query = f'{keyword}'
+    else:
+        ppr_query += f', {keyword}'
+
+    return ppr_query

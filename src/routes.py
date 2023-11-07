@@ -1,14 +1,15 @@
-from flask import flash, redirect, render_template, url_for, request, Response
+from flask import flash, redirect, render_template, url_for, current_app, request, Response
 from flask_login import login_required, login_user, logout_user, current_user
 from wtforms import BooleanField
 
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
+from functools import wraps
 
 from src import app, db
 from src.models import Users, Results, FlashtextModels
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, SearchFilters, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel
 import src.utils.extractor as extractor
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
@@ -18,38 +19,83 @@ from src.utils.optional_features import flashtext_model_create
 def home():
     return render_template("index.html")
 
+# Modularizando as funções de article_extractor
+def extractor_base(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with current_app.app_context():
+            search_form = SearchArticles()
+            available_entities = ScispacyEntities()
+
+            # Flashtext models
+            default_models = FlashtextDefaultModels()
+
+            for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
+                setattr(FlashtextUserModels, model.name, BooleanField(model.id))
+            user_models = FlashtextUserModels()
+
+
+            if request.method == 'POST':
+                # Submit query
+                if 'submit_query' in request.form:
+                    selected_entities = [e.name.upper() for e in available_entities if e.data and e.__class__.__name__ == 'BooleanField']
+                    if search_form.flashtext_radio.data == 'Keyword':
+                        kp = search_form.flashtext_string.data
+
+                    elif search_form.flashtext_radio.data == 'Model':
+                        selected_default_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in default_models._fields.values()
+                                                if model.data and model.__class__.__name__ == 'BooleanField']
+                        selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
+                                                if model.data and model.__class__.__name__ == 'BooleanField']
+                        kp = selected_default_models + selected_user_models
+                    else:
+                        kp = None
+
+                    # Celery
+                    data_tmp = extractor.execute.apply_async((
+                        search_form.pubmed_query.data,
+                        search_form.elsevier_query.data,
+                        search_form.preprints_query.data,
+                        search_form.check_pubmed.data,
+                        search_form.check_scopus.data,
+                        search_form.check_scidir.data,
+                        search_form.check_preprints.data,
+                        int(search_form.pm_num_of_articles.data),
+                        int(search_form.sc_num_of_articles.data),
+                        int(search_form.sd_num_of_articles.data),
+                        int(search_form.ppr_num_of_articles.data),
+                        selected_entities,
+                        kp
+                        )
+                    )
+
+                    flash(f"Your result id is: {data_tmp.id}", category="success")
+                    results = Results(
+                        user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
+                        elsevier_query=search_form.elsevier_query.data)
+                    results.status = 'QUEUED'
+                    db.session.add(results)
+                    db.session.commit()
+
+            if search_form.errors != {}:
+                for err in search_form.errors.values():
+                    flash(f"{err}", category="danger")
+
+            # Retornar as variáveis
+            return func(search_form, available_entities, default_models, user_models, *args, **kwargs)
+
+    return wrapper
+
+
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
-def articles_extractor():
+@extractor_base
+def articles_extractor(search_form, available_entities, default_models, user_models):
     query_form = SearchQuery()
-    search_form = SearchArticles()
-    default_models = FlashtextDefaultModels()
-    
-    for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
-        setattr(FlashtextUserModels, model.name, BooleanField(model.id))
-    user_models = FlashtextUserModels()
 
-    available_entities = [
-                        search_form.amino_acid,
-                        search_form.anatomical_system,
-                        search_form.cancer,
-                        search_form.cell,
-                        search_form.cellular_component,
-                        search_form.developing_anatomical_structure,
-                        search_form.gene_or_gene_product,
-                        search_form.immaterial_anatomical_entity,
-                        search_form.organ,
-                        search_form.organism,
-                        search_form.organism_subdivision,
-                        search_form.organism_substance,
-                        search_form.pathological_formation,
-                        search_form.simple_chemical,
-                        search_form.tissue]
-    
-
+    # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            # Query constructor
             search_form.pubmed_query.data, search_form.elsevier_query.data = query_constructor.basic(
                 search_form.pubmed_query.data, 
                 search_form.elsevier_query.data,
@@ -59,87 +105,19 @@ def articles_extractor():
                 query_form.open_access.data
             )
             
-        if 'submit_query' in request.form:
-            selected_entities = [e.name.upper() for e in available_entities if e.data]
-            if search_form.flashtext_radio.data == 'Keyword':
-                kp = search_form.flashtext_string.data
-
-            elif search_form.flashtext_radio.data == 'Model':
-                selected_default_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in default_models._fields.values()
-                                        if model.data and model.__class__.__name__ == 'BooleanField']
-                selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
-                                        if model.data and model.__class__.__name__ == 'BooleanField']
-                kp = selected_default_models + selected_user_models
-            else:
-                kp = None
-
-
-            data_tmp = extractor.execute.apply_async((
-                search_form.pubmed_query.data,
-                search_form.elsevier_query.data,
-                search_form.check_pubmed.data,
-                search_form.check_scopus.data,
-                search_form.check_scidir.data,
-                int(search_form.pm_num_of_articles.data),
-                int(search_form.sc_num_of_articles.data),
-                int(search_form.sd_num_of_articles.data),
-                selected_entities,
-                kp
-                )
-            )
-
-            #if data_tmp.get() == "None database selected":
-            #    flash(
-            #        f"Your result id is: {data_tmp}, *but no databases were selected*",
-            #        category="danger",
-            #    )
-            #else:
-
-            flash(f"Your result id is: {data_tmp.id}", category="success")
-            results = Results(
-                user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
-                elsevier_query=search_form.elsevier_query.data)
-            results.status = 'QUEUED'
-            db.session.add(results)
-            db.session.commit()
-
-    if search_form.errors != {}:
-        for err in search_form.errors.values():
-            flash(f"{err}", category="danger")
-    
     return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, default_models=default_models, user_models=user_models)
+
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
-def articles_extractor_str():
-    query_form = SearchQuery()
+@extractor_base
+def articles_extractor_str(search_form, available_entities, default_models, user_models):
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
+    ppr_query_form = AdvancedPreprintsQuery()
     search_filters = SearchFilters()
-    search_form = SearchArticles()
-    default_models = FlashtextDefaultModels()
 
-    for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
-        setattr(FlashtextUserModels, model.name, BooleanField(model.id))
-        user_models = FlashtextUserModels()
-
-    available_entities = [
-                        search_form.amino_acid,
-                        search_form.anatomical_system,
-                        search_form.cancer,
-                        search_form.cell,
-                        search_form.cellular_component,
-                        search_form.developing_anatomical_structure,
-                        search_form.gene_or_gene_product,
-                        search_form.immaterial_anatomical_entity,
-                        search_form.organ,
-                        search_form.organism,
-                        search_form.organism_subdivision,
-                        search_form.organism_substance,
-                        search_form.pathological_formation,
-                        search_form.simple_chemical,
-                        search_form.tissue]
-
+    # Query constructor
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
             search_form.pubmed_query.data = query_constructor.pubmed(
@@ -189,48 +167,14 @@ def articles_extractor_str():
                 selected_filters
             )
 
-        if 'submit_query' in request.form:
-            selected_entities = [e.name.upper() for e in available_entities if e.data]
-            if search_form.flashtext_radio.data == 'Keyword':
-                kp = search_form.flashtext_string.data
-
-            elif search_form.flashtext_radio.data == 'Model':
-                selected_default_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in default_models._fields.values()
-                                        if model.data and model.__class__.__name__ == 'BooleanField']
-                selected_user_models = [int(''.join(c for c in str(model.label) if c.isdigit())) for model in user_models._fields.values()
-                                        if model.data and model.__class__.__name__ == 'BooleanField']
-                kp = selected_default_models + selected_user_models
-            else:
-                kp = None
-
-
-            data_tmp = extractor.execute.apply_async((
-                search_form.pubmed_query.data,
-                search_form.elsevier_query.data,
-                search_form.check_pubmed.data,
-                search_form.check_scopus.data,
-                search_form.check_scidir.data,
-                int(search_form.pm_num_of_articles.data),
-                int(search_form.sc_num_of_articles.data),
-                int(search_form.sd_num_of_articles.data),
-                selected_entities,
-                kp,
-                )
+        if 'ppr_add_keyword' in request.form:
+            search_form.preprints_query.data = query_constructor.preprints(
+                search_form.preprints_query.data,
+                ppr_query_form.keyword_ppr.data,
             )
+            
 
-            flash(f"Your result id is: {data_tmp.id}", category="success")
-            results = Results(
-                user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
-                elsevier_query=search_form.elsevier_query.data)
-            results.status = 'QUEUED'
-            db.session.add(results)
-            db.session.commit()
-
-    if search_form.errors != {}:
-        for err in search_form.errors.values():
-            flash(f"{err}", category="danger")
-
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, ppr_query=ppr_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
  
 @app.route("/user_area/")
 @login_required

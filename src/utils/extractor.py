@@ -8,6 +8,7 @@ load_dotenv()
 _ = os.getenv("NCBI_API_KEY")
 apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
+dumps_path = os.getenv("DUMPS_PATH")
 
 import pandas as pd
 import pubmed_parser as pp
@@ -16,9 +17,9 @@ from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
 from src import celery
-from json import loads, dumps
 from src.utils.unify_dfs import unify
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
+from flashtext import KeywordProcessor
 import json
 
 
@@ -116,23 +117,72 @@ def scidir(keyword, num_of_articles):
     doc_srch.results_df["pubtype"] = pubtype
 
     return doc_srch.results_df
+
+
+def preprints(query, num_of_articles):
+    keywords = query.split(", ")
+    dumps = ["biorxiv.jsonl", "chemrxiv.jsonl", "medrxiv.jsonl"]
+
+    print(f'Extracting preprints with keywords: "{keywords}"')
+
+    def process_jsonl_file(file_path):
+        with open(file_path, 'r', encoding='utf-8') as jsonl_file:
+            decoder = json.JSONDecoder()
+            buffer = ""
+            for line in jsonl_file:
+                buffer += line
+                while buffer:
+                    try:
+                        obj, idx = decoder.raw_decode(buffer)
+                        yield obj
+                        buffer = buffer[idx:].lstrip()
+                    except json.JSONDecodeError as e:
+                        break
+
+    data_list = []
+    for dump in dumps:
+        file_path = os.path.join(dumps_path, dump)
+
+        # Write model
+        kp = KeywordProcessor(case_sensitive=False)
+        kp.add_keywords_from_list(keywords)
+
+
+        for data in process_jsonl_file(file_path):
+            abstract = data.get("abstract")
+
+            if set(kp.extract_keywords(abstract)):
+                data_list.append(data)
+
+            if len(data_list) == num_of_articles:
+                break
+
+    results_df = pd.DataFrame(data_list)
+    print("Success: Preprints extracted")
+
+    return results_df
+
+
         
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
-    pubmed_query="Cancer Prostata",
-    elsevier_query="Prostate Cancer",
+    pubmed_query="",
+    elsevier_query="",
+    preprints_query="",
     check_pubmed=False,
     check_scopus=False,
     check_scidir=False,
+    check_preprints=False,
     pm_num_of_articles=25,
     sc_num_of_articles=25,
     sd_num_of_articles=25,
+    ppr_num_of_articles=25,
     ner = None,
-    kp = None
+    kp = None,
 ):
     try:
-        if check_pubmed or check_scopus or check_scidir:
+        if check_pubmed or check_scopus or check_scidir or check_preprints:
             results = {}
             if check_pubmed:
                 response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
@@ -143,9 +193,13 @@ def execute(
             if check_scidir:
                 response_scidir = scidir(elsevier_query, sd_num_of_articles)
                 results["sd"] = response_scidir
+            if check_preprints:
+                response_preprints = preprints(preprints_query, ppr_num_of_articles)
+                results["ppr"] = response_preprints
 
-            # Unify 3 results in a single dataframe
+            # Unify results in a single dataframe
             unified_df = unify(results)
+            print(unified_df.columns)
 
             # Prevent error from empty results
             if unified_df.empty:

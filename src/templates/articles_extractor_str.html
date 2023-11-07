@@ -126,76 +126,32 @@ Articles Extractor
             
             <br>
             <div class="text-justify">{{search_form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
+            <br>
+
+            <div class="row">
+                <div class="col-md-2 text-left"><h3>Preprints</h3></div>
+                <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 text-left" >{{search_form.check_preprints(class='mt-2')}} <label class="form-check-label" for="check_preprints">Enabled</label></div>
+                <div class="col-md-7">{{search_form.range_preprints(class='form-control', step=5, min=0, max=80000, id='range_preprints', oninput="outputUpdate(range_preprints.value)")}}</div>
+                <div class="col-md-2">{{search_form.ppr_num_of_articles(class='form-control', id='ppr_num_of_articles')}}</div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-9">{{ ppr_query.keyword_ppr(class='form-control', placeholder='Keyword') }}</div>
+                <div class="col-md-2 text-left">
+                    <button type="submit" name="ppr_add_keyword" class="btn btn-primary"> Add </button>
+                </div>
+            </div>
+
+            <br>
+            <div class="text-justify">{{search_form.preprints_query(placeholder = 'Preprints Query')}}</div>
             
             <br>
             <hr>
 
-            <div class="text-justify">
-                <h4>Optional features:</h4> 
-                <button class="btn btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModels" aria-expanded="false" aria-controls="collapseModels">
-                    Named-Entity Recognizer
-                </button>
-                
-                <div class="collapse" id="collapseModels"><br>
-                    <div class="row">
-                        
-                        <div class="card card-body col-md-4 mr-4" style="max-height: 300px; overflow-y: auto;">
-                            {% for entity in entities %}
-                            <div class="text-left">{{entity(class="mt-2")}} 
-                                <label class="form-check-label" for={{entity.name}}>{{entity.name.title().replace("_", " ")}}</label>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    
-                        <div class="accordion col-md-6" id="accordionFlashtext">
-                            <div class="accordion-item">
-                              <h2 class="accordion-header" id="headingFlash">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlash" aria-expanded="true" aria-controls="collapseFlash">
-                                  Filter with Keyword Processor
-                                </button>
-                              </h2>
-                              <div id="collapseFlash" class="accordion-collapse shown" aria-labelledby="headingFlash" data-bs-parent="#accordionFlashtext">
-                                <div class="accordion-body">
-                                    <div>
-                                        <ul id="radio", style="padding: 0;">
-                                            <div>
-                                            <input id="radio-0" name="flashtext_radio" type="radio" value="Keyword">
-                                            <label for="radio-0">Specify keywords</label>
-                                            </div>
-                                            <div>
-                                            <input id="radio-1" name="flashtext_radio" type="radio" value="Model">
-                                            <label for="radio-1">Use a model</label>
-                                            </div>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div id="keywordDiv" style="display: none;">
-                                        <label>Keyword:</label>
-                                        {{ search_form.flashtext_string(class='mt-2 form-control', placeholder="ex: Cancer, Prostate") }}
-                                    </div>
-                                    <div id="modelsDiv" style="display: none;">
-                                        <h5>Genes models</h5>
-                                        <div>{{default_models.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
-                                        <div>{{default_models.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
-                                        <br>
-                                        <h5>My models</h5>
-                                        {% for model_name, model in user_models._fields.items() %}
-                                            {% if model.__class__.__name__ == 'BooleanField' %}
-                                                <div>{{model(class='mt-2')}} <label class="form-check-label" for={{model_name}}>{{model_name.replace("_", " ").replace(".pickle", "")}}</label></div>
-                                            {%endif%}
-                                        {%endfor%}
-
-                                        <br>
-                                        <a href="{{ url_for('user_models') }}" class="btn btn-link" style="padding: 0;">My models</a>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+            {% include 'optional_features.html' %}
             
             <br>
 
@@ -222,6 +178,9 @@ Articles Extractor
 
         var rangeSciDir = document.getElementById('range_scidir');
         var textFieldSciDir = document.getElementById('sd_num_of_articles');
+
+        var rangePrePrints = document.getElementById('range_preprints');
+        var textFieldPrePrints = document.getElementById('ppr_num_of_articles');
         
         rangePubmed.addEventListener('input', function() {
             updateTextField(rangePubmed, textFieldPubmed);
@@ -232,14 +191,15 @@ Articles Extractor
         rangeSciDir.addEventListener('input', function() {
             updateTextField(rangeSciDir, textFieldSciDir);
         });
+        rangePrePrints.addEventListener('input', function() {
+            updateTextField(rangePrePrints, textFieldPrePrints);
+        });
     </script>
 
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
 
 <script>
     // jQuery script to handle radio button change events
@@ -255,4 +215,6 @@ Articles Extractor
         });
     });
 </script>
+
+</body>
 {% endblock %}

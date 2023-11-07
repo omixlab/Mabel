@@ -3,6 +3,7 @@ logs
 data/csv
 data/xmls
 data/uploads
+data/dumps
 .env
 default
 version_old
