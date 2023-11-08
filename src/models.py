@@ -58,7 +58,7 @@ class FlashtextModels(db.Model):
 class TokensPassword(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    uuid = db.Column(db.String(64))
+    token = db.Column(db.String(64), nullable=False, unique=True)
     link = db.Column(db.String(90))
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
     updated_date = db.Column(db.DateTime, default=datetime.utcnow())
