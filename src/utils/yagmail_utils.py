@@ -169,8 +169,9 @@ if __name__ == "__main__":
         print("Set the following as your GOOGLE_REFRESH_TOKEN:", refresh_token)
         exit()
 
-    send_mail('gratirodrigues.gdr@gmail.com', 'diulimoralesfonseca@gmail.com',
-              'A mail from you from Python',
-              '<b>A mail from you from Python</b><br><br>' +
-              'So happy to hear from you!')
-
+    send_mail(
+        "gratirodrigues.gdr@gmail.com",
+        "diulimoralesfonseca@gmail.com",
+        "A mail from you from Python",
+        "<b>A mail from you from Python</b><br><br>" + "So happy to hear from you!",
+    )

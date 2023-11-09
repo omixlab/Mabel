@@ -27,6 +27,7 @@ from src.models import Users
 # from wtforms.widgets import html5 as h5widgets
 # Sfrom wtforms.widgets import TextArea
 
+
 class RegisterForm(FlaskForm):
     def validate_username(self, check_user):
         user = Users.query.filter_by(name=check_user.data).first()
@@ -47,10 +48,16 @@ class RegisterForm(FlaskForm):
                 "Password already exists! Register another user Password."
             )
 
-    name = StringField(label="Username:", validators=[Length(min=2, max=30), DataRequired()])
+    name = StringField(
+        label="Username:", validators=[Length(min=2, max=30), DataRequired()]
+    )
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
-    password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
-    password_conf = PasswordField(label="Confirmation Password", validators=[EqualTo("password"), DataRequired()])
+    password = PasswordField(
+        label="Password:", validators=[Length(min=6), DataRequired()]
+    )
+    password_conf = PasswordField(
+        label="Confirmation Password", validators=[EqualTo("password"), DataRequired()]
+    )
     submit = SubmitField(label="Submit")
 
 
@@ -59,21 +66,26 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
+
 class RecoveryPasswordForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     submit = SubmitField(label="Send")
 
+
 class RecoveryPassword(FlaskForm):
-    
     def validate_password(self, check_password):
         password = Users.query.filter_by(password=check_password.data).first()
         if password:
             raise ValidationError(
                 "Password already exists! Register another user Password."
             )
-    
-    password = PasswordField(label="Password:", validators=[Length(min=6), DataRequired()])
-    password_conf = PasswordField(label="Confirmation Password", validators=[EqualTo("password"), DataRequired()])
+
+    password = PasswordField(
+        label="Password:", validators=[Length(min=6), DataRequired()]
+    )
+    password_conf = PasswordField(
+        label="Confirmation Password", validators=[EqualTo("password"), DataRequired()]
+    )
     submit = SubmitField(label="Recovery Password")
 
 

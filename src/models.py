@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from src import bcrypt, db, login_manager
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return Users.query.get(int(user_id))
@@ -54,6 +55,7 @@ class FlashtextModels(db.Model):
     name = db.Column(db.String(64))
     type = db.Column(db.String(24))
     path = db.Column(db.String(255))
+
 
 class TokensPassword(db.Model):
     id = db.Column(db.Integer, primary_key=True)
