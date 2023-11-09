@@ -1,6 +1,8 @@
 import json
+
 import numpy as np
 import pandas as pd
+
 
 def unify(dfs):
     formated_dfs = []
@@ -128,4 +130,4 @@ def unify(dfs):
     # Concatenação dos dataframes
     unified_dataframes = pd.concat(formated_dfs)
     print("Success: Dataframes unified succesfully")
-    return (unified_dataframes)
+    return unified_dataframes

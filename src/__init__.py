@@ -1,14 +1,15 @@
+import os
+
+import mysql.connector
+from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, MetaData, Table
-import mysql.connector
-from src.celery_utils import make_celery
-from dotenv import load_dotenv
-import os
-import src
+from sqlalchemy import MetaData, Table, create_engine
 
+import src
+from src.celery_utils import make_celery
 
 load_dotenv()
 

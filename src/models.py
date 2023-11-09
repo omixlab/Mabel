@@ -1,6 +1,5 @@
-from flask_login import UserMixin
 from datetime import datetime
-
+from flask_login import UserMixin
 from src import bcrypt, db, login_manager
 
 
@@ -30,12 +29,13 @@ class Users(db.Model, UserMixin):
         return f"Register: {self.name}"
 
 
-class Tokens(db.Model):
+class KeysTokens(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
     X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
     X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
 
 class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -47,6 +47,7 @@ class Results(db.Model):
     result_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
 
+
 class FlashtextModels(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -54,3 +55,12 @@ class FlashtextModels(db.Model):
     name = db.Column(db.String(64))
     type = db.Column(db.String(24))
     path = db.Column(db.String(255))
+
+
+class TokensPassword(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    token = db.Column(db.String(64), nullable=False, unique=True)
+    link = db.Column(db.String(90))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow())
+    updated_date = db.Column(db.DateTime, default=datetime.utcnow())

@@ -2,16 +2,16 @@ boolean_operators = [("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")]
 
 # BASIC
 tags = [
-    ('ALL', "All Fields"),
-    ('TITLE', "Title"),
-    ('ABS', "Abstract"),
-    ('AUTH', "Author"),
-    ('AFFIL', "Affiliation"),
-    ('PAGES', "Pages"),
-    ('VOLUME', "Volume"),
-    ('LANGUAGE', "Language"),
-    ('DOCTYPE', "Publication Type"),
-    ('PUBLISHER', "Publisher"),
+    ("ALL", "All Fields"),
+    ("TITLE", "Title"),
+    ("ABS", "Abstract"),
+    ("AUTH", "Author"),
+    ("AFFIL", "Affiliation"),
+    ("PAGES", "Pages"),
+    ("VOLUME", "Volume"),
+    ("LANGUAGE", "Language"),
+    ("DOCTYPE", "Publication Type"),
+    ("PUBLISHER", "Publisher"),
 ]
 
 to_pubmed = {
