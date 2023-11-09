@@ -231,18 +231,18 @@ def recovery_passwordForm():
 @app.route("/recovery_password/<id>/<token>", methods = ['GET', 'POST'])
 def recovery_password(token, id):
     form = RecoveryPassword()
-    if form.validate_on_submit():
-        teste = TokensPassword.query.filter_by(token=token).first()
+    token_password = TokensPassword.query.filter_by(token=token).first()
+    if token_password:
         user = Users.query.filter_by(id=id).first()
-        if user and teste:
+        if user and form.validate_on_submit():
             user.password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
             flash(f"{user.name}, your password was changed with successfuly", category="success")
-            db.session.delete(teste)
+            db.session.delete(token_password)
             db.session.commit()
             return redirect(url_for("login"))
-        else:
-            flash(f"Token expired, generate another token", category="danger")
-            return redirect(url_for("recovery_passwordForm"))
+    else:
+        flash(f"Token expired, generate another token", category="danger")
+        return redirect(url_for("recovery_passwordForm"))
     return render_template('recovery_password.html', form=form, token=token, id=id)
         
 @app.route("/logout")
