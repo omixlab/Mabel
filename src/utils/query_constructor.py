@@ -1,5 +1,6 @@
 from src.utils.dicts_tuples.flasky_tuples import to_pubmed
 
+
 def basic(pm_query, els_query, tag, keyword, boolean, open_access):
     # PubMed query
     if not pm_query:
@@ -9,15 +10,15 @@ def basic(pm_query, els_query, tag, keyword, boolean, open_access):
 
     # Elsevier query
     if not els_query:
-        els_query = f'{tag}({keyword})'
+        els_query = f"{tag}({keyword})"
     else:
-        els_query += f' {boolean} {tag}({keyword})'
+        els_query += f" {boolean} {tag}({keyword})"
 
     # Filter
-    if open_access and 'ffrft[Filter]' not in pm_query:
-        pm_query += ' AND (ffrft[Filter])'
-    if open_access and 'OPENACCESS(1)' not in els_query:
-        els_query += ' AND OPENACCESS(1)'
+    if open_access and "ffrft[Filter]" not in pm_query:
+        pm_query += " AND (ffrft[Filter])"
+    if open_access and "OPENACCESS(1)" not in els_query:
+        els_query += " AND OPENACCESS(1)"
 
     return pm_query, els_query
 
@@ -41,12 +42,12 @@ def pubmed_filters(pm_query, filters):
 
 def elsevier(els_query, tag, keyword, boolean, open_access):
     if not els_query:
-        els_query = f'{tag}({keyword})'
+        els_query = f"{tag}({keyword})"
     else:
-        els_query += f' {boolean} {tag}({keyword})'
+        els_query += f" {boolean} {tag}({keyword})"
 
-    if open_access and 'OPENACCESS(1)' not in els_query:
-        els_query += ' AND OPENACCESS(1)'
+    if open_access and "OPENACCESS(1)" not in els_query:
+        els_query += " AND OPENACCESS(1)"
 
     return els_query
 

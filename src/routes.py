@@ -1,19 +1,25 @@
+import os
+
 from flask import flash, redirect, render_template, url_for, current_app, request, Response
 from flask_login import login_required, login_user, logout_user, current_user
 from wtforms import BooleanField
 
 import pandas as pd
-import os
 from werkzeug.utils import secure_filename
 from functools import wraps
 
 from src import app, db
-from src.models import Users, Results, FlashtextModels
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel
+from src.models import Users, Results, FlashtextModels, TokensPassword
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel, RecoveryPasswordForm, RecoveryPassword
 import src.utils.extractor as extractor
+import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
 from src.utils.optional_features import flashtext_model_create
+
+import bcrypt
+import uuid
+
 
 @app.route("/")
 def home():
@@ -108,6 +114,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
     return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, default_models=default_models, user_models=user_models)
 
 
+
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 @extractor_base
@@ -127,13 +134,13 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 pm_query_form.boolean_pm.data,
             )
 
-        if 'els_add_keyword' in request.form:
+        if "els_add_keyword" in request.form:
             search_form.elsevier_query.data = query_constructor.elsevier(
                 search_form.elsevier_query.data,
                 els_query_form.fields_els.data,
                 els_query_form.keyword_els.data,
                 els_query_form.boolean_els.data,
-                els_query_form.open_access.data
+                els_query_form.open_access.data,
             )
 
         if 'apply_filters' in request.form:
@@ -179,13 +186,15 @@ def articles_extractor_str(search_form, available_entities, default_models, user
 @app.route("/user_area/")
 @login_required
 def user_area():
-    results = Results.query.filter_by(user_id=current_user.id).all()  
+    results = Results.query.filter_by(user_id=current_user.id).all()
     return render_template("user_area.html", results=results)
+
 
 @app.route("/result/<result_id>")
 @login_required
 def result_view(result_id):
     result = Results.query.get(result_id)
+    print(result)
     if result:
         df = pd.read_json(result.result_json)
         return render_template("result_view.html", df=df)
@@ -193,11 +202,11 @@ def result_view(result_id):
         flash(f"Invalid ID", category="danger")
         return redirect(url_for("user_area"))
 
+
 @app.route("/download/<result_id>")
 @login_required
 def download(result_id):
     result = Results.query.get(result_id)
-    print(result)
     if result:
         result_df = pd.read_json(result.result_json)
         return Response(
@@ -293,6 +302,59 @@ def login():
         else:
             flash(f"User or password it's wrong. Try again!", category="danger")
     return render_template("login.html", form=form)
+
+
+@app.route("/recovery_password_form", methods=["GET", "POST"])
+def recovery_passwordForm():
+    form = RecoveryPasswordForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user:
+            uuid_id = str(uuid.uuid1().hex)
+            token_password = TokensPassword(
+                user_id=user.id,
+                token=uuid_id,
+                link=f"localhost:5000/recovery_password/{user.id}/{uuid_id}",
+            )
+            db.session.add(token_password)
+            db.session.commit()
+            yagmail.send_mail(
+                os.getenv("EMAIL"),
+                form.email.data,
+                "Recovery Password",
+                f"<b>Hello "
+                + f"your password can be replace in this link {token_password.link}</b><br><br>"
+                + "Some questions cantact us "
+                + "bambuenterprise@gmail.com",
+            )
+            flash(f"Success! We send e-mail to {form.email.data}", category="success")
+            return redirect(url_for("login"))
+        else:
+            flash(f"Email don't found, please review your e-mail", category="danger")
+    return render_template("recovery_password_form.html", form=form)
+
+
+@app.route("/recovery_password/<id>/<token>", methods=["GET", "POST"])
+def recovery_password(token, id):
+    form = RecoveryPassword()
+    token_password = TokensPassword.query.filter_by(token=token).first()
+    if token_password:
+        user = Users.query.filter_by(id=id).first()
+        if user and form.validate_on_submit():
+            user.password = bcrypt.hashpw(
+                form.password.data.encode("utf-8"), bcrypt.gensalt()
+            )
+            flash(
+                f"{user.name}, your password was changed with successfuly",
+                category="success",
+            )
+            db.session.delete(token_password)
+            db.session.commit()
+            return redirect(url_for("login"))
+    else:
+        flash(f"Token expired, generate another token", category="danger")
+        return redirect(url_for("recovery_passwordForm"))
+    return render_template("recovery_password.html", form=form, token=token, id=id)
 
 
 @app.route("/logout")

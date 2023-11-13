@@ -1,6 +1,8 @@
 import json
+
 import numpy as np
 import pandas as pd
+
 
 def unify(dfs):
     formated_dfs = []

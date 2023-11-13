@@ -1,8 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
 from .. import db
 from ..models import Results
-from dotenv import load_dotenv
 
 load_dotenv()
 _ = os.getenv("NCBI_API_KEY")
@@ -10,12 +11,16 @@ apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
 dumps_path = os.getenv("DUMPS_PATH")
 
+import json
+from json import dumps, loads
+
 import pandas as pd
 import pubmed_parser as pp
 from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+
 from src import celery
 from src.utils.unify_dfs import unify
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
@@ -38,19 +43,20 @@ def pubmed(keyword, num_of_articles):
     data_pubmed = pd.DataFrame()
 
     for value in xmls.values():
-            dicts_out = pp.parse_medline_xml(
-                value,
-                year_info_only=False,
-                nlm_category=False,
-                author_list=False,
-                reference_list=False,
-            )
-            data_pubmed = pd.concat(
-                [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
-            )
+        dicts_out = pp.parse_medline_xml(
+            value,
+            year_info_only=False,
+            nlm_category=False,
+            author_list=False,
+            reference_list=False,
+        )
+        data_pubmed = pd.concat(
+            [data_pubmed, pd.DataFrame(dicts_out)], ignore_index=True
+        )
 
     print("PubMed extraction done!")
-    return  data_pubmed
+    return data_pubmed
+
 
 def scopus(keyword, num_of_articles):
     print(

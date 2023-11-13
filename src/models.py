@@ -1,6 +1,5 @@
-from flask_login import UserMixin
 from datetime import datetime
-
+from flask_login import UserMixin
 from src import bcrypt, db, login_manager
 
 
@@ -10,7 +9,7 @@ def load_user(user_id):
 
 
 class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(length=40), nullable=False, unique=True)
     email = db.Column(db.String(length=40), nullable=False, unique=True)
     password = db.Column(db.String(length=300), nullable=False, unique=True)
@@ -30,15 +29,16 @@ class Users(db.Model, UserMixin):
         return f"Register: {self.name}"
 
 
-class Tokens(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class KeysTokens(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
     X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
     X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
+
 class Results(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     status = db.Column(db.String, nullable=True)
     celery_id = db.Column(db.String(length=100), nullable=False)
@@ -55,3 +55,12 @@ class FlashtextModels(db.Model):
     name = db.Column(db.String(64))
     type = db.Column(db.String(24))
     path = db.Column(db.String(255))
+
+
+class TokensPassword(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    token = db.Column(db.String(64), nullable=False, unique=True)
+    link = db.Column(db.String(90))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow())
+    updated_date = db.Column(db.DateTime, default=datetime.utcnow())
