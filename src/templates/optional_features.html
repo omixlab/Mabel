@@ -1,0 +1,74 @@
+<div class="text-justify">
+    <div class="accordion col-md-11" id="accordionOptional">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOptional">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOptional" aria-expanded="true" aria-controls="collapseOptional">
+                Optional Features
+                </button>
+            </h2>
+
+            <div id="collapseOptional" class="accordion-collapse collapse" aria-labelledby="headingOptional" data-bs-parent="#accordionOptional">
+                <div class="accordion-body">
+
+                    <button class="btn btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNER" aria-expanded="false" aria-controls="collapseNER">
+                        Named-Entity Recognizer
+                    </button>
+                    <div class="collapse" id="collapseNER">      
+                        <div class="card card-body col-md-6 mr-4" style="max-height: 300px; overflow-y: auto;">
+                            {% for name, entity in entities._fields.items() %}
+                                {% if entity.__class__.__name__ == 'BooleanField' %}
+                                <div class="text-left">{{entity(class="mt-2")}} 
+                                    <label class="form-check-label" for={{entity.name}}>{{name.title().replace("_", " ")}}</label>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <button class="btn btn-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFlashtext" aria-expanded="false" aria-controls="collapseFlashtext">
+                        Filter keywords
+                    </button>
+                    <div class="collapse" id="collapseFlashtext"> 
+                        <div class="card card-body col-md-6 mr-4" style="max-height: 300px; overflow-y: auto;">
+                            <div>
+                                <ul id="radio", style="padding: 0;">
+                                    <div>
+                                    <input id="radio-0" name="flashtext_radio" type="radio" value="Keyword">
+                                    <label for="radio-0">Specify keywords</label>
+                                    </div>
+                                    <div>
+                                    <input id="radio-1" name="flashtext_radio" type="radio" value="Model">
+                                    <label for="radio-1">Use a model</label>
+                                    </div>
+                                </ul>
+                            </div>
+                        
+                            <div id="keywordDiv" style="display: none;">
+                                <label>Keyword:</label>
+                                {{ search_form.flashtext_string(class='mt-2 form-control', placeholder="ex: Cancer, Prostate") }}
+                            </div>
+                            <div id="modelsDiv" style="display: none;">
+                                <h5>Genes models</h5>
+                                <div>{{default_models.genes_human(class='mt-2')}} <label class="form-check-label" for="genes_human">Human</label></div>
+                                <div>{{default_models.genes_danio_rerio(class='mt-2')}} <label class="form-check-label" for="genes_danio_rerio">Danio rerio</label></div>
+                                <br>
+                                <h5>My models</h5>
+                                {% for model_name, model in user_models._fields.items() %}
+                                    {% if model.__class__.__name__ == 'BooleanField' %}
+                                        <div>{{model(class='mt-2')}} <label class="form-check-label" for={{model_name}}>{{model_name.replace("_", " ").replace(".pickle", "")}}</label></div>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <br>
+                                <a href="{{ url_for('user_models') }}" class="btn btn-link" style="padding: 0;">My models</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

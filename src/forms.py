@@ -1,3 +1,5 @@
+import os
+
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -8,6 +10,8 @@ from wtforms import (
     StringField,
     SubmitField,
     TextAreaField,
+    FileField,
+    RadioField
 )
 from wtforms.validators import (
     DataRequired,
@@ -16,12 +20,16 @@ from wtforms.validators import (
     InputRequired,
     Length,
     NumberRange,
+    Regexp,
     Optional,
     ValidationError,
 )
+from flask_wtf.file import FileAllowed
+
+from flask_login import current_user
 
 import src.utils.dicts_tuples.flasky_tuples as flasky_tuples
-from src.models import Users
+from src.models import Users, FlashtextModels
 
 # from wtforms.fields import html5 as h5fields
 # from wtforms.widgets import html5 as h5widgets
@@ -110,8 +118,17 @@ class AdvancedElsevierQuery(FlaskForm):
     boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
+class AdvancedPreprintsQuery(FlaskForm):
+    fields_ppr = SelectField(
+        "option", choices=flasky_tuples.els_tags, default=1
+    )
+    keyword_ppr = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_ppr = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+
 
 class SearchArticles(FlaskForm):
+
+    # QUERY
     pubmed_query = TextAreaField(
         "pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
     )
@@ -121,6 +138,13 @@ class SearchArticles(FlaskForm):
         validators=[Optional()],
     )
 
+    preprints_query = TextAreaField(
+        "preprints_query",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()],
+    )
+
+    # Check and Range
     check_pubmed = BooleanField("check")
     range_pubmed = IntegerRangeField(
         default=25,
@@ -164,4 +188,67 @@ class SearchArticles(FlaskForm):
         ],
     )
 
-    check_genes = BooleanField("genes")
+    check_preprints = BooleanField("preprints")
+    range_preprints = IntegerRangeField(
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
+    )
+    ppr_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=80000, message='Number of articles outside of supported range')])
+
+
+    # Flashtext options
+    flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    flashtext_string = StringField("Keywords", name="aaa", description="bbb")
+
+
+class SearchFilters(FlaskForm):
+    abstract = BooleanField("Abstract")
+    free_full_text = BooleanField("Free full text")
+    full_text = BooleanField("Full text")
+    booksdocs = BooleanField("Books and documents")
+    clinicaltrial = BooleanField("Clinical trial")
+    meta_analysis = BooleanField("Meta-Analysis")
+    randomizedcontrolledtrial = BooleanField("Randomized Controlled Trial")
+    review = BooleanField("Review")
+    systematicreview = BooleanField("Systematic Review")
+    humans = BooleanField("Humans")
+    animal = BooleanField("Other Animals")
+    male = BooleanField("Male")
+    female = BooleanField("Female")
+    english = BooleanField("English")
+    portuguese = BooleanField("Portuguese")
+    spanish = BooleanField("Spanish")
+    data = BooleanField("Associated data")
+    excludepreprints = BooleanField("Exclude preprints")
+    medline = BooleanField("MEDLINE")
+
+class ScispacyEntities(FlaskForm):
+    amino_acid = BooleanField("AMINO_ACID")
+    anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
+    cancer = BooleanField("CANCER")
+    cell = BooleanField("CELL")
+    cellular_component = BooleanField("CELLULAR_COMPONENT")
+    developing_anatomical_structure = BooleanField("DEVELOPING_ANATOMICAL_STRUCTURE")
+    gene_or_gene_product = BooleanField("GENE_OR_GENE_PRODUCT")
+    immaterial_anatomical_entity = BooleanField("IMMATERIAL_ANATOMICAL_ENTITY")
+    multi_tissue_structure = BooleanField("MULTI-TISSUE_STRUCTURE")
+    organ = BooleanField("ORGAN")
+    organism = BooleanField("ORGANISM")
+    organism_subdivision = BooleanField("ORGANISM_SUBDIVISION")
+    organism_substance = BooleanField("ORGANISM_SUBSTANCE")
+    pathological_formation = BooleanField("PATHOLOGICAL_FORMATION")
+    simple_chemical = BooleanField("SIMPLE_CHEMICAL")
+    tissue = BooleanField("TISSUE")
+
+class FlashtextDefaultModels(FlaskForm):
+    genes_human = BooleanField(2)
+    genes_danio_rerio = BooleanField(3)
+
+class FlashtextUserModels(FlaskForm):
+    pass
+
+class CreateFlashtextModel(FlaskForm):
+    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty"), Length(max=64, message='Name must be at most 64 characters long'), Regexp('^[a-zA-Z_]*$', message='Name can only contain letters or underscores')])
+    type = SelectField("Type", choices=flasky_tuples.scispacy)
+    tsv = FileField(".txt file", validators=[FileAllowed(['txt'], "Only .txt files are allowed"), InputRequired(message='File is required')])
+    submit = SubmitField(label="Create model")

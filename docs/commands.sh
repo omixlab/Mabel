@@ -7,4 +7,8 @@ celery -A src.celery worker --loglevel=info
 
 redis-server
 
-
+# Create db
+from src import app
+from src import db
+app.app_context().push()
+db.create_all()

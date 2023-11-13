@@ -132,3 +132,47 @@ els_tags = [
     ("VOLUME", "Volume"),
     ("WEBSITE", "Website"),
 ]
+
+# PubMed Filters
+pm_filters = {
+    "abstract": "fha",
+    "free_full_text": "ffrft",
+    "full_text": "fft",
+    "booksdocs": "pubt.booksdocs",
+    "clinicaltrial": "pubt.clinicaltrial",
+    "meta_analysis": "pubt.meta-analysis",
+    "randomizedcontrolledtrial": "pubt.randomizedcontrolledtrial",
+    "review": "pubt.review",
+    "systematicreview": "pubt.systematicreview",
+    "humans": "hum_ani.humans",
+    "animal": "hum_ani.animal",
+    "male": "sex.male",
+    "female": "sex.female",
+    "english": "lang.english",
+    "portuguese": "lang.portuguese",
+    "spanish": "lang.spanish",
+    "data": "articleattr.data",
+    "excludepreprints": "other.excludepreprints",
+    "medline": "other.medline",
+}
+
+# en_ner_bionlp13cg_md Labels
+scispacy = [
+    (None, 'None'),
+    ('AMINO_ACID', 'Amino acid'),
+    ('ANATOMICAL_SYSTEM', 'Anatomical system'),
+    ('CANCER', 'Cancer'),
+    ('CELL', 'Cell'),
+    ('CELLULAR_COMPONENT', 'Cellular component'),
+    ('DEVELOPING_ANATOMICAL_STRUCTURE', 'Developing anatomical structure'),
+    ('GENE_OR_GENE_PRODUCT', 'Gene or gene product'),
+    ('IMMATERIAL_ANATOMICAL_ENTITY', 'Immaterial anatomical entity'),
+    ('MULTI-TISSUE_STRUCTURE', 'Multi-tissue structure'),
+    ('ORGAN', 'Organ'),
+    ('ORGANISM', 'Organism'),
+    ('ORGANISM_SUBDIVISION', 'Organism subdivision'),
+    ('ORGANISM_SUBSTANCE', 'Organism substance'),
+    ('PATHOLOGICAL_FORMATION', 'Pathological formation'),
+    ('SIMPLE_CHEMICAL', 'Simple chemical'),
+    ('TISSUE', 'Tissue')
+]

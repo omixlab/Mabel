@@ -1,7 +1,10 @@
 .ipynb_checkpoints
 logs
+data/csv
+data/xmls
+data/uploads
+data/dumps
 .env
-data
 default
 version_old
 __pycache__
