@@ -202,8 +202,8 @@ class ScispacyEntities(FlaskForm):
     tissue = BooleanField("TISSUE")
 
 class FlashtextDefaultModels(FlaskForm):
-    genes_human = BooleanField(1)
-    genes_danio_rerio = BooleanField(2)
+    genes_human = BooleanField(2)
+    genes_danio_rerio = BooleanField(3)
 
 class FlashtextUserModels(FlaskForm):
     pass
