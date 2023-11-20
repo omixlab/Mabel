@@ -133,7 +133,10 @@ Articles Extractor
                 <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
             </div>
             <div class="row">
-                <div class="col-md-2 text-left" >{{search_form.check_preprints(class='mt-2')}} <label class="form-check-label" for="check_preprints">Enabled</label></div>
+                <div class="col-md-2 text-left" >
+                    <input type="checkbox" class="form-check-input mt-2" id="check_preprints" disabled data-toggle="tooltip" data-placement="top" title="Função desabilitada durante a versão de teste">
+                    <label class="form-check-label" for="check_preprints">Enabled</label>
+                </div>
                 <div class="col-md-7">{{search_form.range_preprints(class='form-control', step=5, min=0, max=80000, id='range_preprints', oninput="outputUpdate(range_preprints.value)")}}</div>
                 <div class="col-md-2">{{search_form.ppr_num_of_articles(class='form-control', id='ppr_num_of_articles')}}</div>
             </div>
