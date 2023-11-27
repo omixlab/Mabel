@@ -360,5 +360,5 @@ def recovery_password(token, id):
 @app.route("/logout")
 def logout():
     logout_user()
-    flash("You do logout", category="info")
+    flash("Logged out successfully", category="info")
     return redirect(url_for("home"))
