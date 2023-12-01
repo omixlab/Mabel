@@ -36,6 +36,7 @@ from src.models import Users, FlashtextModels
 # Sfrom wtforms.widgets import TextArea
 
 
+# Flask Login
 class RegisterForm(FlaskForm):
     def validate_username(self, check_user):
         user = Users.query.filter_by(name=check_user.data).first()
@@ -68,17 +69,14 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField(label="Submit")
 
-
 class LoginForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
-
 class RecoveryPasswordForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     submit = SubmitField(label="Send")
-
 
 class RecoveryPassword(FlaskForm):
     def validate_password(self, check_password):
@@ -97,6 +95,7 @@ class RecoveryPassword(FlaskForm):
     submit = SubmitField(label="Recovery Password")
 
 
+# Query constructor
 class SearchQuery(FlaskForm):
     tags = SelectField(
         "option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1
@@ -118,6 +117,12 @@ class AdvancedElsevierQuery(FlaskForm):
     boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
+class AdvancedScieloQuery(FlaskForm):
+    fields_se = SelectField("option", choices=flasky_tuples.se_tags, default=1)
+    keyword_se = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_se = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access = BooleanField("open_access", validators=[Optional()], default=False)
+
 class AdvancedPreprintsQuery(FlaskForm):
     fields_ppr = SelectField(
         "option", choices=flasky_tuples.els_tags, default=1
@@ -126,16 +131,25 @@ class AdvancedPreprintsQuery(FlaskForm):
     boolean_ppr = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
 
 
+# Submit
 class SearchArticles(FlaskForm):
 
     # QUERY
     pubmed_query = TextAreaField(
-        "pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
+        "pubmed_query", 
+        render_kw={"rows": "4", "cols": "100"}, 
+        validators=[Optional()]
     )
     elsevier_query = TextAreaField(
         "elsevier_query",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
+    )
+
+    scielo_query = TextAreaField(
+        "scielo_query",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()]
     )
 
     preprints_query = TextAreaField(
@@ -188,6 +202,21 @@ class SearchArticles(FlaskForm):
         ],
     )
 
+    check_scielo = BooleanField("scielo")
+    range_scielo = IntegerRangeField(
+        default=25,
+        validators=[DataRequired(), NumberRange(min=0, max=5000)],
+    )
+    se_num_of_articles = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(
+                min=1, max=5000, message="Number of articles outside of supported range"
+            ),
+        ],
+    )
+
     check_preprints = BooleanField("preprints")
     range_preprints = IntegerRangeField(
         default=25, 
@@ -201,6 +230,7 @@ class SearchArticles(FlaskForm):
     flashtext_string = StringField("Keywords", name="aaa", description="bbb")
 
 
+# Others
 class SearchFilters(FlaskForm):
     abstract = BooleanField("Abstract")
     free_full_text = BooleanField("Free full text")

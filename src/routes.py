@@ -10,7 +10,7 @@ from functools import wraps
 
 from src import app, db
 from src.models import Users, Results, FlashtextModels, TokensPassword
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel, RecoveryPasswordForm, RecoveryPassword
+from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedScieloQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel, RecoveryPasswordForm, RecoveryPassword
 import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
@@ -121,6 +121,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 def articles_extractor_str(search_form, available_entities, default_models, user_models):
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
+    se_query_form = IsADirectoryError()
     ppr_query_form = AdvancedPreprintsQuery()
     search_filters = SearchFilters()
 
