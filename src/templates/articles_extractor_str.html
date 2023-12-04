@@ -129,7 +129,7 @@ Articles Extractor
             <br>
 
             <div class="row">
-                <div class="col-md-2 text-left"><h3>Scielo</h3></div>
+                <div class="col-md-2 text-left"><h3>SciElo</h3></div>
                 <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
             </div>
             <div class="row">
@@ -146,8 +146,7 @@ Articles Extractor
             </div>
             
             <div class="row">
-                <div class="col-md-2">{{se_query.open_access(class='mt-3')}} <label class="form-check-label" for="open_access">Open Access</label></div>
-                <div class="col-md-6"></div>
+                <div class="col-md-8"></div>
                 <div class="col-md-2 text-right">
                     <button type="submit" name="se_add_keyword" class="btn btn-primary mt-2"> Add </button>
                 </div>
@@ -210,8 +209,8 @@ Articles Extractor
         var rangeSciDir = document.getElementById('range_scidir');
         var textFieldSciDir = document.getElementById('sd_num_of_articles');
 
-        var rangePrePrints = document.getElementById('range_preprints');
-        var textFieldPrePrints = document.getElementById('ppr_num_of_articles');
+        var rangeSciElo = document.getElementById('range_scielo');
+        var textFieldSciElo = document.getElementById('se_num_of_articles');
         
         rangePubmed.addEventListener('input', function() {
             updateTextField(rangePubmed, textFieldPubmed);
@@ -222,8 +221,8 @@ Articles Extractor
         rangeSciDir.addEventListener('input', function() {
             updateTextField(rangeSciDir, textFieldSciDir);
         });
-        rangePrePrints.addEventListener('input', function() {
-            updateTextField(rangePrePrints, textFieldPrePrints);
+        rangeSciElo.addEventListener('input', function() {
+            updateTextField(rangeSciElo, textFieldSciElo);
         });
     </script>
 

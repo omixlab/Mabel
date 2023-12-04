@@ -15,9 +15,9 @@ def basic(pm_query, els_query, se_query, tag, keyword, boolean, open_access):
         els_query += f" {boolean} {tag}({keyword})"
 
     # Scielo query
-    if tag:
+    if tag != "":
         if tag in to_scielo:
-            keyword = f"{tag}:({keyword})"
+            keyword = f"{to_scielo[tag]}:({keyword})"
         else:
             pass
     if boolean == "NOT":
