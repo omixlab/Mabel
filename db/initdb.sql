@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
 	UNIQUE(email)
 );
 
+INSERT INTO users (name, email, password)
+VALUES ('Bambu', 'bambuenterprise@gmail.com', '123456'); 
+
+
 CREATE TABLE IF NOT EXISTS keys_tokens (
 	id INTEGER (50) NOT NULL AUTO_INCREMENT,
 	NCBI_API_KEY VARCHAR(36) NOT NULL,

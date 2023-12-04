@@ -41,3 +41,5 @@ services:
     links:
       - redis
       - mysql
+    volumes:
+      - ./data:/app/data
