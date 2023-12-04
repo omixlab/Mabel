@@ -129,6 +129,35 @@ Articles Extractor
             <br>
 
             <div class="row">
+                <div class="col-md-2 text-left"><h3>Scielo</h3></div>
+                <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 text-left">{{search_form.check_scielo(class='mt-2')}} <label class="form-check-label" for="check_scielo">Enabled</label></div>
+                <div class="col-md-7">{{search_form.range_scielo(class='form-control', step=25, min=0, max=5000, id='range_scielo', oninput="outputUpdate(range_scielo.value)")}}</div>
+                <div class="col-md-2">{{search_form.se_num_of_articles(class='form-control', id='se_num_of_articles')}}</div>
+            </div>
+            
+            <br>
+            <div class="row">
+                <div class="col-md-2">{{ se_query.fields_se(class='form-control custom-select')}}</div>
+                <div class="col-md-7">{{ se_query.keyword_se(class='form-control', placeholder='Keywords') }}</div>
+                <div class="col-md-2">{{ se_query.boolean_se(class='form-control custom-select')}}</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-2">{{se_query.open_access(class='mt-3')}} <label class="form-check-label" for="open_access">Open Access</label></div>
+                <div class="col-md-6"></div>
+                <div class="col-md-2 text-right">
+                    <button type="submit" name="se_add_keyword" class="btn btn-primary mt-2"> Add </button>
+                </div>
+            </div>
+            
+            <br>
+            <div class="text-justify">{{search_form.scielo_query(placeholder = 'SciElo Query')}}</div>
+            <br>
+
+            <div class="row">
                 <div class="col-md-2 text-left"><h3>Preprints</h3></div>
                 <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
             </div>

@@ -61,14 +61,17 @@ def extractor_base(func):
                     data_tmp = extractor.execute.apply_async((
                         search_form.pubmed_query.data,
                         search_form.elsevier_query.data,
+                        search_form.scielo_query.data,
                         search_form.preprints_query.data,
                         search_form.check_pubmed.data,
                         search_form.check_scopus.data,
                         search_form.check_scidir.data,
+                        search_form.check_scielo.data,
                         search_form.check_preprints.data,
                         int(search_form.pm_num_of_articles.data),
                         int(search_form.sc_num_of_articles.data),
                         int(search_form.sd_num_of_articles.data),
+                        int(search_form.se_num_of_articles.data),
                         int(search_form.ppr_num_of_articles.data),
                         selected_entities,
                         kp
@@ -102,9 +105,10 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
     # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            search_form.pubmed_query.data, search_form.elsevier_query.data = query_constructor.basic(
+            search_form.pubmed_query.data, search_form.elsevier_query.data, search_form.scielo_query.data = query_constructor.basic(
                 search_form.pubmed_query.data, 
                 search_form.elsevier_query.data,
+                search_form.scielo_query.data,
                 query_form.tags.data,
                 query_form.keyword.data,
                 query_form.connective.data,
@@ -121,7 +125,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 def articles_extractor_str(search_form, available_entities, default_models, user_models):
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
-    se_query_form = IsADirectoryError()
+    se_query_form = AdvancedScieloQuery()
     ppr_query_form = AdvancedPreprintsQuery()
     search_filters = SearchFilters()
 
@@ -143,36 +147,13 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 els_query_form.boolean_els.data,
                 els_query_form.open_access.data,
             )
-
-        if 'apply_filters' in request.form:
-            filters_tags = dicts_and_tuples.pm_filters
-            available_filters = [
-                    search_filters.abstract,
-                    search_filters.free_full_text,
-                    search_filters.full_text,
-                    search_filters.booksdocs,
-                    search_filters.clinicaltrial,
-                    search_filters.meta_analysis,
-                    search_filters.randomizedcontrolledtrial,
-                    search_filters.review,
-                    search_filters.systematicreview,
-                    search_filters.humans,
-                    search_filters.animal,
-                    search_filters.male,
-                    search_filters.female,
-                    search_filters.english,
-                    search_filters.portuguese,
-                    search_filters.spanish,
-                    search_filters.data,
-                    search_filters.excludepreprints,
-                    search_filters.medline,
-                    ]
-            
-            selected_filters = [filters_tags[f.name] for f in available_filters if f.data]
-            
-            search_form.pubmed_query.data = query_constructor.pubmed_filters(
-                search_form.pubmed_query.data,
-                selected_filters
+        
+        if 'se_add_keyword' in request.form:
+            search_form.scielo_query.data = query_constructor.scielo(
+                search_form.scielo_query.data,
+                se_query_form.fields_se.data,
+                se_query_form.keyword_se.data,
+                se_query_form.boolean_se.data,
             )
 
         if 'ppr_add_keyword' in request.form:
@@ -180,9 +161,19 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 search_form.preprints_query.data,
                 ppr_query_form.keyword_ppr.data,
             )
+
+        if 'apply_filters' in request.form:
+            filters_tags = dicts_and_tuples.pm_filters
+            available_filters = [getattr(search_filters, field_name) for field_name in dir(search_filters) if isinstance(getattr(search_filters, field_name), BooleanField)]
+            selected_filters = [filters_tags[f.name] for f in available_filters if f.data]
+            
+            search_form.pubmed_query.data = query_constructor.pubmed_filters(
+                search_form.pubmed_query.data,
+                selected_filters
+            )
             
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, ppr_query=ppr_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
+    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, se_query=se_query_form, ppr_query=ppr_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
  
 @app.route("/user_area/")
 @login_required

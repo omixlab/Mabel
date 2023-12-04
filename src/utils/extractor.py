@@ -124,6 +124,9 @@ def scidir(keyword, num_of_articles):
 
     return doc_srch.results_df
 
+def scielo(query, num_of_articles):
+    pass
+
 
 def preprints(query, num_of_articles):
     keywords = query.split(", ")
@@ -175,33 +178,34 @@ def execute(
     self,
     pubmed_query="",
     elsevier_query="",
+    scielo_query="",
     preprints_query="",
     check_pubmed=False,
     check_scopus=False,
     check_scidir=False,
+    check_scielo=False,
     check_preprints=False,
     pm_num_of_articles=25,
     sc_num_of_articles=25,
     sd_num_of_articles=25,
+    se_num_of_articles=25,
     ppr_num_of_articles=25,
     ner = None,
     kp = None,
 ):
     try:
-        if check_pubmed or check_scopus or check_scidir or check_preprints:
+        if check_pubmed or check_scopus or check_scidir or check_preprints or check_scielo:
             results = {}
             if check_pubmed:
-                response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
-                results["pm"] = response_pubmed
+                results["pm"] = pubmed(pubmed_query, pm_num_of_articles)
             if check_scopus:
-                response_scopus = scopus(elsevier_query, sc_num_of_articles)
-                results["sc"] = response_scopus
+                results["sc"] = scopus(elsevier_query, sc_num_of_articles)
             if check_scidir:
-                response_scidir = scidir(elsevier_query, sd_num_of_articles)
-                results["sd"] = response_scidir
+                results["sd"] = scidir(elsevier_query, sd_num_of_articles)
+            if check_scielo:
+                results["se"] = scielo(scielo_query, se_num_of_articles)
             if check_preprints:
-                response_preprints = preprints(preprints_query, ppr_num_of_articles)
-                results["ppr"] = response_preprints
+                results["ppr"] = preprints(preprints_query, ppr_num_of_articles)
 
             # Unify results in a single dataframe
             unified_df = unify(results)

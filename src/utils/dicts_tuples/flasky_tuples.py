@@ -28,6 +28,13 @@ to_pubmed = {
     "PUBLISHER": "[Publisher]",
 }
 
+to_scielo = {
+    "ALL": "",
+    "TITLE": "ti",
+    "ABS": "ab",
+    "AUTH": "au",
+}
+
 
 # ADVANCED
 pm_tags = [
@@ -131,6 +138,16 @@ els_tags = [
     ("TRADENAME", "Tradename"),
     ("VOLUME", "Volume"),
     ("WEBSITE", "Website"),
+]
+
+se_tags = [
+    ("", "All areas"),
+    ("year_cluster", "Publication Year"),
+    ("au", "Author"),
+    ("sponsor", "Sponsor"),
+    ("ta", "Journal"),
+    ("ab", "Abstract"),
+    ("ti", "Title"), 
 ]
 
 # PubMed Filters
