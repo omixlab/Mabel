@@ -14,27 +14,6 @@ tags = [
     ("PUBLISHER", "Publisher"),
 ]
 
-to_pubmed = {
-    "ALL": "",
-    "Date": "[Date Publication]",
-    "TITLE": "[Title]",
-    "ABS": "[Title/Abstract]",
-    "AUTH": "[Author]",
-    "AFFIL": "[Affiliation]",
-    "PAGES": "[Pagination]",
-    "VOLUME": "[Volume]",
-    "LANGUAGE": "[Language]",
-    "DOCTYPE": "[Publication Type]",
-    "PUBLISHER": "[Publisher]",
-}
-
-to_scielo = {
-    "ALL": "",
-    "TITLE": "ti",
-    "ABS": "ab",
-    "AUTH": "au",
-}
-
 
 # ADVANCED
 pm_tags = [
@@ -193,3 +172,27 @@ scispacy = [
     ('SIMPLE_CHEMICAL', 'Simple chemical'),
     ('TISSUE', 'Tissue')
 ]
+
+
+# DICTS
+to_pubmed = {
+    "ALL": "",
+    "Date": "[Date Publication]",
+    "TITLE": "[Title]",
+    "ABS": "[Title/Abstract]",
+    "AUTH": "[Author]",
+    "AFFIL": "[Affiliation]",
+    "PAGES": "[Pagination]",
+    "VOLUME": "[Volume]",
+    "LANGUAGE": "[Language]",
+    "DOCTYPE": "[Publication Type]",
+    "PUBLISHER": "[Publisher]",
+}
+
+to_scielo = {
+    "ALL": "",
+    "TITLE": "ti",
+    "ABS": "ab",
+    "AUTH": "au",
+}
+

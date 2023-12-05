@@ -58,21 +58,32 @@ def extractor_base(func):
                         kp = None
 
                     # Celery
+                    query_fields = {
+                        "pubmed": search_form.pubmed_query.data,
+                        "scopus":search_form.elsevier_query.data,
+                        "scidir":search_form.elsevier_query.data,
+                        "scielo":search_form.scielo_query.data,
+                        "pprint":search_form.preprints_query.data,
+                    }
+                    boolean_fields = {
+                        "pubmed": search_form.check_pubmed.data,
+                        "scopus": search_form.check_scopus.data,
+                        "scidir": search_form.check_scidir.data,
+                        "scielo": search_form.check_scielo.data,
+                        "pprint": search_form.check_preprints.data,
+                    }
+                    range_fields = {
+                        "pubmed":int(search_form.pm_num_of_articles.data),
+                        "scopus":int(search_form.sc_num_of_articles.data),
+                        "scidir":int(search_form.sd_num_of_articles.data),
+                        "scielo":int(search_form.se_num_of_articles.data),
+                        "pprint":int(search_form.ppr_num_of_articles.data),
+                    }
+
                     data_tmp = extractor.execute.apply_async((
-                        search_form.pubmed_query.data,
-                        search_form.elsevier_query.data,
-                        search_form.scielo_query.data,
-                        search_form.preprints_query.data,
-                        search_form.check_pubmed.data,
-                        search_form.check_scopus.data,
-                        search_form.check_scidir.data,
-                        search_form.check_scielo.data,
-                        search_form.check_preprints.data,
-                        int(search_form.pm_num_of_articles.data),
-                        int(search_form.sc_num_of_articles.data),
-                        int(search_form.sd_num_of_articles.data),
-                        int(search_form.se_num_of_articles.data),
-                        int(search_form.ppr_num_of_articles.data),
+                        query_fields,
+                        boolean_fields,
+                        range_fields,
                         selected_entities,
                         kp
                         )
