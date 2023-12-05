@@ -140,6 +140,39 @@ def unify(dfs):
                 )
             )
 
+    # SCIELO
+    if "se" in dfs:
+        scielo = dfs["se"]
+
+        se_formated_pages = []
+        for row1, row2 in zip(scielo["start_page"], scielo["end_page"]):
+            if row1 and row2:
+                pages = f"{row1}-{row2}"
+            else:
+                pages = np.nan
+            se_formated_pages.append(pages)
+
+        if scielo.empty:
+            pass
+        else:
+            formated_dfs.append(
+                pd.DataFrame(
+                    {
+                        "Title": scielo["title"],
+                        "Abstract": scielo["abstract"],
+                        "Pages": se_formated_pages,
+                        "Journal": scielo["journal"],
+                        "Authors": scielo["authors"],
+                        "Date": scielo["year"],
+                        "Type": np.nan,
+                        "DOI": scielo["doi"],
+                        "Affiliations": np.nan,
+                        "MeSH Terms": np.nan,
+                    }
+                )
+            )
+
+
     # PREPRINTS
     if "ppr" in dfs:
         preprints = dfs["ppr"]

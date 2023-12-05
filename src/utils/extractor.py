@@ -20,6 +20,7 @@ from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+from scielo_extractor.extractor import ScieloSearch
 
 from src import celery
 from src.utils.unify_dfs import unify
@@ -125,7 +126,12 @@ def scidir(keyword, num_of_articles):
     return doc_srch.results_df
 
 def scielo(query, num_of_articles):
-    pass
+    print(
+        f"Starting data extraction of articles from ScienceDirect using the keyword: {query}"
+    )
+    results = ScieloSearch().query(query=query, format='dataframe')
+    
+    return results
 
 
 def preprints(query, num_of_articles):
