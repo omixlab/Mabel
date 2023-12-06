@@ -10,7 +10,7 @@ from functools import wraps
 
 from src import app, db
 from src.models import Users, Results, FlashtextModels, TokensPassword
-from src.forms import LoginForm, RegisterForm, SearchQuery, SearchArticles, AdvancedPubMedQuery, AdvancedElsevierQuery, AdvancedScieloQuery, AdvancedPreprintsQuery, SearchFilters, ScispacyEntities, FlashtextDefaultModels, FlashtextUserModels, CreateFlashtextModel, RecoveryPasswordForm, RecoveryPassword
+from src import forms
 import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
 import src.utils.query_constructor as query_constructor
@@ -30,15 +30,15 @@ def extractor_base(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with current_app.app_context():
-            search_form = SearchArticles()
-            available_entities = ScispacyEntities()
+            search_form = forms.SearchArticles()
+            available_entities = forms.ScispacyEntities()
 
             # Flashtext models
-            default_models = FlashtextDefaultModels()
+            default_models = forms.FlashtextDefaultModels()
 
-            for model in FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
-                setattr(FlashtextUserModels, model.name, BooleanField(model.id))
-            user_models = FlashtextUserModels()
+            for model in forms.FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
+                setattr(forms.FlashtextUserModels, model.name, BooleanField(model.id))
+            user_models = forms.FlashtextUserModels()
 
 
             if request.method == 'POST':
@@ -59,25 +59,25 @@ def extractor_base(func):
 
                     # Celery
                     query_fields = {
-                        "pubmed": search_form.pubmed_query.data,
-                        "scopus":search_form.elsevier_query.data,
-                        "scidir":search_form.elsevier_query.data,
-                        "scielo":search_form.scielo_query.data,
-                        "pprint":search_form.preprints_query.data,
+                        "pubmed": search_form.query_pubmed.data,
+                        "scopus":search_form.query_elsevier.data,
+                        "scidir":search_form.query_elsevier.data,
+                        "scielo":search_form.query_scielo.data,
+                        "pprint":search_form.query_pprint.data,
                     }
                     boolean_fields = {
                         "pubmed": search_form.check_pubmed.data,
                         "scopus": search_form.check_scopus.data,
                         "scidir": search_form.check_scidir.data,
                         "scielo": search_form.check_scielo.data,
-                        "pprint": search_form.check_preprints.data,
+                        "pprint": search_form.check_pprint.data,
                     }
                     range_fields = {
-                        "pubmed":int(search_form.pm_num_of_articles.data),
-                        "scopus":int(search_form.sc_num_of_articles.data),
-                        "scidir":int(search_form.sd_num_of_articles.data),
-                        "scielo":int(search_form.se_num_of_articles.data),
-                        "pprint":int(search_form.ppr_num_of_articles.data),
+                        "pubmed":int(search_form.num_pubmed.data),
+                        "scopus":int(search_form.num_scopus.data),
+                        "scidir":int(search_form.num_scidir.data),
+                        "scielo":int(search_form.num_scielo.data),
+                        "pprint":int(search_form.num_pprint.data),
                     }
 
                     data_tmp = extractor.execute.apply_async((
@@ -111,27 +111,27 @@ def extractor_base(func):
 @login_required
 @extractor_base
 def articles_extractor(search_form, available_entities, default_models, user_models):
-    query_form = SearchQuery()
+    query_form = forms.BasicQuery()
 
     # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            search_form.pubmed_query.data, search_form.elsevier_query.data, search_form.scielo_query.data = query_constructor.basic(
-                search_form.pubmed_query.data, 
-                search_form.elsevier_query.data,
-                search_form.scielo_query.data,
+            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data = query_constructor.basic(
+                search_form.query_pubmed.data, 
+                search_form.query_elsevier.data,
+                search_form.query_scielo.data,
                 query_form.tags.data,
                 query_form.keyword.data,
-                query_form.connective.data,
+                query_form.boolean.data,
                 query_form.open_access.data
             )
             
     return render_template("articles_extractor.html", 
-                           search_form=search_form, 
-                           query_form=query_form, 
-                           entities=available_entities, 
-                           default_models=default_models, 
-                           user_models=user_models)
+                            query_form = query_form,
+                            search_form = search_form,
+                            entities = available_entities,
+                            default_models = default_models,
+                            user_models = user_models,)
 
 
 
@@ -139,43 +139,43 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 @login_required
 @extractor_base
 def articles_extractor_str(search_form, available_entities, default_models, user_models):
-    pm_query_form = AdvancedPubMedQuery()
-    els_query_form = AdvancedElsevierQuery()
-    se_query_form = AdvancedScieloQuery()
-    pprint_query_form = AdvancedPreprintsQuery()
-    search_filters = SearchFilters()
+    pubmed_form = forms.AdvancedPubMedQuery()
+    elsevier_form = forms.AdvancedElsevierQuery()
+    scielo_form = forms.AdvancedScieloQuery()
+    pprint_form = forms.AdvancedPreprintsQuery()
+    search_filters = forms.SearchFilters()
 
     # Query constructor
     if request.method == 'POST':
         if 'pm_add_keyword' in request.form:
             search_form.pubmed_query.data = query_constructor.pubmed(
                 search_form.pubmed_query.data,
-                pm_query_form.fields_pm.data,
-                pm_query_form.keyword_pm.data,
-                pm_query_form.boolean_pm.data,
+                pubmed_form.fields_pm.data,
+                pubmed_form.keyword_pm.data,
+                pubmed_form.boolean_pm.data,
             )
 
         if "els_add_keyword" in request.form:
             search_form.elsevier_query.data = query_constructor.elsevier(
                 search_form.elsevier_query.data,
-                els_query_form.fields_els.data,
-                els_query_form.keyword_els.data,
-                els_query_form.boolean_els.data,
-                els_query_form.open_access.data,
+                elsevier_form.fields_els.data,
+                elsevier_form.keyword_els.data,
+                elsevier_form.boolean_els.data,
+                elsevier_form.open_access.data,
             )
         
         if 'se_add_keyword' in request.form:
             search_form.scielo_query.data = query_constructor.scielo(
                 search_form.scielo_query.data,
-                se_query_form.fields_se.data,
-                se_query_form.keyword_se.data,
-                se_query_form.boolean_se.data,
+                scielo_form.fields_se.data,
+                scielo_form.keyword_se.data,
+                scielo_form.boolean_se.data,
             )
 
         if 'ppr_add_keyword' in request.form:
             search_form.preprints_query.data = query_constructor.preprints(
                 search_form.preprints_query.data,
-                pprint_query_form.keyword_ppr.data,
+                pprint_form.keyword_ppr.data,
             )
 
         if 'apply_filters' in request.form:
@@ -187,19 +187,22 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 search_form.pubmed_query.data,
                 selected_filters
             )
-            
 
-    return render_template("articles_extractor_str.html", 
-                           pm_query=pm_query_form, 
-                           els_query=els_query_form, 
-                           se_query=se_query_form, 
-                           ppr_query=pprint_query_form, 
-                           search_form=search_form, 
-                           search_filters=search_filters, 
-                           entities=available_entities, 
-                           default_models=default_models, 
-                           user_models=user_models)
- 
+        forms = {
+            "pubmed": pubmed_form,
+            "elsevier": elsevier_form,
+            "scielo": scielo_form,
+            "pprint": pprint_form,
+            "search": search_form,
+            "filters": search_filters,
+            "entities": available_entities,
+            "default_models": default_models,
+            "user_models": user_models,
+        }
+
+
+    return render_template("articles_extractor_str.html", forms=forms)
+
 @app.route("/user_area/")
 @login_required
 def user_area():
@@ -245,7 +248,7 @@ def delete_record(id):
 @app.route("/user_models/", methods=["GET", "POST"])
 @login_required
 def user_models():
-    form = CreateFlashtextModel()
+    form = forms.CreateFlashtextModel()
     user_models = FlashtextModels.query.filter_by(user_id=current_user.id).all() 
 
     if form.validate_on_submit():
@@ -291,7 +294,7 @@ def delete_model(id):
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
-    form = RegisterForm()
+    form = forms.RegisterForm()
     if form.validate_on_submit():
         user = Users(
             name=form.name.data, email=form.email.data, password_cryp=form.password.data
@@ -307,7 +310,7 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()
+    form = forms.LoginForm()
     if form.validate_on_submit():
         user_logged = Users.query.filter_by(email=form.email.data).first()
         if user_logged and user_logged.convert_password(
@@ -323,7 +326,7 @@ def login():
 
 @app.route("/recovery_password_form", methods=["GET", "POST"])
 def recovery_passwordForm():
-    form = RecoveryPasswordForm()
+    form = forms.RecoveryPasswordForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user:
@@ -353,7 +356,7 @@ def recovery_passwordForm():
 
 @app.route("/recovery_password/<id>/<token>", methods=["GET", "POST"])
 def recovery_password(token, id):
-    form = RecoveryPassword()
+    form = forms.RecoveryPassword()
     token_password = TokensPassword.query.filter_by(token=token).first()
     if token_password:
         user = Users.query.filter_by(id=id).first()

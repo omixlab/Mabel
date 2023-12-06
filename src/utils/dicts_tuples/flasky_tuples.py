@@ -16,7 +16,7 @@ tags = [
 
 
 # ADVANCED
-pm_tags = [
+pubmed_tags = [
     ("", "All Fields"),
     ("[Date]", "Date"),
     ("[Author]", "Author"),
@@ -47,7 +47,7 @@ pm_tags = [
     ("[Supplementary Concept]", "Supplementary Concept"),
 ]
 
-els_tags = [
+elsevier_tags = [
     ("ALL", "All"),
     ("ABS", "Abstract"),
     ("AF-ID", "Affiliation ID"),
@@ -119,7 +119,7 @@ els_tags = [
     ("WEBSITE", "Website"),
 ]
 
-se_tags = [
+scielo_tags = [
     ("", "All areas"),
     ("year_cluster", "Publication Year"),
     ("au", "Author"),
@@ -130,7 +130,7 @@ se_tags = [
 ]
 
 # PubMed Filters
-pm_filters = {
+pubmed_filters = {
     "abstract": "fha",
     "free_full_text": "ffrft",
     "full_text": "fft",

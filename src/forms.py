@@ -96,72 +96,70 @@ class RecoveryPassword(FlaskForm):
 
 
 # Query constructor
-class SearchQuery(FlaskForm):
-    tags = SelectField(
-        "option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1
-    )
+class BasicQuery(FlaskForm):
+    tags = SelectField("option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1)
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    connective = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 
 class AdvancedPubMedQuery(FlaskForm):
-    fields_pm = SelectField("option", choices=flasky_tuples.pm_tags, default=1)
-    keyword_pm = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean_pm = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    tags = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
+    keyword = StringField(label="Keyword:", validators=[Length(min=2)])
+    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access = None
 
 
 class AdvancedElsevierQuery(FlaskForm):
-    fields_els = SelectField("option", choices=flasky_tuples.els_tags, default=1)
-    keyword_els = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    tags = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
+    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 class AdvancedScieloQuery(FlaskForm):
-    fields_se = SelectField("option", choices=flasky_tuples.se_tags, default=1)
-    keyword_se = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_se = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    tags = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
+    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 class AdvancedPreprintsQuery(FlaskForm):
-    fields_ppr = SelectField(
-        "option", choices=flasky_tuples.els_tags, default=1
-    )
-    keyword_ppr = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_ppr = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+    tags = None
+    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+    open_access = None
 
 
 # Submit
 class SearchArticles(FlaskForm):
 
     # QUERY
-    pubmed_query = TextAreaField(
-        "pubmed_query", 
+    query_pubmed = TextAreaField(
+        label="Pubmed", 
         render_kw={"rows": "4", "cols": "100"}, 
         validators=[Optional()]
     )
-    elsevier_query = TextAreaField(
-        "elsevier_query",
+    query_elsevier = TextAreaField(
+        "Elsevier",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
-    scielo_query = TextAreaField(
-        "scielo_query",
+    query_scielo = TextAreaField(
+        "SciElo",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()]
     )
-    pprint_query = TextAreaField(
-        "preprints_query",
+    query_pprint = TextAreaField(
+        "Preprints",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
 
     # Check and Range
-    check_pubmed = BooleanField("check")
+    check_pubmed = BooleanField("pubmed")
     check_scopus = BooleanField("scopus")
     check_scidir = BooleanField("scidir")
     check_scielo = BooleanField("scielo")
-    check_pprint = BooleanField("preprints")
+    check_pprint = BooleanField("pprint")
 
 
     range_pubmed = IntegerRangeField(
@@ -180,7 +178,7 @@ class SearchArticles(FlaskForm):
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
-    range_preprints = IntegerRangeField(
+    range_pprint = IntegerRangeField(
         default=25, 
         validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
@@ -220,11 +218,16 @@ class SearchArticles(FlaskForm):
             DataRequired(), 
             NumberRange(min=1, max=80000, message='Number of articles outside of supported range')
         ])
+    
+    title_pubmed = "Pubmed"
+    title_scopus = "Scopus"
+    title_scidir = "Science Direct"
+    title_scielo = "SciElo"
 
 
     # Flashtext options
     flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
-    flashtext_string = StringField("Keywords", name="aaa", description="bbb")
+    flashtext_string = StringField("Keywords")
 
 
 # Others

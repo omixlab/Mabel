@@ -15,7 +15,7 @@ Articles Extractor
             <div class="row">
                 <div class="col-md-2">{{ query_form.tags(class='form-control custom-select')}}</div>
                 <div class="col-md-7">{{ query_form.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
-                <div class="col-md-2">{{ query_form.connective(class='form-control custom-select')}}</div>
+                <div class="col-md-2">{{ query_form.boolean(class='form-control custom-select')}}</div>
             </div>
             
             <div class="row">
@@ -26,42 +26,29 @@ Articles Extractor
                 </div>
             </div>
             <br>
-            <div class="text-justify">{{search_form.pubmed_query(placeholder = 'Pubmed Query')}}</div>
+            <div class="text-justify">{{search_form.query_pubmed(placeholder = 'Pubmed Query')}}</div>
             <br>
-            <div class="text-justify">{{search_form.elsevier_query(placeholder = 'Elsevier Query')}}</div>
+            <div class="text-justify">{{search_form.query_elsevier(placeholder = 'Elsevier Query')}}</div>
             <br>
-            <div class="text-justify">{{search_form.scielo_query(placeholder = 'SciElo Query')}}</div>
+            <div class="text-justify">{{search_form.query_scielo(placeholder = 'SciElo Query')}}</div>
             <br>
 
             <div class="text-justify">
                 <h5 class="text-justify">Select desired databases and number of articles</h5>
+
+                {% for database in ["pubmed", "scopus", "scidir", "scielo"] %}
                 <div class="row">
-                    <div class="col-md-2">{{search_form.check_pubmed(class='mt-2')}} <label class="form-check-label" for="check_pubmed">PubMed</label></div>
-                    <div class="col-md-7">{{search_form.range_pubmed(class='form-control', step=5, min=0, max=5000, id='range_pubmed', oninput="outputUpdate(range_pubmed.value)")}}</div>
-                    <div class="col-md-2">{{search_form.pm_num_of_articles(class='form-control', id='pm_num_of_articles')}}</div>
+                    <div class="col-md-2">
+                        {{ search_form['check_' + database](class='mt-2') }}
+                        <label class="form-check-label" for="check_{{ database }}">{{ search_form['title_' + database] }}</label>
+                    </div>
+                    <div class="col-md-7">{{ search_form['range_' + database](class='form-control', step=5, min=0, max=5000, id='range_' + database, oninput="outputUpdate('range_' + database + '.value')") }}</div>
+                    <div class="col-md-2">{{ search_form['num_' + database](class='form-control', id='num_' + database) }}</div>
                 </div>
                 <br>
-                <div class="row">
-                    <div class="col-md-2">{{search_form.check_scopus(class='mt-2')}} <label class="form-check-label" for="check_scopus">Scopus</label></div>
-                    <div class="col-md-7">{{search_form.range_scopus(class='form-control', step=5, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
-                    <div class="col-md-2">{{search_form.sc_num_of_articles(class='form-control', id='sc_num_of_articles')}}</div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-2">{{search_form.check_scidir(class='mt-2')}} <label class="form-check-label" for="check_scidir">ScienceDirect</label></div>
-                    <div class="col-md-7">{{search_form.range_scidir(class='form-control', min=0, max=5000, step=5, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
-                    <div class="col-md-2">{{search_form.sd_num_of_articles(class='form-control', id='sd_num_of_articles')}}</div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-2">{{search_form.check_scielo(class='mt-2')}} <label class="form-check-label" for="check_scielo">SciElo</label></div>
-                    <div class="col-md-7">{{search_form.range_scielo(class='form-control', min=0, max=5000, step=5, id='range_scielo', oninput="outputUpdate(range_scielo.value)")}}</div>
-                    <div class="col-md-2">{{search_form.se_num_of_articles(class='form-control', id='se_num_of_articles')}}</div>
-                </div>
-                
-                <br>
+                {% endfor %}
+
                 <hr>
-                
             </div>
             
             {% include 'optional_features.html' %}
@@ -92,16 +79,16 @@ Articles Extractor
     }
 
         var rangePubmed = document.getElementById('range_pubmed');
-        var textFieldPubmed = document.getElementById('pm_num_of_articles');
+        var textFieldPubmed = document.getElementById('num_pubmed');
 
         var rangeScopus = document.getElementById('range_scopus');
-        var textFieldScopus = document.getElementById('sc_num_of_articles');
+        var textFieldScopus = document.getElementById('num_scopus');
 
         var rangeSciDir = document.getElementById('range_scidir');
-        var textFieldSciDir = document.getElementById('sd_num_of_articles');
+        var textFieldSciDir = document.getElementById('num_scidir');
 
         var rangeSciElo = document.getElementById('range_scielo');
-        var textFieldSciElo = document.getElementById('se_num_of_articles');
+        var textFieldSciElo = document.getElementById('num_scielo');
         
         setupEventListener(rangePubmed, textFieldPubmed);
         setupEventListener(rangeScopus, textFieldScopus);
