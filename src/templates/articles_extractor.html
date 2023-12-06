@@ -85,6 +85,12 @@ Articles Extractor
         textField.value = input.value;
         }
 
+        function setupEventListener(range, textField) {
+        range.addEventListener('input', function() {
+            updateTextField(range, textField);
+        });
+    }
+
         var rangePubmed = document.getElementById('range_pubmed');
         var textFieldPubmed = document.getElementById('pm_num_of_articles');
 
@@ -97,18 +103,10 @@ Articles Extractor
         var rangeSciElo = document.getElementById('range_scielo');
         var textFieldSciElo = document.getElementById('se_num_of_articles');
         
-        rangePubmed.addEventListener('input', function() {
-            updateTextField(rangePubmed, textFieldPubmed);
-        });
-        rangeScopus.addEventListener('input', function() {
-            updateTextField(rangeScopus, textFieldScopus);
-        });
-        rangeSciDir.addEventListener('input', function() {
-            updateTextField(rangeSciDir, textFieldSciDir);
-        });
-        rangeSciElo.addEventListener('input', function() {
-            updateTextField(rangeSciElo, textFieldSciElo);
-        });
+        setupEventListener(rangePubmed, textFieldPubmed);
+        setupEventListener(rangeScopus, textFieldScopus);
+        setupEventListener(rangeSciDir, textFieldSciDir);
+        setupEventListener(rangeSciElo, textFieldSciElo);
 
     </script>
 

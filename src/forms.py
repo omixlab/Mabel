@@ -145,14 +145,12 @@ class SearchArticles(FlaskForm):
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
-
     scielo_query = TextAreaField(
         "scielo_query",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()]
     )
-
-    preprints_query = TextAreaField(
+    pprint_query = TextAreaField(
         "preprints_query",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
@@ -160,69 +158,68 @@ class SearchArticles(FlaskForm):
 
     # Check and Range
     check_pubmed = BooleanField("check")
+    check_scopus = BooleanField("scopus")
+    check_scidir = BooleanField("scidir")
+    check_scielo = BooleanField("scielo")
+    check_pprint = BooleanField("preprints")
+
+
     range_pubmed = IntegerRangeField(
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
-    pm_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_scopus = BooleanField("scopus")
     range_scopus = IntegerRangeField(
-        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    sc_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_scidir = BooleanField("scidir")
     range_scidir = IntegerRangeField(
-        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    sd_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_scielo = BooleanField("scielo")
     range_scielo = IntegerRangeField(
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
-    se_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_preprints = BooleanField("preprints")
     range_preprints = IntegerRangeField(
         default=25, 
         validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    ppr_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=80000, message='Number of articles outside of supported range')])
+
+
+    num_pubmed = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_scopus = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_scidir = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+    
+    num_scielo = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_pprint = IntegerField(
+        default=25, 
+        validators=[
+            DataRequired(), 
+            NumberRange(min=1, max=80000, message='Number of articles outside of supported range')
+        ])
 
 
     # Flashtext options

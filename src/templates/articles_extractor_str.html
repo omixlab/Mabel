@@ -163,7 +163,7 @@ Articles Extractor
             <div class="row">
                 <div class="col-md-2 text-left" >{{search_form.check_preprints(class='mt-2')}} <label class="form-check-label" for="check_preprints">Enabled</label></div>
                 <div class="col-md-7">{{search_form.range_preprints(class='form-control', step=5, min=0, max=80000, id='range_preprints', oninput="outputUpdate(range_preprints.value)")}}</div>
-                <div class="col-md-2">{{search_form.ppr_num_of_articles(class='form-control', id='ppr_num_of_articles')}}</div>
+                <div class="col-md-2">{{search_form.pprint_num_of_articles(class='form-control', id='pprint_num_of_articles')}}</div>
             </div>
             <br>
             <div class="row">
@@ -174,7 +174,7 @@ Articles Extractor
             </div>
 
             <br>
-            <div class="text-justify">{{search_form.preprints_query(placeholder = 'Preprints Query')}}</div>
+            <div class="text-justify">{{search_form.pprint_query(placeholder = 'Preprints Query')}}</div>
             
             <br>
             <hr>
@@ -196,9 +196,16 @@ Articles Extractor
     
 
     <script>
+        // Update the value in the num_of_articles fields
         function updateTextField(input, textField) {
         textField.value = input.value;
         }
+
+        function setupEventListener(range, textField) {
+        range.addEventListener('input', function() {
+            updateTextField(range, textField);
+        });
+    }
 
         var rangePubmed = document.getElementById('range_pubmed');
         var textFieldPubmed = document.getElementById('pm_num_of_articles');
@@ -211,19 +218,15 @@ Articles Extractor
 
         var rangeSciElo = document.getElementById('range_scielo');
         var textFieldSciElo = document.getElementById('se_num_of_articles');
+
+        var rangePprint = document.getElementById('range_pprint');
+        var textFieldPPrint = document.getElementById('pprint_num_of_articles');
         
-        rangePubmed.addEventListener('input', function() {
-            updateTextField(rangePubmed, textFieldPubmed);
-        });
-        rangeScopus.addEventListener('input', function() {
-            updateTextField(rangeScopus, textFieldScopus);
-        });
-        rangeSciDir.addEventListener('input', function() {
-            updateTextField(rangeSciDir, textFieldSciDir);
-        });
-        rangeSciElo.addEventListener('input', function() {
-            updateTextField(rangeSciElo, textFieldSciElo);
-        });
+        setupEventListener(rangePubmed, textFieldPubmed);
+        setupEventListener(rangeScopus, textFieldScopus);
+        setupEventListener(rangeSciDir, textFieldSciDir);
+        setupEventListener(rangeSciElo, textFieldSciElo);
+        setupEventListener(rangePprint, textFieldPprint);
     </script>
 
 

@@ -126,7 +126,12 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                 query_form.open_access.data
             )
             
-    return render_template("articles_extractor.html", search_form=search_form, query_form=query_form, entities=available_entities, default_models=default_models, user_models=user_models)
+    return render_template("articles_extractor.html", 
+                           search_form=search_form, 
+                           query_form=query_form, 
+                           entities=available_entities, 
+                           default_models=default_models, 
+                           user_models=user_models)
 
 
 
@@ -137,7 +142,7 @@ def articles_extractor_str(search_form, available_entities, default_models, user
     pm_query_form = AdvancedPubMedQuery()
     els_query_form = AdvancedElsevierQuery()
     se_query_form = AdvancedScieloQuery()
-    ppr_query_form = AdvancedPreprintsQuery()
+    pprint_query_form = AdvancedPreprintsQuery()
     search_filters = SearchFilters()
 
     # Query constructor
@@ -170,7 +175,7 @@ def articles_extractor_str(search_form, available_entities, default_models, user
         if 'ppr_add_keyword' in request.form:
             search_form.preprints_query.data = query_constructor.preprints(
                 search_form.preprints_query.data,
-                ppr_query_form.keyword_ppr.data,
+                pprint_query_form.keyword_ppr.data,
             )
 
         if 'apply_filters' in request.form:
@@ -184,7 +189,16 @@ def articles_extractor_str(search_form, available_entities, default_models, user
             )
             
 
-    return render_template("articles_extractor_str.html", pm_query=pm_query_form, els_query=els_query_form, se_query=se_query_form, ppr_query=ppr_query_form, search_form=search_form, search_filters=search_filters, entities=available_entities, default_models=default_models, user_models=user_models)
+    return render_template("articles_extractor_str.html", 
+                           pm_query=pm_query_form, 
+                           els_query=els_query_form, 
+                           se_query=se_query_form, 
+                           ppr_query=pprint_query_form, 
+                           search_form=search_form, 
+                           search_filters=search_filters, 
+                           entities=available_entities, 
+                           default_models=default_models, 
+                           user_models=user_models)
  
 @app.route("/user_area/")
 @login_required
