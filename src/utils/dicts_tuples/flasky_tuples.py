@@ -190,7 +190,6 @@ to_pubmed = {
 }
 
 to_scielo = {
-    "ALL": "",
     "TITLE": "ti",
     "ABS": "ab",
     "AUTH": "au",

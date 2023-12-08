@@ -223,6 +223,7 @@ class SearchArticles(FlaskForm):
     title_scopus = "Scopus"
     title_scidir = "Science Direct"
     title_scielo = "SciElo"
+    title_elsevier = "Elsevier"
 
 
     # Flashtext options

@@ -11,4 +11,4 @@ __pycache__
 dump.*
 requirements_2.txt
 client_secret.json
-src/templates/articles_extractor copy.html
+src/templates/articles_extractor_str copy.html

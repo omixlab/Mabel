@@ -188,20 +188,20 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 selected_filters
             )
 
-        forms = {
-            "pubmed": pubmed_form,
-            "elsevier": elsevier_form,
-            "scielo": scielo_form,
-            "pprint": pprint_form,
-            "search": search_form,
-            "filters": search_filters,
-            "entities": available_entities,
-            "default_models": default_models,
-            "user_models": user_models,
-        }
 
 
-    return render_template("articles_extractor_str.html", forms=forms)
+
+
+    return render_template("articles_extractor_str.html",
+                            pubmed_form = pubmed_form,
+                            elsevier_form = elsevier_form,
+                            scielo_form = scielo_form,
+                            pprint_form = pprint_form,
+                            search_form = search_form,
+                            entities = available_entities,
+                            default_models = default_models,
+                            user_models = user_models,
+                            )
 
 @app.route("/user_area/")
 @login_required

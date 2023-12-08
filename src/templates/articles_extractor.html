@@ -26,12 +26,10 @@ Articles Extractor
                 </div>
             </div>
             <br>
-            <div class="text-justify">{{search_form.query_pubmed(placeholder = 'Pubmed Query')}}</div>
+            {% for database in ["pubmed", "elsevier", "scielo" ] %}
+            <div class="text-justify">{{search_form['query_' + database](placeholder = search_form['title_' + database] + ' Query')}}</div>
             <br>
-            <div class="text-justify">{{search_form.query_elsevier(placeholder = 'Elsevier Query')}}</div>
-            <br>
-            <div class="text-justify">{{search_form.query_scielo(placeholder = 'SciElo Query')}}</div>
-            <br>
+            {% endfor %}
 
             <div class="text-justify">
                 <h5 class="text-justify">Select desired databases and number of articles</h5>
