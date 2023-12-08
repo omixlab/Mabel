@@ -103,30 +103,26 @@ class BasicQuery(FlaskForm):
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 
-class AdvancedPubMedQuery(FlaskForm):
-    tags = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
-    keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
-    open_access = None
+class AdvancedQuery(FlaskForm):
+    tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
+    keyword_pubmed = StringField(label="Keyword:", validators=[Length(min=2)])
+    boolean_pubmed = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access_pubmed = None
 
+    tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
+    keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_elsevier = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
 
-class AdvancedElsevierQuery(FlaskForm):
-    tags = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
-    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
-    open_access = BooleanField("open_access", validators=[Optional()], default=False)
+    tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
+    keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_scielo = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    open_access_scielo = BooleanField("open_access", validators=[Optional()], default=False)
 
-class AdvancedScieloQuery(FlaskForm):
-    tags = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
-    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
-    open_access = BooleanField("open_access", validators=[Optional()], default=False)
-
-class AdvancedPreprintsQuery(FlaskForm):
-    tags = None
-    keyword = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
-    open_access = None
+    tags_pprint = None
+    keyword_pprint = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_pprint = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+    open_access_pprint = None
 
 
 # Submit
@@ -224,6 +220,7 @@ class SearchArticles(FlaskForm):
     title_scidir = "Science Direct"
     title_scielo = "SciElo"
     title_elsevier = "Elsevier"
+    title_pprint = "Preprints"
 
 
     # Flashtext options

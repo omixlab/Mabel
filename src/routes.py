@@ -139,43 +139,40 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 @login_required
 @extractor_base
 def articles_extractor_str(search_form, available_entities, default_models, user_models):
-    pubmed_form = forms.AdvancedPubMedQuery()
-    elsevier_form = forms.AdvancedElsevierQuery()
-    scielo_form = forms.AdvancedScieloQuery()
-    pprint_form = forms.AdvancedPreprintsQuery()
+    query_form = forms.AdvancedQuery()
     search_filters = forms.SearchFilters()
 
     # Query constructor
     if request.method == 'POST':
-        if 'pm_add_keyword' in request.form:
-            search_form.pubmed_query.data = query_constructor.pubmed(
-                search_form.pubmed_query.data,
-                pubmed_form.fields_pm.data,
-                pubmed_form.keyword_pm.data,
-                pubmed_form.boolean_pm.data,
+        if 'pubmed_add_keyword' in request.form:
+            search_form.query_pubmed.data = query_constructor.pubmed(
+                search_form.query_pubmed.data,
+                query_form.tags_pubmed.data,
+                query_form.keyword_pubmed.data,
+                query_form.boolean_pubmed.data,
             )
 
-        if "els_add_keyword" in request.form:
-            search_form.elsevier_query.data = query_constructor.elsevier(
-                search_form.elsevier_query.data,
-                elsevier_form.fields_els.data,
-                elsevier_form.keyword_els.data,
-                elsevier_form.boolean_els.data,
-                elsevier_form.open_access.data,
+        if "elsevier_add_keyword" in request.form:
+            search_form.query_elsevier.data = query_constructor.elsevier(
+                search_form.query_elsevier.data,
+                query_form.tags_elsevier.data,
+                query_form.keyword_elsevier.data,
+                query_form.boolean_elsevier.data,
+                query_form.open_access_elsevier.data,
             )
         
-        if 'se_add_keyword' in request.form:
-            search_form.scielo_query.data = query_constructor.scielo(
-                search_form.scielo_query.data,
-                scielo_form.fields_se.data,
-                scielo_form.keyword_se.data,
-                scielo_form.boolean_se.data,
+        if 'scielo_add_keyword' in request.form:
+            search_form.query_scielo.data = query_constructor.scielo(
+                search_form.query_scielo.data,
+                query_form.tags_scielo.data,
+                query_form.keyword_scielo.data,
+                query_form.boolean_scielo.data,
             )
 
-        if 'ppr_add_keyword' in request.form:
-            search_form.preprints_query.data = query_constructor.preprints(
-                search_form.preprints_query.data,
-                pprint_form.keyword_ppr.data,
+        if 'pprint_add_keyword' in request.form:
+            search_form.query_pprint.data = query_constructor.preprints(
+                search_form.query_pprint.data,
+                query_form.keyword_pprint.data,
             )
 
         if 'apply_filters' in request.form:
@@ -183,8 +180,8 @@ def articles_extractor_str(search_form, available_entities, default_models, user
             available_filters = [getattr(search_filters, field_name) for field_name in dir(search_filters) if isinstance(getattr(search_filters, field_name), BooleanField)]
             selected_filters = [filters_tags[f.name] for f in available_filters if f.data]
             
-            search_form.pubmed_query.data = query_constructor.pubmed_filters(
-                search_form.pubmed_query.data,
+            search_form.query_pubmed.data = query_constructor.pubmed_filters(
+                search_form.query_pubmed.data,
                 selected_filters
             )
 
@@ -193,11 +190,9 @@ def articles_extractor_str(search_form, available_entities, default_models, user
 
 
     return render_template("articles_extractor_str.html",
-                            pubmed_form = pubmed_form,
-                            elsevier_form = elsevier_form,
-                            scielo_form = scielo_form,
-                            pprint_form = pprint_form,
-                            search_form = search_form,
+                            query_form=query_form,
+                            search_form=search_form,
+                            search_filters=search_filters,
                             entities = available_entities,
                             default_models = default_models,
                             user_models = user_models,
