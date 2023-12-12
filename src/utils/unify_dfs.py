@@ -8,8 +8,8 @@ def unify(dfs):
     formated_dfs = []
 
     # PUBMED
-    if "pm" in dfs:
-        pubmed = dfs["pm"]
+    if "pubmed" in dfs:
+        pubmed = dfs["pubmed"]
 
         if pubmed.empty:
             pass
@@ -66,8 +66,8 @@ def unify(dfs):
             )
 
     # SCOPUS
-    if "sc" in dfs:
-        scopus = dfs["sc"]
+    if "scopus" in dfs:
+        scopus = dfs["scopus"]
 
         if scopus.empty:
             pass
@@ -100,8 +100,8 @@ def unify(dfs):
             )
 
     # SCIENCE DIRECT
-    if "sd" in dfs:
-        scidir = dfs["sd"]
+    if "scidir" in dfs:
+        scidir = dfs["scidir"]
 
         if scidir.empty:
             pass
@@ -141,8 +141,8 @@ def unify(dfs):
             )
 
     # SCIELO
-    if "se" in dfs:
-        scielo = dfs["se"]
+    if "scielo" in dfs:
+        scielo = dfs["scielo"]
 
         se_formated_pages = []
         for row1, row2 in zip(scielo["start_page"], scielo["end_page"]):
@@ -174,8 +174,8 @@ def unify(dfs):
 
 
     # PREPRINTS
-    if "ppr" in dfs:
-        preprints = dfs["ppr"]
+    if "pprint" in dfs:
+        preprints = dfs["pprint"]
 
         if preprints.empty:
             pass

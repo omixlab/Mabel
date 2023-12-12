@@ -91,8 +91,8 @@ def extractor_base(func):
 
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
-                        user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.pubmed_query.data,
-                        elsevier_query=search_form.elsevier_query.data)
+                        user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.query_pubmed.data,
+                        elsevier_query=search_form.query_elsevier.data)
                     results.status = 'QUEUED'
                     db.session.add(results)
                     db.session.commit()
@@ -249,6 +249,8 @@ def user_models():
     if form.validate_on_submit():
         tsv_path = os.path.join(os.environ.get('UPLOAD_FILES'), secure_filename(f'{form.name.data}.txt'))
         form.tsv.data.save(tsv_path)
+
+        print(os.environ.get('FLASHTEXT_USER_MODELS'))
 
         model_path = os.path.join(os.environ.get('FLASHTEXT_USER_MODELS'), str(current_user.id), secure_filename(f'{form.name.data}.pickle'))
         os.makedirs(os.path.dirname(model_path), exist_ok=True)

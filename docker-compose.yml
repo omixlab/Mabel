@@ -28,6 +28,8 @@ services:
       - redis
     links:
       - redis
+    volumes:
+      - ./:/home/bambu-systematic-review/
 
   web:
     container_name: web
@@ -41,3 +43,5 @@ services:
     links:
       - redis
       - mysql
+    volumes:
+      - ./:/home/bambu-systematic-review/

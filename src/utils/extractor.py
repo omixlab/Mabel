@@ -127,14 +127,14 @@ def scidir(keyword, num_of_articles):
 
 def scielo(query, num_of_articles):
     print(
-        f"Starting data extraction of articles from ScienceDirect using the keyword: {query}"
+        f"Starting data extraction of articles from SciElo using the keyword: {query}"
     )
     results = ScieloSearch().query(query=query, format='dataframe')
     
     return results
 
 
-def preprints(query, num_of_articles):
+def pprint(query, num_of_articles):
     keywords = query.split(", ")
     dumps = ["biorxiv.jsonl", "chemrxiv.jsonl", "medrxiv.jsonl"]
 

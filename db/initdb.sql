@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS tokens_password (
 );
 
 INSERT INTO flashtext_models (id, user_id, name, type, path)
-VALUES (1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_human.pickle'); 
+VALUES (1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_human.pickle'); 
 
 INSERT INTO flashtext_models (id, user_id, name, type, path)
-VALUES (2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_dario_rerio.pickle'); 
+VALUES (2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_dario_rerio.pickle'); 
