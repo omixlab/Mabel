@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+Login
+{% endblock %}
+{% block content %}
+
+<body>
+    <h1>Selecione um Item</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.doi.label }}
+            {{ form.doi() }}
+            <div class="text-justify">{{form.question(placeholder = 'What do you want know?')}}</div>
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+{% endblock %}

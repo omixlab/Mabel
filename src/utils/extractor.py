@@ -132,7 +132,7 @@ def preprints(query, num_of_articles):
     print(f'Extracting preprints with keywords: "{keywords}"')
 
     def process_jsonl_file(file_path):
-        with open(file_path, 'r', encoding='utf-8') as jsonl_file:
+        with open(file_path, "r", encoding="utf-8") as jsonl_file:
             decoder = json.JSONDecoder()
             buffer = ""
             for line in jsonl_file:
@@ -153,7 +153,6 @@ def preprints(query, num_of_articles):
         kp = KeywordProcessor(case_sensitive=False)
         kp.add_keywords_from_list(keywords)
 
-
         for data in process_jsonl_file(file_path):
             abstract = data.get("abstract")
 
@@ -169,7 +168,6 @@ def preprints(query, num_of_articles):
     return results_df
 
 
-        
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
@@ -184,8 +182,8 @@ def execute(
     sc_num_of_articles=25,
     sd_num_of_articles=25,
     ppr_num_of_articles=25,
-    ner = None,
-    kp = None,
+    ner=None,
+    kp=None,
 ):
     try:
         if check_pubmed or check_scopus or check_scidir or check_preprints:
@@ -209,38 +207,44 @@ def execute(
 
             # Prevent error from empty results
             if unified_df.empty:
-                result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-                result.status = 'NO RESULTS'
+                result = (
+                    db.session.query(Results)
+                    .filter_by(celery_id=self.request.id)
+                    .first()
+                )
+                result.status = "NO RESULTS"
                 db.session.commit()
                 return "No results"
 
             # Scispacy NER
             if ner:
-                print(f'Running NER for {ner} entities')
+                print(f"Running NER for {ner} entities")
                 unified_df = scispacy_ner(unified_df, ner)
 
             # Flashtext Keyword Processor
             if type(kp) is str:
-                print(f'Filtering {kp} with Flashtext')
+                print(f"Filtering {kp} with Flashtext")
                 unified_df = flashtext_kp_string(unified_df, kp)
             if type(kp) is list:
-                print(f'Filtering {kp} with Flashtext')
+                print(f"Filtering {kp} with Flashtext")
                 unified_df = flashtext_kp(unified_df, kp)
 
             # Return as json
-            result_json = unified_df.to_json(orient='records', indent=4)
-            result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-            result.status = 'DONE'
+            result_json = unified_df.to_json(orient="records", indent=4)
+            result = (
+                db.session.query(Results).filter_by(celery_id=self.request.id).first()
+            )
+            result.status = "DONE"
             result.result_json = result_json
             db.session.commit()
             return result_json
 
         else:
             return "None database selected"
-    
+
     except Exception as e:
         # exception_message = str(e)
         result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-        result.status = 'FAILED'
+        result.status = "FAILED"
         db.session.commit()
         raise

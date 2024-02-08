@@ -8,14 +8,15 @@
 <table class="table table-hover table-hover ms-0">
     <thead>
         <tr>
-            <th space="col">task ID</th>
+            <th space="col">Task ID</th>
             <th space="col">Pubmed Query</th>
             <th space="col">Elsevier Query</th>
             <th space="col">Created Date</th>
             <th space="col">Status</th>
             <th space="col">Open</th>
+            <th space="col">ChatGPT</th>
             <th space="col">Download</th>
-            <th space="col"></th>
+            <th space="col">Drop</th>
         </tr>
     </thead>
     <tbody>
@@ -29,6 +30,11 @@
             <td>
                 {% if result.status == 'DONE' %}
                    <a class="btn btn-md btn-primary" href="{{url_for('result_view', result_id=result.id)}}">Open</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if result.status == 'DONE' %}
+                   <a class="btn btn-md btn-info" href={{url_for('chatgpt_engine', result_id=result.id)}}>ChatGPT</a>
                 {% endif %}
             </td>
             <td>

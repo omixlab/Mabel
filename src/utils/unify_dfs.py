@@ -72,7 +72,7 @@ def unify(dfs):
         if scopus.empty:
             pass
         else:
-            
+
             sc_formated_affil = []
             for row in scopus["affiliation"]:
                 try:
@@ -117,7 +117,9 @@ def unify(dfs):
                     sd_formated_auth.append("error")
 
             sd_formated_pages = []
-            for start, end in zip(scidir["prism:startingPage"], scidir["prism:endingPage"]):
+            for start, end in zip(
+                scidir["prism:startingPage"], scidir["prism:endingPage"]
+            ):
                 try:
                     sd_formated_pages.append(f"{start}-{end}")
                 except:
@@ -164,14 +166,13 @@ def unify(dfs):
                 )
             )
 
-
     # Concatenação dos dataframes
     try:
         unified_dataframes = pd.concat(formated_dfs)
-        unified_dataframes = unified_dataframes.drop_duplicates(subset=['DOI'])
+        unified_dataframes = unified_dataframes.drop_duplicates(subset=["DOI"])
         print("Success: Dataframes unified succesfully")
-        return (unified_dataframes)
+        return unified_dataframes
     except:
         if not formated_dfs:
             print("Error: No results")
-        return pd.DataFrame() # Gera dataframe vazio
+        return pd.DataFrame()  # Gera dataframe vazio

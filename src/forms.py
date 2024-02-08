@@ -11,7 +11,7 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     FileField,
-    RadioField
+    RadioField,
 )
 from wtforms.validators import (
     DataRequired,
@@ -118,12 +118,13 @@ class AdvancedElsevierQuery(FlaskForm):
     boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
+
 class AdvancedPreprintsQuery(FlaskForm):
-    fields_ppr = SelectField(
-        "option", choices=flasky_tuples.els_tags, default=1
-    )
+    fields_ppr = SelectField("option", choices=flasky_tuples.els_tags, default=1)
     keyword_ppr = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_ppr = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+    boolean_ppr = SelectField(
+        "connective", choices=[flasky_tuples.boolean_operators[0]]
+    )
 
 
 class SearchArticles(FlaskForm):
@@ -190,14 +191,25 @@ class SearchArticles(FlaskForm):
 
     check_preprints = BooleanField("preprints")
     range_preprints = IntegerRangeField(
-        default=25, 
-        validators=[DataRequired(), NumberRange(min=1, max=5000)]
+        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    ppr_num_of_articles = IntegerField(default=25, validators=[DataRequired(), NumberRange(min=1, max=80000, message='Number of articles outside of supported range')])
-
+    ppr_num_of_articles = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(
+                min=1,
+                max=80000,
+                message="Number of articles outside of supported range",
+            ),
+        ],
+    )
 
     # Flashtext options
-    flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    flashtext_radio = RadioField(
+        "Keyword or Models",
+        choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")],
+    )
     flashtext_string = StringField("Keywords", name="aaa", description="bbb")
 
 
@@ -222,6 +234,7 @@ class SearchFilters(FlaskForm):
     excludepreprints = BooleanField("Exclude preprints")
     medline = BooleanField("MEDLINE")
 
+
 class ScispacyEntities(FlaskForm):
     amino_acid = BooleanField("AMINO_ACID")
     anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
@@ -240,15 +253,39 @@ class ScispacyEntities(FlaskForm):
     simple_chemical = BooleanField("SIMPLE_CHEMICAL")
     tissue = BooleanField("TISSUE")
 
+
 class FlashtextDefaultModels(FlaskForm):
     genes_human = BooleanField(2)
     genes_danio_rerio = BooleanField(3)
 
+
 class FlashtextUserModels(FlaskForm):
     pass
 
+
 class CreateFlashtextModel(FlaskForm):
-    name = StringField("Name of the model", validators=[InputRequired("Can't leave empty"), Length(max=64, message='Name must be at most 64 characters long'), Regexp('^[a-zA-Z_]*$', message='Name can only contain letters or underscores')])
+    name = StringField(
+        "Name of the model",
+        validators=[
+            InputRequired("Can't leave empty"),
+            Length(max=64, message="Name must be at most 64 characters long"),
+            Regexp(
+                "^[a-zA-Z_]*$", message="Name can only contain letters or underscores"
+            ),
+        ],
+    )
     type = SelectField("Type", choices=flasky_tuples.scispacy)
-    tsv = FileField(".txt file", validators=[FileAllowed(['txt'], "Only .txt files are allowed"), InputRequired(message='File is required')])
+    tsv = FileField(
+        ".txt file",
+        validators=[
+            FileAllowed(["txt"], "Only .txt files are allowed"),
+            InputRequired(message="File is required"),
+        ],
+    )
     submit = SubmitField(label="Create model")
+
+
+class ChatGPTForm(FlaskForm):
+    doi = SelectField("DOI:", validators=[DataRequired()])
+    question = StringField("What do you want know?", name="aaa", description="bbb")
+    submit = SubmitField("Send")
