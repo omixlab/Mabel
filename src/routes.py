@@ -172,7 +172,9 @@ def articles_extractor_str(search_form, available_entities, default_models, user
         if 'pprint_add_keyword' in request.form:
             search_form.query_pprint.data = query_constructor.preprints(
                 search_form.query_pprint.data,
+                query_form.tags_pprint.data,
                 query_form.keyword_pprint.data,
+                query_form.boolean_pprint.data,
             )
 
         if 'apply_filters' in request.form:

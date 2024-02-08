@@ -1,5 +1,3 @@
-boolean_operators = [("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")]
-
 # BASIC
 tags = [
     ("ALL", "All Fields"),
@@ -127,6 +125,15 @@ scielo_tags = [
     ("ta", "Journal"),
     ("ab", "Abstract"),
     ("ti", "Title"), 
+]
+
+pprint_tags = [
+    ("abstract", "Abstract"),
+    ("title", "Title"),
+    ("doi", "DOI"),
+    ("date", "Date"),
+    ("authors", "Authors"),
+    ("journal", "Journal"),
 ]
 
 # PubMed Filters

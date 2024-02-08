@@ -69,8 +69,6 @@ def elsevier(els_query, tag, keyword, boolean, open_access):
 def scielo(se_query, tag, keyword, boolean):
     if tag:
         keyword = f"{tag}:({keyword})"
-    if boolean == "NOT":
-        boolean = "AND NOT"
 
     if not se_query:
         se_query = f"({keyword})"
@@ -79,10 +77,10 @@ def scielo(se_query, tag, keyword, boolean):
 
     return se_query
 
-def preprints(ppr_query, keyword):
+def preprints(ppr_query, tag, keyword, boolean):
     if not ppr_query:
-        ppr_query = f'{keyword}'
+        ppr_query = f'({tag}:{keyword})'
     else:
-        ppr_query += f', {keyword}'
+        ppr_query += f' {boolean} ({tag}:{keyword})'
 
     return ppr_query

@@ -99,29 +99,29 @@ class RecoveryPassword(FlaskForm):
 class BasicQuery(FlaskForm):
     tags = SelectField("option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1)
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 
 class AdvancedQuery(FlaskForm):
     tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
     keyword_pubmed = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean_pubmed = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean_pubmed = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access_pubmed = None
 
     tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
     keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_elsevier = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean_elsevier = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
     keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_scielo = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean_scielo = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("AND NOT", "NOT")])
     open_access_scielo = BooleanField("open_access", validators=[Optional()], default=False)
 
-    tags_pprint = None
+    tags_pprint = SelectField("option", choices=flasky_tuples.pprint_tags, default=1)
     keyword_pprint = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_pprint = SelectField("connective", choices=[flasky_tuples.boolean_operators[0]])
+    boolean_pprint = SelectField("connective", choices=[("and", "AND"), ("or", "OR"), ("and not", "NOT")])
     open_access_pprint = None
 
 
