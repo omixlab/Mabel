@@ -273,7 +273,7 @@ class FlashtextDefaultModels(FlaskForm):
     genes_danio_rerio = BooleanField(2)
 
 class FlashtextUserModels(FlaskForm):
-    # Atributos são criados no acesso
+    # Apenas cria a classe aqui, atributos são criados durante o acesso (routes.py)
     pass
 
 class CreateFlashtextModel(FlaskForm):

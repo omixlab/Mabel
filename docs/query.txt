@@ -1,0 +1,55 @@
+# PUBMED
+(
+    (Alzheimer's Disease[Title/Abstract]) 
+    OR (Alzheimer Disease[Title/Abstract]) 
+    OR (AD[Title/Abstract])
+) 
+AND 
+(
+    (Molecular target[Title/Abstract]) 
+    OR (Drug target[Title/Abstract])  
+    OR (Therapeutic target[Title/Abstract]) 
+    OR (Pharmacological target[Title/Abstract]) 
+    OR ((Treatment[Title/Abstract]) AND (Target[Title/Abstract]))
+) 
+AND 
+(
+    ("2019/01/01"[Date - Publication] : "3000"[Date - Publication])
+)
+
+((Alzheimer's Disease[Title/Abstract]) OR (Alzheimer Disease[Title/Abstract]) OR (AD[Title/Abstract])) AND ((Molecular target[Title/Abstract]) OR (Drug target[Title/Abstract]) OR (Therapeutic target[Title/Abstract]) OR (Pharmacological target[Title/Abstract]) OR ((Treatment[Title/Abstract]) AND (Target[Title/Abstract]))) AND (("2019/01/01"[Date - Publication] : "3000"[Date - Publication]))
+
+
+
+# SCOPUS
+3
+
+
+# SCIENCEDIRECT - (TITLE-ABS-KEY e PUBYEAR não parecem funcionar)
+(TITLE("Alzheimer's Disease" OR "Alzheimer Disease" OR "AD") OR ABS("Alzheimer's Disease" OR "Alzheimer Disease" OR "AD")) 
+AND (TITLE("Molecular target" OR "Drug target" OR "Therapeutic target" OR "Pharmacological target" OR ("Treatment" AND "target")) OR ABS("Molecular target" OR "Drug target" OR "Therapeutic target" OR "Pharmacological target" OR ("Treatment" AND "target"))) 
+
+
+#SCIELO
+(
+    ((ti:(Alzheimer's Disease)) OR (ab:(Alzheimer's Disease))) 
+    OR ((ti:(Alzheimer Disease)) OR (ab:(Alzheimer Disease))) 
+    OR ((ti:(AD)) OR (ab:(AD)))
+)
+AND (
+    ((ti:(Molecular target)) OR (ab:(Molecular target))) 
+    OR ((ti:(Molecular target)) OR (ab:(Molecular target))) 
+    OR ((ti:(Drug target)) OR (ab:(Drug target))) 
+    OR ((ti:(Therapeutic target)) OR (ab:(Therapeutic target))) 
+    OR ((ti:(Pharmacological target)) OR (ab:(Pharmacological target))) 
+    OR (((ti:(Treatment)) OR (ab:(Treatment))) AND ((ti:(Target)) OR (ab:(Target))))
+    )
+AND (
+    (year_cluster:(2019)) 
+    OR (year_cluster:(2020)) 
+    OR (year_cluster:(2021)) 
+    OR (year_cluster:(2022)) 
+    OR (year_cluster:(2023))
+    )
+
+(((ti:(Alzheimer's Disease)) OR (ab:(Alzheimer's Disease)))OR ((ti:(Alzheimer Disease)) OR (ab:(Alzheimer Disease)))OR ((ti:(AD)) OR (ab:(AD))))AND (((ti:(Molecular target)) OR (ab:(Molecular target)))OR ((ti:(Molecular target)) OR (ab:(Molecular target)))OR ((ti:(Drug target)) OR (ab:(Drug target)))OR ((ti:(Therapeutic target)) OR (ab:(Therapeutic target)))OR ((ti:(Pharmacological target)) OR (ab:(Pharmacological target)))OR (((ti:(Treatment)) OR (ab:(Treatment))) AND ((ti:(Target)) OR (ab:(Target)))))AND ((year_cluster:(2019))OR (year_cluster:(2020))OR (year_cluster:(2021))OR (year_cluster:(2022))OR (year_cluster:(2023)))

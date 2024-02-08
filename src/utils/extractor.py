@@ -11,6 +11,8 @@ apikey = os.getenv("X_ELS_APIKey")
 insttoken = os.getenv("X_ELS_Insttoken")
 dumps_path = os.getenv("DUMPS_PATH")
 
+TERM_EXPRESSION = '([a-zA-Z0-9.@_]+:[a-zA-Z0-9_\- ]+)'
+
 import json
 from json import dumps, loads
 
@@ -27,6 +29,7 @@ from src.utils.unify_dfs import unify
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 from flashtext import KeywordProcessor
 import json
+import re
 
 
 def pubmed(keyword, num_of_articles):
@@ -127,52 +130,53 @@ def scidir(keyword, num_of_articles):
 
 def scielo(query, num_of_articles):
     print(
-        f"Starting data extraction of articles from SciElo using the keyword: {query}"
+        f"Starting data extraction {num_of_articles} of articles from SciElo using the keyword: {query}"
     )
-    results = ScieloSearch().query(query=query, format='dataframe')
+    results = ScieloSearch().query(query=query, format='dataframe', result_size=num_of_articles)
     
     return results
 
 
 def pprint(query, num_of_articles):
-    keywords = query.split(", ")
+    print(f'Extracting preprints with keywords: "{query}"')
+
+    # Process json files
+    def process_json_files(dumps):
+        json_data = []  
+        for dump in dumps:
+            file_path = os.path.join(dumps_path, dump)
+            with open(file_path, 'r', encoding='utf-8') as jsonl_file:
+                for line in jsonl_file:
+                    json_data.append(json.loads(line))
+        return json_data
+
+
+    def filter_query(df, raw_query):
+        '''
+        Process a query string with 
+        '''
+        terms = re.findall(TERM_EXPRESSION, raw_query)
+        compiled_query = raw_query
+        
+        for term in terms:
+            field, keyword = term.split(':', 1)
+            
+            if field not in df.columns:
+                raise Exception(f'field "{field}" is not present in dataframe')
+            
+            compiled_term = f'{field}.str.contains("{keyword}")'
+            compiled_query = compiled_query.replace(
+                term, compiled_term
+            )
+        try:
+            return df.query(compiled_query)
+        except:
+            raise Exception('invalid query')
+    
     dumps = ["biorxiv.jsonl", "chemrxiv.jsonl", "medrxiv.jsonl"]
-
-    print(f'Extracting preprints with keywords: "{keywords}"')
-
-    def process_jsonl_file(file_path):
-        with open(file_path, 'r', encoding='utf-8') as jsonl_file:
-            decoder = json.JSONDecoder()
-            buffer = ""
-            for line in jsonl_file:
-                buffer += line
-                while buffer:
-                    try:
-                        obj, idx = decoder.raw_decode(buffer)
-                        yield obj
-                        buffer = buffer[idx:].lstrip()
-                    except json.JSONDecodeError as e:
-                        break
-
-    data_list = []
-    for dump in dumps:
-        file_path = os.path.join(dumps_path, dump)
-
-        # Write model
-        kp = KeywordProcessor(case_sensitive=False)
-        kp.add_keywords_from_list(keywords)
-
-
-        for data in process_jsonl_file(file_path):
-            abstract = data.get("abstract")
-
-            if set(kp.extract_keywords(abstract)):
-                data_list.append(data)
-
-            if len(data_list) == num_of_articles:
-                break
-
-    results_df = pd.DataFrame(data_list)
+    df = pd.DataFrame(process_json_files(dumps))
+    
+    results_df = filter_query(df, query)
     print("Success: Preprints extracted")
 
     return results_df

@@ -4,6 +4,7 @@ data/csv
 data/xmls
 data/uploads
 data/dumps
+data/dfs_results
 .env
 default
 version_old
