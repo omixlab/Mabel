@@ -29,8 +29,7 @@ from src.utils.unify_dfs import unify
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 from flashtext import KeywordProcessor
 import json
-import re
-
+from keyword_search.query import keyword_search
 
 def pubmed(keyword, num_of_articles):
     print(
@@ -149,34 +148,12 @@ def pprint(query, num_of_articles):
                 for line in jsonl_file:
                     json_data.append(json.loads(line))
         return json_data
-
-
-    def filter_query(df, raw_query):
-        '''
-        Process a query string with 
-        '''
-        terms = re.findall(TERM_EXPRESSION, raw_query)
-        compiled_query = raw_query
-        
-        for term in terms:
-            field, keyword = term.split(':', 1)
-            
-            if field not in df.columns:
-                raise Exception(f'field "{field}" is not present in dataframe')
-            
-            compiled_term = f'{field}.str.contains("{keyword}")'
-            compiled_query = compiled_query.replace(
-                term, compiled_term
-            )
-        try:
-            return df.query(compiled_query)
-        except:
-            raise Exception('invalid query')
+    
     
     dumps = ["biorxiv.jsonl", "chemrxiv.jsonl", "medrxiv.jsonl"]
     df = pd.DataFrame(process_json_files(dumps))
     
-    results_df = filter_query(df, query)
+    results_df = keyword_search(df, query)
     print("Success: Preprints extracted")
 
     return results_df
