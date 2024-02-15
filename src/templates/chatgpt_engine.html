@@ -7,15 +7,25 @@ Login
 <body>
     <h1>Selecione um Item</h1>
     <form method="POST">
-        {{ form.csrf_token }}
-        <div>
-            {{ form.doi.label }}
-            {{ form.doi() }}
-            <div class="text-justify">{{form.question(placeholder = 'What do you want know?')}}</div>
-        </div>
-        <div>
-            {{ form.submit() }}
-        </div>
+        <table class="table table-hover table-bordered" >
+            <thead>
+                <tr>
+                    {% for column_name in df.columns %}
+                        <th space="col" class="wide-cell">{{column_name}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in data.iterrows() %}
+                <tr>
+                    <td>{{ row['doi'] }}</td>
+                    <td><input type="checkbox" name="selected_doi" value="{{ row['doi'] }}"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        <br>
+        <input type="submit" value="Enviar">
     </form>
+
 </body>
 {% endblock %}
