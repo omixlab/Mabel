@@ -107,21 +107,25 @@ class AdvancedQuery(FlaskForm):
     tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
     keyword_pubmed = StringField(label="Keyword:", validators=[Length(min=2)])
     boolean_pubmed = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    date_pubmed = None 
     open_access_pubmed = None
 
     tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
     keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_elsevier = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    date_elsevier= None    
     open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
     keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_scielo = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("AND NOT", "NOT")])
+    date_scielo = None
     open_access_scielo = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_pprint = SelectField("option", choices=flasky_tuples.pprint_tags, default=1)
     keyword_pprint = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_pprint = SelectField("connective", choices=[("and", "AND"), ("or", "OR"), ("and not", "NOT")])
+    date_pprint = SelectField("date", choices=[(str(year), str(year)) for year in range(2024, 1899, -1)])
     open_access_pprint = None
 
 

@@ -45,8 +45,13 @@ Articles Extractor
                 <!-- Tags, Keyword, Boolean -->
                 <div class="row">
                     {% if query_form['tags_' + database] %}
-                    <div class="col-md-2">{{ query_form['tags_' + database](class='form-control custom-select')}}</div>
-                    <div class="col-md-7">{{ query_form['keyword_' + database](class='form-control', placeholder='Keyword') }}</div>
+                    <div class="col-md-2">{{ query_form['tags_' + database](class='form-control custom-select', placeholder='Tags', id='tags_'+database)}}</div>
+                    <div class="col-md-7">{{ query_form['keyword_' + database](class='form-control', placeholder='Keyword', id='keyword_'+database) }}
+                        {% if query_form['date_' + database] %}
+                        {{ query_form['date_' + database](class='form-control', placeholder='Date', id='date_'+database, style='display: none') }}
+                        {% endif %}
+                    </div>
+
                     {% else %}
                     <div class="col-md-9">{{ query_form['keyword_' + database](class='form-control', placeholder='Keyword') }}</div>
                     {% endif %}
@@ -204,6 +209,20 @@ Articles Extractor
                 $('#modelsDiv').show();
             }
         });
+
+        // Check if the selected option is 'Date'
+        $('#tags_pprint').change(function () {
+                console.log('mudou')
+                var selectedOption = $(this).val();
+
+                if (selectedOption === 'date') {
+                    $('#keyword_pprint').hide();  
+                    $('#date_pprint').show(); 
+                } else {
+                    $('#date_pprint').hide();     
+                    $('#keyword_pprint').show();   
+                }
+            });
     });
 </script>
 
