@@ -29,7 +29,7 @@ from src.utils.unify_dfs import unify
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 from flashtext import KeywordProcessor
 import json
-from keyword_search.query import keyword_search
+from src.utils.keyword_search import keyword_search
 
 def pubmed(keyword, num_of_articles):
     print(
@@ -91,7 +91,7 @@ def scopus(keyword, num_of_articles):
     abstracts_df = pd.DataFrame(dicts.items(), columns=["prism:url", "Abstract"])
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
         abstracts_df, on="prism:url", how="left"
-    )
+    )       
 
     return doc_srch_scopus.results_df
 

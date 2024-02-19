@@ -77,7 +77,10 @@ def scielo(se_query, tag, keyword, boolean):
 
     return se_query
 
-def preprints(ppr_query, tag, keyword, boolean):
+def preprints(ppr_query, tag, keyword, boolean, date):
+    if tag == "date":
+        keyword = date
+        print(tag, keyword)
     if not ppr_query:
         ppr_query = f'({tag}:{keyword})'
     else:

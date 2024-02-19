@@ -46,9 +46,18 @@ Articles Extractor
                 <div class="row">
                     {% if query_form['tags_' + database] %}
                     <div class="col-md-2">{{ query_form['tags_' + database](class='form-control custom-select', placeholder='Tags', id='tags_'+database)}}</div>
-                    <div class="col-md-7">{{ query_form['keyword_' + database](class='form-control', placeholder='Keyword', id='keyword_'+database) }}
-                        {% if query_form['date_' + database] %}
-                        {{ query_form['date_' + database](class='form-control', placeholder='Date', id='date_'+database, style='display: none') }}
+                    <div class="col-md-7">
+                        <div> {{ query_form['keyword_' + database](class='form-control', placeholder='Keyword', id='keyword_'+database) }}</div>
+                            
+                        {% if query_form['start_date_' + database] %}
+                            <div class="row">
+                                <div class="col">
+                                    {{ query_form['start_date_' + database](class='form-control', placeholder='Start date', id='start_date_'+database, style='display: none') }}
+                                </div>
+                                <div class="col">
+                                    {{ query_form['end_date_' + database](class='form-control', placeholder='End date', id='end_date_'+database, style='display: none') }}
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
 
@@ -217,9 +226,11 @@ Articles Extractor
 
                 if (selectedOption === 'date') {
                     $('#keyword_pprint').hide();  
-                    $('#date_pprint').show(); 
+                    $('#start_date_pprint').show(); 
+                    $('#end_date_pprint').show(); 
                 } else {
-                    $('#date_pprint').hide();     
+                    $('#start_date_pprint').hide();   
+                    $('#end_date_pprint').hide();   
                     $('#keyword_pprint').show();   
                 }
             });

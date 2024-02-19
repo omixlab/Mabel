@@ -125,7 +125,9 @@ class AdvancedQuery(FlaskForm):
     tags_pprint = SelectField("option", choices=flasky_tuples.pprint_tags, default=1)
     keyword_pprint = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_pprint = SelectField("connective", choices=[("and", "AND"), ("or", "OR"), ("and not", "NOT")])
-    date_pprint = SelectField("date", choices=[(str(year), str(year)) for year in range(2024, 1899, -1)])
+    start_date_pprint = StringField(label="Start date:", validators=[Length(min=2)])
+    end_date_pprint = StringField(label="End date:", validators=[Length(min=2)])
+
     open_access_pprint = None
 
 

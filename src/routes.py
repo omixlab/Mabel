@@ -175,6 +175,7 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 query_form.tags_pprint.data,
                 query_form.keyword_pprint.data,
                 query_form.boolean_pprint.data,
+                f"{query_form.start_date_pprint.data}-{query_form.end_date_pprint.data}",
             )
 
         if 'apply_filters' in request.form:
