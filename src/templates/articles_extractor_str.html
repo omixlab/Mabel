@@ -221,7 +221,6 @@ Articles Extractor
 
         // Check if the selected option is 'Date'
         $('#tags_pprint').change(function () {
-                console.log('mudou')
                 var selectedOption = $(this).val();
 
                 if (selectedOption === 'date') {
@@ -232,6 +231,20 @@ Articles Extractor
                     $('#start_date_pprint').hide();   
                     $('#end_date_pprint').hide();   
                     $('#keyword_pprint').show();   
+                }
+            });
+
+        $('#tags_scielo').change(function () {
+                var selectedOption = $(this).val();
+
+                if (selectedOption === 'year_cluster') {
+                    $('#keyword_scielo').hide();  
+                    $('#start_date_scielo').show(); 
+                    $('#end_date_scielo').show(); 
+                } else {
+                    $('#start_date_scielo').hide();   
+                    $('#end_date_scielo').hide();   
+                    $('#keyword_scielo').show();   
                 }
             });
     });

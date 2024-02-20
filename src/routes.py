@@ -162,11 +162,17 @@ def articles_extractor_str(search_form, available_entities, default_models, user
             )
         
         if 'scielo_add_keyword' in request.form:
+            if query_form.start_date_scielo.data and query_form.end_date_scielo.data:
+                years_range = range(query_form.start_date_scielo.data, query_form.end_date_scielo.data+1)
+            else:
+                years_range=None
+
             search_form.query_scielo.data = query_constructor.scielo(
                 search_form.query_scielo.data,
                 query_form.tags_scielo.data,
                 query_form.keyword_scielo.data,
                 query_form.boolean_scielo.data,
+                years_range,
             )
 
         if 'pprint_add_keyword' in request.form:

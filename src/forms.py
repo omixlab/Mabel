@@ -107,19 +107,18 @@ class AdvancedQuery(FlaskForm):
     tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
     keyword_pubmed = StringField(label="Keyword:", validators=[Length(min=2)])
     boolean_pubmed = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
-    date_pubmed = None 
     open_access_pubmed = None
 
     tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
     keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_elsevier = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
-    date_elsevier= None    
     open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
     keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
     boolean_scielo = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("AND NOT", "NOT")])
-    date_scielo = None
+    start_date_scielo = IntegerField(label="Start date:", validators=[Optional(), NumberRange(min=-4713, max=9999)])
+    end_date_scielo = IntegerField(label="End date:", validators=[Optional(), NumberRange(min=-4713, max=9999)])
     open_access_scielo = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_pprint = SelectField("option", choices=flasky_tuples.pprint_tags, default=1)

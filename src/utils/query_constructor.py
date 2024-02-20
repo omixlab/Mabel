@@ -66,21 +66,29 @@ def elsevier(els_query, tag, keyword, boolean, open_access):
 
     return els_query
 
-def scielo(se_query, tag, keyword, boolean):
+def scielo(scielo_query, tag, keyword, boolean, dates):
     if tag:
-        keyword = f"{tag}:({keyword})"
-
-    if not se_query:
-        se_query = f"({keyword})"
+        if tag == "year_cluster": 
+            if len(dates) > 1:
+                year_subterms = [f"({tag}:({year}))" for year in dates] # Apesar da query correta, o Scielo não retorna o primeiro ano da lista
+                term = " OR ".join(year_subterms)
+            else:
+                term = f"{tag}:({dates[0]})"
+        else:
+            term = f"{tag}:({keyword})"
     else:
-        se_query += f" {boolean} ({keyword})"
+        term = keyword
 
-    return se_query
+    if not scielo_query:
+        scielo_query = f"({term})"
+    else:
+        scielo_query += f" {boolean} ({term})"
+
+    return scielo_query
 
 def preprints(ppr_query, tag, keyword, boolean, date):
     if tag == "date":
         keyword = date
-        print(tag, keyword)
     if not ppr_query:
         ppr_query = f'({tag}:{keyword})'
     else:
