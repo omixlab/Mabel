@@ -13,18 +13,15 @@ Login
                     {% for column_name in df.columns %}
                         <th space="col" class="wide-cell">{{column_name}}</th>
                     {% endfor %}
-                    <th>Select</th>
                 </tr>
             </thead>
             <tbody>
                 {% for r, row in df.iterrows() %}
                 <tr>
-                    {% for column_name in df.columns %}
                         <td>{{ row['DOI'] }}</td>
                         <td>{{ row['Title'] }}</td>
                         <td>{{ row['Authors'] }}</td>
                         <td><input type="checkbox" id="{{ index }}" name="selecionado" value="{{ row['DOI'] }}"></td>
-                   {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
