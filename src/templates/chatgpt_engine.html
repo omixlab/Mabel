@@ -5,7 +5,7 @@ Login
 {% block content %}
 
 <body>
-    <h1>Selecione um Item</h1>
+    <h1>Itens to verified in ChatGPT</h1>
     <form method="POST">
         <table class="table table-hover table-bordered" >
             <thead>
@@ -13,19 +13,52 @@ Login
                     {% for column_name in df.columns %}
                         <th space="col" class="wide-cell">{{column_name}}</th>
                     {% endfor %}
+                    <th>Select</th>
                 </tr>
             </thead>
             <tbody>
-                {% for index, row in data.iterrows() %}
+                {% for r, row in df.iterrows() %}
                 <tr>
-                    <td>{{ row['doi'] }}</td>
-                    <td><input type="checkbox" name="selected_doi" value="{{ row['doi'] }}"></td>
+                    {% for column_name in df.columns %}
+                        <td>{{ row['DOI'] }}</td>
+                        <td>{{ row['Title'] }}</td>
+                        <td>{{ row['Authors'] }}</td>
+                        <td><input type="checkbox" id="{{ index }}" name="selecionado" value="{{ row['DOI'] }}"></td>
+                   {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
+        </table>
         <br>
-        <input type="submit" value="Enviar">
+        <button type="submit" id="submitButton">Submit</button>
     </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#checkboxForm').submit(function(event) {
+                event.preventDefault(); // Impede o envio do formulário tradicional
 
+                var selecionados = [];
+                $('input[type=checkbox]').each(function() {
+                    if ($(this).is(':checked')) {
+                        selecionados.push($(this).attr('id'));
+                    }
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json',
+                    url: '/',
+                    data: JSON.stringify({ 'selecionados': selecionados }),
+                    success: function(response) {
+                        alert('Seleções salvas com sucesso!');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 {% endblock %}

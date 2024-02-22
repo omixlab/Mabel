@@ -275,11 +275,16 @@ def chatgpt_engine(result_id):
     form = ChatGPTForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
-    form.doi.choices = [(row["DOI"], row["DOI"]) for index, row in df.iterrows()]
-    if form.validate_on_submit():
-        selected_doi = form.doi.data
-        return f"Você selecionou: {selected_doi}"
-    return render_template("chatgpt_engine.html", form=form)
+    df = df[['DOI', 'Title', 'Authors']]
+    df['Selecionado'] = False 
+    #form.doi.choices = [(row["DOI"], row["DOI"]) for index, row in df.iterrows()]
+    resultados = []
+    if request.method == 'POST':
+        # Receber os dados do POST
+        data = request.get_json()
+        resultados.append(data['selecionados'])
+        print(resultados)
+    return render_template("chatgpt_engine.html", form=form, df=df)
 
 
 @app.route("/download/<result_id>")
