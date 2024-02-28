@@ -33,7 +33,7 @@ from src.forms import (
     CreateFlashtextModel,
     RecoveryPasswordForm,
     RecoveryPassword,
-    ChatGPTForm,
+    # ChatGPTForm,
 )
 import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
@@ -43,6 +43,11 @@ from src.utils.optional_features import flashtext_model_create
 
 import bcrypt
 import uuid
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 @app.route("/")
@@ -272,19 +277,28 @@ def result_view(result_id):
 @app.route("/chatgpt_engine/<result_id>", methods=["GET", "POST"])
 @login_required
 def chatgpt_engine(result_id):
-    form = ChatGPTForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
-    df = df[['DOI', 'Title', 'Authors']]
-    df['Selecionado'] = False 
-    #form.doi.choices = [(row["DOI"], row["DOI"]) for index, row in df.iterrows()]
-    resultados = []
-    if request.method == 'POST':
-        # Receber os dados do POST
-        data = request.get_json()
-        resultados.append(data['selecionados'])
-        print(resultados)
-    return render_template("chatgpt_engine.html", form=form, df=df)
+    # df = df[["DOI", "Title", "Authors"]]
+
+    list_doi = []
+    if request.method == "POST":
+        for getid in request.form.getlist("mycheckbox"):
+            list_doi.append(getid)
+
+    abstract_selected = df[df["DOI"].isin(list_doi)][["Abstract"]]
+
+    prompt = ChatPromptTemplate.from_template("Whats is talked in this {topic}")
+    model = ChatOpenAI(model="gpt-3.5-turbo")
+    output_parser = StrOutputParser()
+
+    chain = prompt | model | output_parser
+
+    result = chain.invoke({"topic": abstract_selected})
+
+    flash(result)
+
+    return render_template("chatgpt_engine.html", df=df, result=result)
 
 
 @app.route("/download/<result_id>")

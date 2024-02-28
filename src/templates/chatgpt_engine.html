@@ -3,59 +3,60 @@
 Login
 {% endblock %}
 {% block content %}
-
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <body>
-    <h1>Itens to verified in ChatGPT</h1>
-    <form method="POST">
-        <table class="table table-hover table-bordered" >
+    <h1>Itens to be verified in ChatGPT</h1>
+    <div class="table-responsive"></div>
+    <form id="checkboxForm" method="POST" action="/chatgpt_engine/1">
+        <table id="mytable" class="table table-hover table-bordered">
             <thead>
-                <tr>
-                    {% for column_name in df.columns %}
-                        <th space="col" class="wide-cell">{{column_name}}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
+                <th><input type="checkbox" id="checkall" /></th>
+                <th>DOI</th>
+                <th>Title</th>
+                <th>Authors</th>
             <tbody>
-                {% for r, row in df.iterrows() %}
-                <tr>
+                {% for index, row in df.iterrows() %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ row['DOI'] }}" name="mycheckbox" class="checkthis" /></td>
                         <td>{{ row['DOI'] }}</td>
                         <td>{{ row['Title'] }}</td>
                         <td>{{ row['Authors'] }}</td>
-                        <td><input type="checkbox" id="{{ index }}" name="selecionado" value="{{ row['DOI'] }}"></td>
-                </tr>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
         <br>
-        <button type="submit" id="submitButton">Submit</button>
+        <input type="submit" value="Select" class="btn btn-primary">  
+        <div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-primary" role="alert">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
+            </div>
     </form>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </div>
     <script>
-        $(document).ready(function() {
-            $('#checkboxForm').submit(function(event) {
-                event.preventDefault(); // Impede o envio do formulário tradicional
-
-                var selecionados = [];
-                $('input[type=checkbox]').each(function() {
-                    if ($(this).is(':checked')) {
-                        selecionados.push($(this).attr('id'));
-                    }
-                });
-
-                $.ajax({
-                    type: 'POST',
-                    contentType: 'application/json',
-                    url: '/',
-                    data: JSON.stringify({ 'selecionados': selecionados }),
-                    success: function(response) {
-                        alert('Seleções salvas com sucesso!');
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
+        $(document).ready(function(){
+        $("#mytable #checkall").click(function () {
+                if ($("#mytable #checkall").is(':checked')) {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", true);
+                    });
+          
+                } else {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", false);
+                    });
+                }
             });
+              
+            $("[data-toggle=tooltip]").tooltip();
         });
-    </script>
+        </script>  
 </body>
 {% endblock %}

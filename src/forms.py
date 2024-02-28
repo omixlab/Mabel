@@ -283,9 +283,3 @@ class CreateFlashtextModel(FlaskForm):
         ],
     )
     submit = SubmitField(label="Create model")
-
-
-class ChatGPTForm(FlaskForm):
-    doi = SelectField("DOI:", validators=[DataRequired()])
-    question = StringField("What do you want know?", name="aaa", description="bbb")
-    submit = SubmitField("Send")

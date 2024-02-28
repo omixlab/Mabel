@@ -24,3 +24,5 @@ spacy
 flashtext
 Werkzeug==2.2.0
 yagmail
+langchain-openai
+
