@@ -293,10 +293,8 @@ def chatgpt_engine(result_id):
     output_parser = StrOutputParser()
 
     chain = prompt | model | output_parser
-
     result = chain.invoke({"topic": abstract_selected})
-
-    flash(result)
+    flash("This paper ", result)
 
     return render_template("chatgpt_engine.html", df=df, result=result)
 
