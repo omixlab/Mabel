@@ -5,7 +5,7 @@ import re
 import string
 import copy
 
-TERM_EXPRESSION = '([a-zA-Z0-9.@_]+:[a-zA-Z0-9_\- ]+)'
+TERM_EXPRESSION = "([a-zA-Z0-9.@_]+:[a-zA-Z0-9\'_\- ]+)"
 
 def trim_strings(raw_string):
     trim_string = copy.copy(raw_string)

@@ -86,7 +86,7 @@ def scopus(keyword, num_of_articles):
         else:
             dicts[i] = "Failed"
 
-        print("Scopus extraction done!")
+    print("Scopus extraction done!")
 
     abstracts_df = pd.DataFrame(dicts.items(), columns=["prism:url", "Abstract"])
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(

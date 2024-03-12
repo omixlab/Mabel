@@ -179,10 +179,7 @@ class SearchArticles(FlaskForm):
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
-    range_pprint = IntegerRangeField(
-        default=25, 
-        validators=[DataRequired(), NumberRange(min=1, max=5000)]
-    )
+    range_pprint = None
 
 
     num_pubmed = IntegerField(
@@ -213,12 +210,7 @@ class SearchArticles(FlaskForm):
             NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
         ])
 
-    num_pprint = IntegerField(
-        default=25, 
-        validators=[
-            DataRequired(), 
-            NumberRange(min=1, max=80000, message='Number of articles outside of supported range')
-        ])
+    num_pprint = None
     
     title_pubmed = "Pubmed"
     title_scopus = "Scopus"

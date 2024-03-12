@@ -77,7 +77,7 @@ def extractor_base(func):
                         "scopus":int(search_form.num_scopus.data),
                         "scidir":int(search_form.num_scidir.data),
                         "scielo":int(search_form.num_scielo.data),
-                        "pprint":int(search_form.num_pprint.data),
+                        "pprint":None,
                     }
 
                     data_tmp = extractor.execute.apply_async((

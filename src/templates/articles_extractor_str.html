@@ -16,7 +16,9 @@ Articles Extractor
                 <!-- Heading -->
                 <div class="row">
                     <div class="col-md-2 text-left"><h3>{{search_form['title_' + database]}}</h3></div>
+                    {% if search_form['num_' + database] %}
                     <div class="col-md-2" style="margin-top: 10px;">Number of articles:</div>
+                    {% endif %}
                 </div>
                 
                 <!-- Check and Range -->
@@ -35,8 +37,10 @@ Articles Extractor
                     {% else %}
                     <div class="row">
                         <div class="col-md-2 text-left" >{{search_form['check_' + database](class='mt-2')}} <label class="form-check-label" for="check_{{database}}">Enabled</label></div>
+                        {% if search_form['num_' + database] %}
                         <div class="col-md-7">{{search_form['range_' + database](class='form-control', step=5, min=0, max=5000, id='range_'+database, oninput="outputUpdate('range_'+database+'.value')")}}</div>
                         <div class="col-md-2">{{search_form['num_' + database](class='form-control', id='num_'+database)}}</div>
+                        {% endif %}
                     </div>
                     {% endif %}
 

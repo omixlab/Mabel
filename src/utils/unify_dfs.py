@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,21 @@ import pandas as pd
 
 def unify(dfs):
     formated_dfs = []
+
+    directory_path = "data/dfs_results/"
+
+    folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
+
+    if not folders or "1" not in folders:
+        folder = "1"
+        os.makedirs(os.path.join(directory_path, folder))
+    else:
+        highest_numbered_folder = max(folders, key=lambda x: int(x))
+
+        folder = str(int(highest_numbered_folder) + 1)
+        os.makedirs(os.path.join(directory_path, folder))
+
+    folder_path = os.path.join(directory_path, folder)
 
     # PUBMED
     if "pubmed" in dfs:
@@ -62,6 +78,7 @@ def unify(dfs):
                         "MeSH Terms": pubmed["mesh_terms"],
                     }
                 )
+            df.to_csv(os.path.join(folder_path, "pubmed.csv"))
             formated_dfs.append(df)
 
     # SCOPUS
@@ -95,6 +112,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
+            df.to_csv(os.path.join(folder_path, "scopus.csv"))
             formated_dfs.append(df)
 
     # SCIENCE DIRECT
@@ -135,6 +153,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
+            df.to_csv(os.path.join(folder_path, "scidir.csv"))
             formated_dfs.append(df)
 
     # SCIELO
@@ -166,6 +185,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
+            df.to_csv(os.path.join(folder_path, "scielo.csv"))
             formated_dfs.append(df)
 
 
@@ -190,6 +210,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
+            df.to_csv(os.path.join(folder_path, "pprint.csv"))
             formated_dfs.append(df)
 
 
@@ -198,10 +219,10 @@ def unify(dfs):
     try:
         unified_dataframes = pd.concat(formated_dfs)
 
-        total = len(unified_dataframes)
-        unified_dataframes = unified_dataframes.drop_duplicates(subset=['DOI'])
-        dropped = len(unified_dataframes)
-        print(f"Dropped {total-dropped} duplicates")
+        # total = len(unified_dataframes)
+        # unified_dataframes = unified_dataframes.drop_duplicates(subset=['DOI'])
+        # dropped = len(unified_dataframes)
+        # print(f"Dropped {total-dropped} duplicates")
         print(f"Success: Dataframes unified succesfully ({len(unified_dataframes)} articles in total)")
         return (unified_dataframes)
     except:
