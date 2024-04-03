@@ -31,9 +31,10 @@ class Users(db.Model, UserMixin):
 
 class KeysTokens(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
-    X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
-    X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
+    NCBI_API_KEY = db.Column(db.String(length=36), unique=True)
+    X_ELS_APIKey = db.Column(db.String(length=32), unique=True)
+    X_ELS_Insttoken = db.Column(db.String(length=32), unique=True)
+    GeminiAI = db.Column(db.String(length=32), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
 

@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 from flask import (
     flash,
@@ -17,7 +18,7 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 
 from src import app, db
-from src.models import Users, Results, FlashtextModels, TokensPassword
+from src.models import Users, Results, FlashtextModels, TokensPassword, KeysTokens
 from src.forms import (
     LoginForm,
     RegisterForm,
@@ -33,21 +34,24 @@ from src.forms import (
     CreateFlashtextModel,
     RecoveryPasswordForm,
     RecoveryPassword,
-    # ChatGPTForm,
+    GeminiForm,
+    RegisterTokensForm
 )
 import src.utils.extractor as extractor
 import src.utils.yagmail_utils as yagmail
+from src.utils.gemeni import gemeni as genai
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
 from src.utils.optional_features import flashtext_model_create
 
 import bcrypt
 import uuid
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# from langchain_openai import ChatOpenAI
+# from langchain_core.prompts import ChatPromptTemplate
+# from langchain_core.output_parsers import StrOutputParser
+
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 
 @app.route("/")
@@ -274,29 +278,28 @@ def result_view(result_id):
         return redirect(url_for("user_area"))
 
 
-@app.route("/chatgpt_engine/<result_id>", methods=["GET", "POST"])
+@app.route("/gemini_engine/<result_id>", methods=["GET", "POST"])
 @login_required
-def chatgpt_engine(result_id):
+def gemini_engine(result_id):
+    form = GeminiForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
-    # df = df[["DOI", "Title", "Authors"]]
+
+    load_dotenv()
+    key = os.getenv("GOOGLE_API_KEY")
 
     list_doi = []
     if request.method == "POST":
         for getid in request.form.getlist("mycheckbox"):
             list_doi.append(getid)
 
-    abstract_selected = df[df["DOI"].isin(list_doi)][["Abstract"]]
+        abstract_selected = df[df["DOI"].isin(list_doi)][["Abstract"]]
 
-    prompt = ChatPromptTemplate.from_template("Whats is talked in this {topic}")
-    model = ChatOpenAI(model="gpt-3.5-turbo")
-    output_parser = StrOutputParser()
+        result = genai(key, form.question.data, abstract_selected)
 
-    chain = prompt | model | output_parser
-    result = chain.invoke({"topic": abstract_selected})
-    flash("This paper ", result)
+        flash(result)
 
-    return render_template("chatgpt_engine.html", df=df, result=result)
+    return render_template("gemini_engine.html", df=df, form=form, result_final=result)
 
 
 @app.route("/download/<result_id>")
@@ -387,6 +390,36 @@ def register():
             flash(f"Error user register {err}", category="danger")
     return render_template("register.html", form=form)
 
+@app.route("/register_tokens/", methods=["GET", "POST"])
+@login_required
+def register_tokens():
+    form = RegisterTokensForm()
+    if form.validate_on_submit():
+        register_token = KeysTokens(
+            NCBI_API_KEY=form.NCBI_API_KEY.data,
+            X_ELS_APIKey=form.X_ELS_APIKey.data,
+            X_ELS_Insttoken=form.X_ELS_Insttoken.data,
+            GeminiAI=form.GeminiAI.data, 
+            user_id=current_user.id
+        )
+        #tregister_token_exis = TokensPassword.query.filter_by(user_id=current_user.id).first()
+        #if tregister_token_exis:
+        #    new_tokens = {'NCBI_API_KEY': form.NCBI_API_KEY.data, 
+        #                  'X_ELS_APIKey': form.X_ELS_APIKey.data,
+        #                  'X_ELS_Insttoken': form.X_ELS_Insttoken.data,
+        #                  'GeminiAI': form.GeminiAI.data}
+
+            # Crie a declaração de atualização
+        #    update_statement = TokensPassword.update().where(TokensPassword.c.user_id == current_user.id).values(new_tokens)
+        #    db.session.commit()
+        #else:
+        db.session.add(register_token)
+        db.session.commit()
+        
+        flash(f'{register_token}')
+    
+    return render_template("register_tokens.html", form=form)
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -414,6 +447,7 @@ def recovery_passwordForm():
             token_password = TokensPassword(
                 user_id=user.id,
                 token=uuid_id,
+                #ajustar
                 link=f"localhost:5000/recovery_password/{user.id}/{uuid_id}",
             )
             db.session.add(token_password)

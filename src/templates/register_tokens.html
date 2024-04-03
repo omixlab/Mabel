@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+Form Register Token
+{% endblock %}
+{% block content %}
+
+<body class="text-center">
+    <div style="width: 50%; height: 550px; float:left;">
+        <img class='mt-5'
+            src="https://img.freepik.com/vetores-gratis/ilustracao-do-conceito-abstrato-de-aplicativo-descentralizado_335657-3888.jpg?w=740"
+            width="350" height="350">
+    </div>
+    <div style="width:50%; height: 550px; float:left;">
+        <h1 class="h3 mb-3 font-weight-normal">
+            Save your tokens 
+        </h1>
+        <form method="POST" class="form-register" styler="color: withesmoke">
+            {{form.hidden_tag()}}
+
+            {{ form.NCBI_API_KEY.label() }}
+            {{ form.NCBI_API_KEY(class='form-control', placeholder='NCBI API KEY') }}
+
+            {{ form.X_ELS_APIKey.label() }}
+            {{ form.X_ELS_APIKey(class='form-control', placeholder='X ELS APIKey') }}
+
+            {{ form.X_ELS_Insttoken.label() }}
+            {{ form.X_ELS_Insttoken(class='form-control', placeholder='X ELS Insttoken') }}
+
+            {{ form.GeminiAI.label() }}
+            {{ form.GeminiAI(class='form-control', placeholder='GeminiAId') }}
+
+            <br>
+            <div class="d-grid">
+                {{ form.submit(class="btn btn-lg btn-success") }}
+            </div>
+            <br>
+        </form>
+
+    </div>
+</body>
+{% endblock %}

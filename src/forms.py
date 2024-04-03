@@ -74,6 +74,12 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
+class RegisterTokensForm(FlaskForm):
+    NCBI_API_KEY = StringField(label="NCBI_API_KEY:")
+    X_ELS_APIKey = StringField(label="X_ELS_APIKey:")
+    X_ELS_Insttoken = StringField(label="X_ELS_Insttoken:")
+    GeminiAI = StringField(label="GemeniAI:")
+    submit = SubmitField(label="Save")
 
 class RecoveryPasswordForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
@@ -283,3 +289,11 @@ class CreateFlashtextModel(FlaskForm):
         ],
     )
     submit = SubmitField(label="Create model")
+
+
+class GeminiForm(FlaskForm):
+    question = TextAreaField(
+        "Message Gemini",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[DataRequired()],
+    )
