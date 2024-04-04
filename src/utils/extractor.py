@@ -120,6 +120,8 @@ def scidir(keyword, num_of_articles):
             abstract.append(doi_doc.data["coredata"]["dc:description"])
             pubtype.append(doi_doc.data["coredata"]["pubType"])
         else:
+            abstract.append("Document error")
+            pubtype.append("Document error")
             print("Read document failed.")
 
     doc_srch.results_df["abstract"] = abstract
@@ -163,6 +165,7 @@ def pprint(query, num_of_articles):
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
+    job_name = "",
     query_fields = dict(),
     boolean_fields = dict(),
     range_fields = dict(),
@@ -180,7 +183,7 @@ def execute(
                     results[k] = func(query_fields[k], range_fields[k]) # Call function for each database, with query and num_of_articles as parameters
 
             # Unify results in a single dataframe
-            unified_df = unify(results)
+            unified_df = unify(job_name, results)
             print(unified_df.columns)
 
             # Prevent error from empty results

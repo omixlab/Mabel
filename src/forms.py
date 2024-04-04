@@ -132,6 +132,7 @@ class AdvancedQuery(FlaskForm):
 
 # Submit
 class SearchArticles(FlaskForm):
+    job_name = StringField(label="Job name")
 
     # QUERY
     query_pubmed = TextAreaField(

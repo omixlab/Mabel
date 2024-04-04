@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-def unify(dfs):
+def unify(job_name, dfs):
     formated_dfs = []
 
     directory_path = "data/dfs_results/"
@@ -78,7 +78,7 @@ def unify(dfs):
                         "MeSH Terms": pubmed["mesh_terms"],
                     }
                 )
-            df.to_csv(os.path.join(folder_path, "pubmed.csv"))
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
             formated_dfs.append(df)
 
     # SCOPUS
@@ -112,7 +112,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            df.to_csv(os.path.join(folder_path, "scopus.csv"))
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
             formated_dfs.append(df)
 
     # SCIENCE DIRECT
@@ -153,7 +153,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            df.to_csv(os.path.join(folder_path, "scidir.csv"))
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
             formated_dfs.append(df)
 
     # SCIELO
@@ -185,7 +185,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            df.to_csv(os.path.join(folder_path, "scielo.csv"))
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
             formated_dfs.append(df)
 
 
@@ -210,7 +210,7 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            df.to_csv(os.path.join(folder_path, "pprint.csv"))
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
             formated_dfs.append(df)
 
 

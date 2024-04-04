@@ -65,6 +65,8 @@ def extractor_base(func):
                         "scielo":search_form.query_scielo.data,
                         "pprint":search_form.query_pprint.data,
                     }
+                    queries_str_list = ''.join([f"{key.capitalize()}: \"{value}\" \n\n" for key, value in query_fields.items() if value])
+
                     boolean_fields = {
                         "pubmed": search_form.check_pubmed.data,
                         "scopus": search_form.check_scopus.data,
@@ -81,6 +83,7 @@ def extractor_base(func):
                     }
 
                     data_tmp = extractor.execute.apply_async((
+                        search_form.job_name.data,
                         query_fields,
                         boolean_fields,
                         range_fields,
@@ -91,8 +94,10 @@ def extractor_base(func):
 
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
-                        user_id=current_user.id, celery_id=data_tmp.id, pubmed_query = search_form.query_pubmed.data,
-                        elsevier_query=search_form.query_elsevier.data)
+                        user_id= current_user.id, 
+                        celery_id= data_tmp.id, 
+                        pubmed_query= search_form.job_name.data,    # job_name =
+                        elsevier_query= queries_str_list)           # used queries =
                     results.status = 'QUEUED'
                     db.session.add(results)
                     db.session.commit()

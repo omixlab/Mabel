@@ -9,19 +9,19 @@ Articles Extractor
         <h2 class="h3 mb-2 font-weight-normal">
             Search Articles
         </h2>
-        <form method="POST" class="form-signin; mt-5" style="color:black; padding-left: 8%;">
+        <form method="POST" class="form-signin; mt-5" style="color:black; padding-left: 8%; padding-right: 8%;">
             {{search_form.hidden_tag()}}
             
             <div class="row">
                 <div class="col-md-2">{{ query_form.tags(class='form-control custom-select')}}</div>
-                <div class="col-md-7">{{ query_form.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
+                <div class="col-md-8">{{ query_form.keyword(class='form-control', placeholder='Keyword', required='required') }}</div>
                 <div class="col-md-2">{{ query_form.boolean(class='form-control custom-select')}}</div>
             </div>
             
             <div class="row">
-                <div class="col-md-2">{{query_form.open_access(class='mt-3')}} <label class="form-check-label" for="open_access">Open Access</label></div>
-                <div class="col-md-7"></div>
-                <div class="col-md-2 text-left">
+                <div class="col-md-2 text-start">{{query_form.open_access(class='mt-3')}} <label class="form-check-label" for="open_access">Open Access</label></div>
+                <div class="col-md-8"></div>
+                <div class="col-md-2 text-end">
                     <button type="submit" name="add_keyword" class="btn btn-primary mt-2"> Add </button>
                 </div>
             </div>
@@ -32,15 +32,15 @@ Articles Extractor
             {% endfor %}
 
             <div class="text-justify">
-                <h5 class="text-justify">Select desired databases and number of articles</h5>
+                <h5 class="text-start">Select desired databases and number of articles:</h5>
 
                 {% for database in ["pubmed", "scopus", "scidir", "scielo"] %}
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-md-2 text-start">
                         {{ search_form['check_' + database](class='mt-2') }}
                         <label class="form-check-label" for="check_{{ database }}">{{ search_form['title_' + database] }}</label>
                     </div>
-                    <div class="col-md-7">{{ search_form['range_' + database](class='form-control', step=5, min=0, max=5000, id='range_' + database, oninput="outputUpdate('range_' + database + '.value')") }}</div>
+                    <div class="col-md-8">{{ search_form['range_' + database](class='form-range', step=5, min=0, max=5000, id='range_' + database, oninput="outputUpdate('range_' + database + '.value')") }}</div>
                     <div class="col-md-2">{{ search_form['num_' + database](class='form-control', id='num_' + database) }}</div>
                 </div>
                 <br>
@@ -53,8 +53,12 @@ Articles Extractor
 
             <br>
             
+            <!-- Submit -->
             <div class="row mt-3">
-                <div class="col-md-11 text-center">
+                <div class="col-md-3"></div>
+                <div class="col-md-4">
+                    {{search_form.job_name(class='form-control', placeholder='Job name') }}</div>
+                <div class="col-md-1">
                     <button type="submit" name="submit_query" class="btn btn-md btn-primary">Search</button>
                 </div>
             </div>
@@ -94,24 +98,6 @@ Articles Extractor
         setupEventListener(rangeSciElo, textFieldSciElo);
 
     </script>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // jQuery script to handle radio button change events
-    $(document).ready(function () {
-        $('input[name="flashtext_radio"]').change(function () {
-            if (this.value === 'Keyword') {
-                $('#keywordDiv').show();
-                $('#modelsDiv').hide();
-            } else if (this.value === 'Model') {
-                $('#keywordDiv').hide();
-                $('#modelsDiv').show();
-            }
-        });
-    });
-</script>
 
 </body>
 {% endblock %}

@@ -70,4 +70,4 @@ AND (
     date:2019-2024)
 
 
-(((title:Colorectal cancer) or (abstract:Colorectal cancer) and (title:Disease) or (abstract:Disease))) and ((title:Molecular target) or (abstract:Molecular target) or (title:Drug target) or (abstract:Drug target) or (title:Therapeutic target) or (abstract:Therapeutic target) or (title:Pharmacological target) or (abstract:Pharmacological target) or ((title:Treatment) and (title:target)) or ((abstract:Treatment) and (abstract:target))) and (date:2019-2024)
+((title:Colorectal cancer) or (abstract:Colorectal cancer)) and ((title:Molecular target) or (abstract:Molecular target) or (title:Drug target) or (abstract:Drug target) or (title:Therapeutic target) or (abstract:Therapeutic target) or (title:Pharmacological target) or (abstract:Pharmacological target) or ((title:Treatment) and (title:target)) or ((abstract:Treatment) and (abstract:target))) and (date:2019-2024)
