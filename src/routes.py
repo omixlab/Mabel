@@ -394,29 +394,38 @@ def register():
 @login_required
 def register_tokens():
     form = RegisterTokensForm()
-    if form.validate_on_submit():
+    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+
+    if register_token_exist:
+        #new_tokens = {
+        #    'NCBI_API_KEY': form.NCBI_API_KEY.data,
+        #    'X_ELS_APIKey': form.X_ELS_APIKey.data,
+        #    'X_ELS_Insttoken': form.X_ELS_Insttoken.data,
+        #    'GeminiAI': form.GeminiAI.data
+        #}
+
+        # Update existing token
+        register_token_exist.NCBI_API_KEY = form.NCBI_API_KEY.data
+        register_token_exist.X_ELS_APIKey = form.X_ELS_APIKey.data
+        register_token_exist.X_ELS_Insttoken = form.X_ELS_Insttoken.data
+        register_token_exist.GeminiAI = form.GeminiAI.data
+        db.session.commit()
+
+        flash('Token was updated successfully!')
+    else:
+        # Create a new token
         register_token = KeysTokens(
+            user_id=current_user.id,
             NCBI_API_KEY=form.NCBI_API_KEY.data,
             X_ELS_APIKey=form.X_ELS_APIKey.data,
             X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-            GeminiAI=form.GeminiAI.data, 
-            user_id=current_user.id
+            GeminiAI=form.GeminiAI.data
         )
-        #tregister_token_exis = TokensPassword.query.filter_by(user_id=current_user.id).first()
-        #if tregister_token_exis:
-        #    new_tokens = {'NCBI_API_KEY': form.NCBI_API_KEY.data, 
-        #                  'X_ELS_APIKey': form.X_ELS_APIKey.data,
-        #                  'X_ELS_Insttoken': form.X_ELS_Insttoken.data,
-        #                  'GeminiAI': form.GeminiAI.data}
-
-            # Crie a declaração de atualização
-        #    update_statement = TokensPassword.update().where(TokensPassword.c.user_id == current_user.id).values(new_tokens)
-        #    db.session.commit()
-        #else:
         db.session.add(register_token)
         db.session.commit()
-        
-        flash(f'{register_token}')
+
+
+        flash('New token registered successfully!')
     
     return render_template("register_tokens.html", form=form)
 
