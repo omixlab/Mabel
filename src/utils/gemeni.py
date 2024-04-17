@@ -1,6 +1,5 @@
 import requests
 
-
 def gemeni(key, question, text):
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={key}"

@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 from flask import (
     flash,
@@ -46,12 +45,6 @@ from src.utils.optional_features import flashtext_model_create
 
 import bcrypt
 import uuid
-
-# from langchain_openai import ChatOpenAI
-# from langchain_core.prompts import ChatPromptTemplate
-# from langchain_core.output_parsers import StrOutputParser
-
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 
 @app.route("/")
@@ -100,9 +93,24 @@ def extractor_base(func):
                     else:
                         kp = None
 
+                    #tokens
+                    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+                    if register_token_exist:
+                        _ = register_token_exist.NCBI_API_KEY             
+                        apikey = register_token_exist.X_ELS_APIKey
+                        insttoken = register_token_exist.X_ELS_Insttoken
+                    else:
+                        register_token_user_master= KeysTokens.query.filter_by(user_id=1).first()
+                        _ = register_token_user_master.NCBI_API_KEY             
+                        apikey = register_token_user_master.X_ELS_APIKey
+                        insttoken = register_token_user_master.X_ELS_Insttoken
+                    
                     # Celery
                     data_tmp = extractor.execute.apply_async(
                         (
+                            _,
+                            apikey, 
+                            insttoken,
                             search_form.pubmed_query.data,
                             search_form.elsevier_query.data,
                             search_form.preprints_query.data,
@@ -285,8 +293,13 @@ def gemini_engine(result_id):
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
 
-    load_dotenv()
-    key = os.getenv("GOOGLE_API_KEY")
+    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+    
+    if register_token_exist :
+        key = register_token_exist.GeminiAI
+    else:
+        register_token_master = KeysTokens.query.filter_by(user_id=1).first()
+        key = register_token_master.GeminiAI
 
     list_doi = []
     if request.method == "POST":
@@ -299,7 +312,7 @@ def gemini_engine(result_id):
 
         flash(result)
 
-    return render_template("gemini_engine.html", df=df, form=form, result_final=result)
+    return render_template("gemini_engine.html", df=df, form=form, result_final=result, result_id=result_id)
 
 
 @app.route("/download/<result_id>")
@@ -397,13 +410,7 @@ def register_tokens():
     register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
 
     if register_token_exist:
-        #new_tokens = {
-        #    'NCBI_API_KEY': form.NCBI_API_KEY.data,
-        #    'X_ELS_APIKey': form.X_ELS_APIKey.data,
-        #    'X_ELS_Insttoken': form.X_ELS_Insttoken.data,
-        #    'GeminiAI': form.GeminiAI.data
-        #}
-
+        
         # Update existing token
         register_token_exist.NCBI_API_KEY = form.NCBI_API_KEY.data
         register_token_exist.X_ELS_APIKey = form.X_ELS_APIKey.data
