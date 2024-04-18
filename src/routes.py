@@ -37,7 +37,7 @@ from src.forms import (
     RegisterTokensForm
 )
 import src.utils.extractor as extractor
-import src.utils.yagmail_utils as yagmail
+import resend
 from src.utils.gemeni import gemeni as genai
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
@@ -468,15 +468,18 @@ def recovery_passwordForm():
             )
             db.session.add(token_password)
             db.session.commit()
-            yagmail.send_mail(
-                os.getenv("EMAIL"),
-                form.email.data,
-                "Recovery Password",
-                f"<b>Hello "
-                + f"your password can be replace in this link {token_password.link}</b><br><br>"
-                + "Some questions cantact us "
-                + "bambuenterprise@gmail.com",
-            )
+            resend.api_key = os.getenv("RESEND")
+
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": f"{form.email.data}",
+                "subject": "Recovery Password",
+                "html": f"<b>Hello "
+               + f"your password can be replace in this link {token_password.link}</b><br><br>"
+               + "Some questions cantact us "
+               + "bambuenterprise@gmail.com"
+                })
+
             flash(f"Success! We send e-mail to {form.email.data}", category="success")
             return redirect(url_for("login"))
         else:

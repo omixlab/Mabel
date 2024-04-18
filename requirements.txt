@@ -24,4 +24,5 @@ pymysql
 spacy
 flashtext
 Werkzeug==2.2.0
-yagmail
+#yagmail
+resend==0.8.0
