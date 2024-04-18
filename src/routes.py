@@ -17,25 +17,8 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 
 from src import app, db
-from src.models import Users, Results, FlashtextModels, TokensPassword, KeysTokens
-from src.forms import (
-    LoginForm,
-    RegisterForm,
-    SearchQuery,
-    SearchArticles,
-    AdvancedPubMedQuery,
-    AdvancedElsevierQuery,
-    AdvancedPreprintsQuery,
-    SearchFilters,
-    ScispacyEntities,
-    FlashtextDefaultModels,
-    FlashtextUserModels,
-    CreateFlashtextModel,
-    RecoveryPasswordForm,
-    RecoveryPassword,
-    GeminiForm,
-    RegisterTokensForm
-)
+from src.models import Users, Results, FlashtextModels, TokensPassword
+from src import forms
 import src.utils.extractor as extractor
 import resend
 from src.utils.gemeni import gemeni as genai
@@ -57,15 +40,15 @@ def extractor_base(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with current_app.app_context():
-            search_form = SearchArticles()
-            available_entities = ScispacyEntities()
+            search_form = forms.SearchArticles()
+            available_entities = forms.ScispacyEntities()
 
             # Flashtext models
-            default_models = FlashtextDefaultModels()
+            default_models = forms.FlashtextDefaultModels()
 
-            for model in FlashtextModels.query.filter_by(user_id=current_user.id).all():
-                setattr(FlashtextUserModels, model.name, BooleanField(model.id))
-            user_models = FlashtextUserModels()
+            for model in forms.FlashtextModels.query.filter_by(user_id=current_user.id).all(): 
+                setattr(forms.FlashtextUserModels, model.name, BooleanField(model.id))
+            user_models = forms.FlashtextUserModels()
 
             if request.method == "POST":
                 # Submit query
@@ -94,47 +77,59 @@ def extractor_base(func):
                         kp = None
 
                     #tokens
-                    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+                    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
                     if register_token_exist:
                         _ = register_token_exist.NCBI_API_KEY             
                         apikey = register_token_exist.X_ELS_APIKey
                         insttoken = register_token_exist.X_ELS_Insttoken
                     else:
-                        register_token_user_master= KeysTokens.query.filter_by(user_id=1).first()
+                        register_token_user_master= forms.KeysTokens.query.filter_by(user_id=1).first()
                         _ = register_token_user_master.NCBI_API_KEY             
                         apikey = register_token_user_master.X_ELS_APIKey
                         insttoken = register_token_user_master.X_ELS_Insttoken
                     
                     # Celery
-                    data_tmp = extractor.execute.apply_async(
-                        (
-                            _,
-                            apikey, 
-                            insttoken,
-                            search_form.pubmed_query.data,
-                            search_form.elsevier_query.data,
-                            search_form.preprints_query.data,
-                            search_form.check_pubmed.data,
-                            search_form.check_scopus.data,
-                            search_form.check_scidir.data,
-                            search_form.check_preprints.data,
-                            int(search_form.pm_num_of_articles.data),
-                            int(search_form.sc_num_of_articles.data),
-                            int(search_form.sd_num_of_articles.data),
-                            int(search_form.ppr_num_of_articles.data),
-                            selected_entities,
-                            kp,
+                    query_fields = {
+                        "pubmed": search_form.query_pubmed.data,
+                        "scopus":search_form.query_elsevier.data,
+                        "scidir":search_form.query_elsevier.data,
+                        "scielo":search_form.query_scielo.data,
+                        "pprint":search_form.query_pprint.data,
+                    }
+                    queries_str_list = ''.join([f"{key.capitalize()}: \"{value}\" \n\n" for key, value in query_fields.items() if value])
+
+                    boolean_fields = {
+                        "pubmed": search_form.check_pubmed.data,
+                        "scopus": search_form.check_scopus.data,
+                        "scidir": search_form.check_scidir.data,
+                        "scielo": search_form.check_scielo.data,
+                        "pprint": search_form.check_pprint.data,
+                    }
+                    range_fields = {
+                        "pubmed":int(search_form.num_pubmed.data),
+                        "scopus":int(search_form.num_scopus.data),
+                        "scidir":int(search_form.num_scidir.data),
+                        "scielo":int(search_form.num_scielo.data),
+                        "pprint":None,
+                    }
+
+                    data_tmp = extractor.execute.apply_async((
+                        search_form.job_name.data,
+                        query_fields,
+                        boolean_fields,
+                        range_fields,
+                        selected_entities,
+                        kp
                         )
                     )
 
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
-                        user_id=current_user.id,
-                        celery_id=data_tmp.id,
-                        pubmed_query=search_form.pubmed_query.data,
-                        elsevier_query=search_form.elsevier_query.data,
-                    )
-                    results.status = "QUEUED"
+                        user_id= current_user.id, 
+                        celery_id= data_tmp.id, 
+                        pubmed_query= search_form.job_name.data,    # job_name =
+                        elsevier_query= queries_str_list)           # used queries =
+                    results.status = 'QUEUED'
                     db.session.add(results)
                     db.session.commit()
 
@@ -159,113 +154,101 @@ def extractor_base(func):
 @login_required
 @extractor_base
 def articles_extractor(search_form, available_entities, default_models, user_models):
-    query_form = SearchQuery()
+    query_form = forms.BasicQuery()
 
     # Query constructor
-    if request.method == "POST":
-        if "add_keyword" in request.form:
-            (
-                search_form.pubmed_query.data,
-                search_form.elsevier_query.data,
-            ) = query_constructor.basic(
-                search_form.pubmed_query.data,
-                search_form.elsevier_query.data,
+    if request.method == 'POST':
+        if 'add_keyword' in request.form:
+            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data = query_constructor.basic(
+                search_form.query_pubmed.data, 
+                search_form.query_elsevier.data,
+                search_form.query_scielo.data,
                 query_form.tags.data,
                 query_form.keyword.data,
-                query_form.connective.data,
-                query_form.open_access.data,
+                query_form.boolean.data,
+                query_form.open_access.data
             )
+            
+    return render_template("articles_extractor.html", 
+                            query_form = query_form,
+                            search_form = search_form,
+                            entities = available_entities,
+                            default_models = default_models,
+                            user_models = user_models,)
 
-    return render_template(
-        "articles_extractor.html",
-        search_form=search_form,
-        query_form=query_form,
-        entities=available_entities,
-        default_models=default_models,
-        user_models=user_models,
-    )
 
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 @extractor_base
-def articles_extractor_str(
-    search_form, available_entities, default_models, user_models
-):
-    pm_query_form = AdvancedPubMedQuery()
-    els_query_form = AdvancedElsevierQuery()
-    ppr_query_form = AdvancedPreprintsQuery()
-    search_filters = SearchFilters()
+def articles_extractor_str(search_form, available_entities, default_models, user_models):
+    query_form = forms.AdvancedQuery()
+    search_filters = forms.SearchFilters()
 
     # Query constructor
-    if request.method == "POST":
-        if "pm_add_keyword" in request.form:
-            search_form.pubmed_query.data = query_constructor.pubmed(
-                search_form.pubmed_query.data,
-                pm_query_form.fields_pm.data,
-                pm_query_form.keyword_pm.data,
-                pm_query_form.boolean_pm.data,
+    if request.method == 'POST':
+        if 'pubmed_add_keyword' in request.form:
+            search_form.query_pubmed.data = query_constructor.pubmed(
+                search_form.query_pubmed.data,
+                query_form.tags_pubmed.data,
+                query_form.keyword_pubmed.data,
+                query_form.boolean_pubmed.data,
             )
 
-        if "els_add_keyword" in request.form:
-            search_form.elsevier_query.data = query_constructor.elsevier(
-                search_form.elsevier_query.data,
-                els_query_form.fields_els.data,
-                els_query_form.keyword_els.data,
-                els_query_form.boolean_els.data,
-                els_query_form.open_access.data,
+        if "elsevier_add_keyword" in request.form:
+            search_form.query_elsevier.data = query_constructor.elsevier(
+                search_form.query_elsevier.data,
+                query_form.tags_elsevier.data,
+                query_form.keyword_elsevier.data,
+                query_form.boolean_elsevier.data,
+                query_form.open_access_elsevier.data,
+            )
+        
+        if 'scielo_add_keyword' in request.form:
+            if query_form.start_date_scielo.data and query_form.end_date_scielo.data:
+                years_range = range(query_form.start_date_scielo.data, query_form.end_date_scielo.data+1)
+            else:
+                years_range=None
+
+            search_form.query_scielo.data = query_constructor.scielo(
+                search_form.query_scielo.data,
+                query_form.tags_scielo.data,
+                query_form.keyword_scielo.data,
+                query_form.boolean_scielo.data,
+                years_range,
+            )
+
+        if 'pprint_add_keyword' in request.form:
+            search_form.query_pprint.data = query_constructor.preprints(
+                search_form.query_pprint.data,
+                query_form.tags_pprint.data,
+                query_form.keyword_pprint.data,
+                query_form.boolean_pprint.data,
+                f"{query_form.start_date_pprint.data}-{query_form.end_date_pprint.data}",
             )
 
         if "apply_filters" in request.form:
             filters_tags = dicts_and_tuples.pm_filters
-            available_filters = [
-                search_filters.abstract,
-                search_filters.free_full_text,
-                search_filters.full_text,
-                search_filters.booksdocs,
-                search_filters.clinicaltrial,
-                search_filters.meta_analysis,
-                search_filters.randomizedcontrolledtrial,
-                search_filters.review,
-                search_filters.systematicreview,
-                search_filters.humans,
-                search_filters.animal,
-                search_filters.male,
-                search_filters.female,
-                search_filters.english,
-                search_filters.portuguese,
-                search_filters.spanish,
-                search_filters.data,
-                search_filters.excludepreprints,
-                search_filters.medline,
-            ]
-
-            selected_filters = [
-                filters_tags[f.name] for f in available_filters if f.data
-            ]
-
-            search_form.pubmed_query.data = query_constructor.pubmed_filters(
-                search_form.pubmed_query.data, selected_filters
+            available_filters = [getattr(search_filters, field_name) for field_name in dir(search_filters) if isinstance(getattr(search_filters, field_name), BooleanField)]
+            selected_filters = [filters_tags[f.name] for f in available_filters if f.data]
+            
+            search_form.query_pubmed.data = query_constructor.pubmed_filters(
+                search_form.query_pubmed.data,
+                selected_filters
             )
 
-        if "ppr_add_keyword" in request.form:
-            search_form.preprints_query.data = query_constructor.preprints(
-                search_form.preprints_query.data,
-                ppr_query_form.keyword_ppr.data,
-            )
 
-    return render_template(
-        "articles_extractor_str.html",
-        pm_query=pm_query_form,
-        els_query=els_query_form,
-        ppr_query=ppr_query_form,
-        search_form=search_form,
-        search_filters=search_filters,
-        entities=available_entities,
-        default_models=default_models,
-        user_models=user_models,
-    )
 
+
+
+    return render_template("articles_extractor_str.html",
+                            query_form=query_form,
+                            search_form=search_form,
+                            search_filters=search_filters,
+                            entities = available_entities,
+                            default_models = default_models,
+                            user_models = user_models,
+                            )
 
 @app.route("/user_area/")
 @login_required
@@ -289,16 +272,16 @@ def result_view(result_id):
 @app.route("/gemini_engine/<result_id>", methods=["GET", "POST"])
 @login_required
 def gemini_engine(result_id):
-    form = GeminiForm()
+    form = forms.GeminiForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
 
-    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
     
     if register_token_exist :
         key = register_token_exist.GeminiAI
     else:
-        register_token_master = KeysTokens.query.filter_by(user_id=1).first()
+        register_token_master = forms.KeysTokens.query.filter_by(user_id=1).first()
         key = register_token_master.GeminiAI
 
     list_doi = []
@@ -341,14 +324,16 @@ def delete_record(id):
 @app.route("/user_models/", methods=["GET", "POST"])
 @login_required
 def user_models():
-    form = CreateFlashtextModel()
-    user_models = FlashtextModels.query.filter_by(user_id=current_user.id).all()
+    form = forms.CreateFlashtextModel()
+    user_models = FlashtextModels.query.filter_by(user_id=current_user.id).all() 
 
     if form.validate_on_submit():
         tsv_path = os.path.join(
             os.environ.get("UPLOAD_FILES"), secure_filename(f"{form.name.data}.txt")
         )
         form.tsv.data.save(tsv_path)
+
+        print(os.environ.get('FLASHTEXT_USER_MODELS'))
 
         model_path = os.path.join(
             os.environ.get("FLASHTEXT_USER_MODELS"),
@@ -390,7 +375,7 @@ def delete_model(id):
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
-    form = RegisterForm()
+    form = forms.RegisterForm()
     if form.validate_on_submit():
         user = Users(
             name=form.name.data, email=form.email.data, password_cryp=form.password.data
@@ -406,8 +391,8 @@ def register():
 @app.route("/register_tokens/", methods=["GET", "POST"])
 @login_required
 def register_tokens():
-    form = RegisterTokensForm()
-    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+    form = forms.RegisterTokensForm()
+    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
 
     if register_token_exist:
         
@@ -421,7 +406,7 @@ def register_tokens():
         flash('Token was updated successfully!')
     else:
         # Create a new token
-        register_token = KeysTokens(
+        register_token = forms.KeysTokens(
             user_id=current_user.id,
             NCBI_API_KEY=form.NCBI_API_KEY.data,
             X_ELS_APIKey=form.X_ELS_APIKey.data,
@@ -439,7 +424,7 @@ def register_tokens():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()
+    form = forms.LoginForm()
     if form.validate_on_submit():
         user_logged = Users.query.filter_by(email=form.email.data).first()
         if user_logged and user_logged.convert_password(
@@ -455,7 +440,7 @@ def login():
 
 @app.route("/recovery_password_form", methods=["GET", "POST"])
 def recovery_passwordForm():
-    form = RecoveryPasswordForm()
+    form = forms.RecoveryPasswordForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user:
@@ -489,7 +474,7 @@ def recovery_passwordForm():
 
 @app.route("/recovery_password/<id>/<token>", methods=["GET", "POST"])
 def recovery_password(token, id):
-    form = RecoveryPassword()
+    form = forms.RecoveryPassword()
     token_password = TokensPassword.query.filter_by(token=token).first()
     if token_password:
         user = Users.query.filter_by(id=id).first()
@@ -513,5 +498,5 @@ def recovery_password(token, id):
 @app.route("/logout")
 def logout():
     logout_user()
-    flash("You do logout", category="info")
+    flash("Logged out successfully", category="info")
     return redirect(url_for("home"))

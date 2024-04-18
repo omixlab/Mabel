@@ -1,15 +1,31 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
 
 
-def unify(dfs):
+def unify(job_name, dfs):
     formated_dfs = []
 
+    directory_path = "data/dfs_results/"
+
+    folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
+
+    if not folders or "1" not in folders:
+        folder = "1"
+        os.makedirs(os.path.join(directory_path, folder))
+    else:
+        highest_numbered_folder = max(folders, key=lambda x: int(x))
+
+        folder = str(int(highest_numbered_folder) + 1)
+        os.makedirs(os.path.join(directory_path, folder))
+
+    folder_path = os.path.join(directory_path, folder)
+
     # PUBMED
-    if "pm" in dfs:
-        pubmed = dfs["pm"]
+    if "pubmed" in dfs:
+        pubmed = dfs["pubmed"]
 
         if pubmed.empty:
             pass
@@ -48,8 +64,7 @@ def unify(dfs):
                     pm_formated_type.append("error")
 
             # Converte em dataframes padronizados
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": pubmed["title"],
                         "Abstract": pubmed["abstract"],
@@ -63,11 +78,12 @@ def unify(dfs):
                         "MeSH Terms": pubmed["mesh_terms"],
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
 
     # SCOPUS
-    if "sc" in dfs:
-        scopus = dfs["sc"]
+    if "scopus" in dfs:
+        scopus = dfs["scopus"]
 
         if scopus.empty:
             pass
@@ -82,8 +98,7 @@ def unify(dfs):
                 except:
                     sc_formated_affil.append("error")
 
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": scopus["dc:title"],
                         "Abstract": scopus["Abstract"],
@@ -97,11 +112,12 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
 
     # SCIENCE DIRECT
-    if "sd" in dfs:
-        scidir = dfs["sd"]
+    if "scidir" in dfs:
+        scidir = dfs["scidir"]
 
         if scidir.empty:
             pass
@@ -125,8 +141,7 @@ def unify(dfs):
                 except:
                     sd_formated_pages.append("error")
 
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": scidir["dc:title"],
                         "Abstract": scidir["abstract"],
@@ -140,17 +155,50 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
+
+    # SCIELO
+    if "scielo" in dfs:
+        scielo = dfs["scielo"]
+
+        se_formated_pages = []
+        for row1, row2 in zip(scielo["start_page"], scielo["end_page"]):
+            if row1 and row2:
+                pages = f"{row1}-{row2}"
+            else:
+                pages = np.nan
+            se_formated_pages.append(pages)
+
+        if scielo.empty:
+            pass
+        else:
+            df = pd.DataFrame(
+                    {
+                        "Title": scielo["title"],
+                        "Abstract": scielo["abstract"],
+                        "Pages": se_formated_pages,
+                        "Journal": scielo["journal"],
+                        "Authors": scielo["authors"],
+                        "Date": scielo["year"],
+                        "Type": np.nan,
+                        "DOI": scielo["doi"],
+                        "Affiliations": np.nan,
+                        "MeSH Terms": np.nan,
+                    }
+                )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
+
 
     # PREPRINTS
-    if "ppr" in dfs:
-        preprints = dfs["ppr"]
+    if "pprint" in dfs:
+        preprints = dfs["pprint"]
 
         if preprints.empty:
             pass
         else:
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": preprints["title"],
                         "Abstract": preprints["abstract"],
@@ -164,14 +212,20 @@ def unify(dfs):
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
+
 
     # Concatenação dos dataframes
     try:
         unified_dataframes = pd.concat(formated_dfs)
-        unified_dataframes = unified_dataframes.drop_duplicates(subset=["DOI"])
-        print("Success: Dataframes unified succesfully")
-        return unified_dataframes
+
+        total = len(unified_dataframes)
+        unified_dataframes = unified_dataframes.drop_duplicates(subset=['DOI'])
+        dropped = len(unified_dataframes)
+        print(f"Dropped {total-dropped} duplicates out of {total}")
+        print(f"Success: Dataframes unified succesfully ({len(unified_dataframes)} articles in total)")
+        return (unified_dataframes)
     except:
         if not formated_dfs:
             print("Error: No results")

@@ -1,0 +1,5 @@
+# SCOPUS
+https://dev.elsevier.com/sc_search_tips.html
+
+# SCIENCEDIRECT
+https://dev.elsevier.com/tips/ScienceDirectSearchTips.htm

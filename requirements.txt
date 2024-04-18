@@ -26,3 +26,5 @@ flashtext
 Werkzeug==2.2.0
 #yagmail
 resend==0.8.0
+scielo-extractor
+keyword-search

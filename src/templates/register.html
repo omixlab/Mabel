@@ -19,13 +19,13 @@ Form Register
 
             {{ form.name.label() }}
             {{ form.name(class='form-control', placeholder='Your username') }}
-
+            <br>
             {{ form.email.label() }}
             {{ form.email(class='form-control', placeholder='Your E-mail') }}
-
+            <br>
             {{ form.password.label() }}
             {{ form.password(class='form-control', placeholder='Your password') }}
-
+            <br>
             {{ form.password_conf.label() }}
             {{ form.password_conf(class='form-control', placeholder='Confirm your password') }}
 
@@ -35,8 +35,7 @@ Form Register
             </div>
             <br>
             <div class="Checkbox mb-3">
-                <h4 style="color:black">Already have an account?</h4>
-                <a class='btn btn-sm btn-secondary' href="{{url_for('login')}}">Log in</a>
+                <a href="{{url_for('login')}}"> <h6>Already have an account?</h6></a>
             </div>
         </form>
 

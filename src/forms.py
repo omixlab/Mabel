@@ -36,6 +36,7 @@ from src.models import Users, FlashtextModels
 # Sfrom wtforms.widgets import TextArea
 
 
+# Flask Login
 class RegisterForm(FlaskForm):
     def validate_username(self, check_user):
         user = Users.query.filter_by(name=check_user.data).first()
@@ -68,7 +69,6 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField(label="Submit")
 
-
 class LoginForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     password = PasswordField(label="Senha:", validators=[DataRequired()])
@@ -84,7 +84,6 @@ class RegisterTokensForm(FlaskForm):
 class RecoveryPasswordForm(FlaskForm):
     email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
     submit = SubmitField(label="Send")
-
 
 class RecoveryPassword(FlaskForm):
     def validate_password(self, check_password):
@@ -103,122 +102,138 @@ class RecoveryPassword(FlaskForm):
     submit = SubmitField(label="Recovery Password")
 
 
-class SearchQuery(FlaskForm):
-    tags = SelectField(
-        "option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1
-    )
+# Query constructor
+class BasicQuery(FlaskForm):
+    tags = SelectField("option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1)
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
-    connective = SelectField("connective", choices=flasky_tuples.boolean_operators)
+    boolean = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
 
 
-class AdvancedPubMedQuery(FlaskForm):
-    fields_pm = SelectField("option", choices=flasky_tuples.pm_tags, default=1)
-    keyword_pm = StringField(label="Keyword:", validators=[Length(min=2)])
-    boolean_pm = SelectField("connective", choices=flasky_tuples.boolean_operators)
+class AdvancedQuery(FlaskForm):
+    tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
+    keyword_pubmed = StringField(label="Keyword:", validators=[Length(min=2)])
+    boolean_pubmed = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    open_access_pubmed = None
+
+    tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
+    keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_elsevier = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
+
+    tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
+    keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_scielo = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("AND NOT", "NOT")])
+    start_date_scielo = IntegerField(label="Start date:", validators=[Optional(), NumberRange(min=-4713, max=9999)])
+    end_date_scielo = IntegerField(label="End date:", validators=[Optional(), NumberRange(min=-4713, max=9999)])
+    open_access_scielo = BooleanField("open_access", validators=[Optional()], default=False)
+
+    tags_pprint = SelectField("option", choices=flasky_tuples.pprint_tags, default=1)
+    keyword_pprint = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_pprint = SelectField("connective", choices=[("and", "AND"), ("or", "OR"), ("and not", "NOT")])
+    start_date_pprint = StringField(label="Start date:", validators=[Length(min=2)])
+    end_date_pprint = StringField(label="End date:", validators=[Length(min=2)])
+
+    open_access_pprint = None
 
 
-class AdvancedElsevierQuery(FlaskForm):
-    fields_els = SelectField("option", choices=flasky_tuples.els_tags, default=1)
-    keyword_els = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_els = SelectField("connective", choices=flasky_tuples.boolean_operators)
-    open_access = BooleanField("open_access", validators=[Optional()], default=False)
-
-
-class AdvancedPreprintsQuery(FlaskForm):
-    fields_ppr = SelectField("option", choices=flasky_tuples.els_tags, default=1)
-    keyword_ppr = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_ppr = SelectField(
-        "connective", choices=[flasky_tuples.boolean_operators[0]]
-    )
-
-
+# Submit
 class SearchArticles(FlaskForm):
+    job_name = StringField(label="Job name")
 
     # QUERY
-    pubmed_query = TextAreaField(
-        "pubmed_query", render_kw={"rows": "4", "cols": "100"}, validators=[Optional()]
+    query_pubmed = TextAreaField(
+        label="Pubmed", 
+        render_kw={"rows": "4", "cols": "100"}, 
+        validators=[Optional()]
     )
-    elsevier_query = TextAreaField(
-        "elsevier_query",
+    query_elsevier = TextAreaField(
+        "Elsevier",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
-
-    preprints_query = TextAreaField(
-        "preprints_query",
+    query_scielo = TextAreaField(
+        "SciElo",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()]
+    )
+    query_pprint = TextAreaField(
+        "Preprints",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )
 
     # Check and Range
-    check_pubmed = BooleanField("check")
+    check_pubmed = BooleanField("pubmed")
+    check_scopus = BooleanField("scopus")
+    check_scidir = BooleanField("scidir")
+    check_scielo = BooleanField("scielo")
+    check_pprint = BooleanField("pprint")
+
+
     range_pubmed = IntegerRangeField(
         default=25,
         validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
-    pm_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_scopus = BooleanField("scopus")
     range_scopus = IntegerRangeField(
-        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    sc_num_of_articles = IntegerField(
-        default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
-    )
-
-    check_scidir = BooleanField("scidir")
     range_scidir = IntegerRangeField(
-        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
+        default=25, 
+        validators=[DataRequired(), NumberRange(min=1, max=5000)]
     )
-    sd_num_of_articles = IntegerField(
+    range_scielo = IntegerRangeField(
         default=25,
-        validators=[
-            DataRequired(),
-            NumberRange(
-                min=1, max=5000, message="Number of articles outside of supported range"
-            ),
-        ],
+        validators=[DataRequired(), NumberRange(min=0, max=5000)],
     )
+    range_pprint = None
 
-    check_preprints = BooleanField("preprints")
-    range_preprints = IntegerRangeField(
-        default=25, validators=[DataRequired(), NumberRange(min=1, max=5000)]
-    )
-    ppr_num_of_articles = IntegerField(
+
+    num_pubmed = IntegerField(
         default=25,
         validators=[
             DataRequired(),
-            NumberRange(
-                min=1,
-                max=80000,
-                message="Number of articles outside of supported range",
-            ),
-        ],
-    )
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_scopus = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_scidir = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+    
+    num_scielo = IntegerField(
+        default=25,
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=5000, message="Number of articles outside of supported range"),
+        ])
+
+    num_pprint = None
+    
+    title_pubmed = "Pubmed"
+    title_scopus = "Scopus"
+    title_scidir = "Science Direct"
+    title_scielo = "SciElo"
+    title_elsevier = "Elsevier"
+    title_pprint = "Preprints"
+
 
     # Flashtext options
-    flashtext_radio = RadioField(
-        "Keyword or Models",
-        choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")],
-    )
-    flashtext_string = StringField("Keywords", name="aaa", description="bbb")
+    flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
+    flashtext_string = StringField("Keywords")
 
 
+# Others
 class SearchFilters(FlaskForm):
     abstract = BooleanField("Abstract")
     free_full_text = BooleanField("Free full text")
@@ -261,11 +276,12 @@ class ScispacyEntities(FlaskForm):
 
 
 class FlashtextDefaultModels(FlaskForm):
-    genes_human = BooleanField(2)
-    genes_danio_rerio = BooleanField(3)
+    genes_human = BooleanField(1)
+    genes_danio_rerio = BooleanField(2)
 
 
 class FlashtextUserModels(FlaskForm):
+    # Apenas cria a classe aqui, atributos são criados durante o acesso (routes.py)
     pass
 
 

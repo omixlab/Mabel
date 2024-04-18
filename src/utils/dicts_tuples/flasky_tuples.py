@@ -1,5 +1,3 @@
-boolean_operators = [("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")]
-
 # BASIC
 tags = [
     ("ALL", "All Fields"),
@@ -14,23 +12,9 @@ tags = [
     ("PUBLISHER", "Publisher"),
 ]
 
-to_pubmed = {
-    "ALL": "",
-    "Date": "[Date Publication]",
-    "TITLE": "[Title]",
-    "ABS": "[Title/Abstract]",
-    "AUTH": "[Author]",
-    "AFFIL": "[Affiliation]",
-    "PAGES": "[Pagination]",
-    "VOLUME": "[Volume]",
-    "LANGUAGE": "[Language]",
-    "DOCTYPE": "[Publication Type]",
-    "PUBLISHER": "[Publisher]",
-}
-
 
 # ADVANCED
-pm_tags = [
+pubmed_tags = [
     ("", "All Fields"),
     ("[Date]", "Date"),
     ("[Author]", "Author"),
@@ -61,7 +45,7 @@ pm_tags = [
     ("[Supplementary Concept]", "Supplementary Concept"),
 ]
 
-els_tags = [
+elsevier_tags = [
     ("ALL", "All"),
     ("ABS", "Abstract"),
     ("AF-ID", "Affiliation ID"),
@@ -133,8 +117,27 @@ els_tags = [
     ("WEBSITE", "Website"),
 ]
 
+scielo_tags = [
+    ("", "All areas"),
+    ("year_cluster", "Publication Year"),
+    ("au", "Author"),
+    ("sponsor", "Sponsor"),
+    ("ta", "Journal"),
+    ("ab", "Abstract"),
+    ("ti", "Title"), 
+]
+
+pprint_tags = [
+    ("abstract", "Abstract"),
+    ("title", "Title"),
+    ("doi", "DOI"),
+    ("date", "Date"),
+    ("authors", "Authors"),
+    ("journal", "Journal"),
+]
+
 # PubMed Filters
-pm_filters = {
+pubmed_filters = {
     "abstract": "fha",
     "free_full_text": "ffrft",
     "full_text": "fft",
@@ -176,3 +179,26 @@ scispacy = [
     ("SIMPLE_CHEMICAL", "Simple chemical"),
     ("TISSUE", "Tissue"),
 ]
+
+
+# DICTS
+to_pubmed = {
+    "ALL": "",
+    "Date": "[Date Publication]",
+    "TITLE": "[Title]",
+    "ABS": "[Title/Abstract]",
+    "AUTH": "[Author]",
+    "AFFIL": "[Affiliation]",
+    "PAGES": "[Pagination]",
+    "VOLUME": "[Volume]",
+    "LANGUAGE": "[Language]",
+    "DOCTYPE": "[Publication Type]",
+    "PUBLISHER": "[Publisher]",
+}
+
+to_scielo = {
+    "TITLE": "ti",
+    "ABS": "ab",
+    "AUTH": "au",
+}
+
