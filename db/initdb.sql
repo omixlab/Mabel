@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS bambu-db;
+CREATE DATABASE IF NOT EXISTS bambu;
 
-USE bambu-db;
+USE bambu;
 
 CREATE TABLE IF NOT EXISTS users (
 	id	INTEGER (50) NOT NULL AUTO_INCREMENT,
@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS results (
 	user_id	INTEGER,
 	status VARCHAR(20),
 	celery_id VARCHAR(100) NOT NULL,
-	pubmed_query VARCHAR(1024),
-	elsevier_query VARCHAR(1024),
+	job_name VARCHAR(100),
+	used_queries VARCHAR(4096),
 	result_json json,
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),

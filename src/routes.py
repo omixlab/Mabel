@@ -127,8 +127,8 @@ def extractor_base(func):
                     results = Results(
                         user_id= current_user.id, 
                         celery_id= data_tmp.id, 
-                        pubmed_query= search_form.job_name.data,    # job_name =
-                        elsevier_query= queries_str_list)           # used queries =
+                        job_name= search_form.job_name.data,
+                        used_queries= queries_str_list)
                     results.status = 'QUEUED'
                     db.session.add(results)
                     db.session.commit()
