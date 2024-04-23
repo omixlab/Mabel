@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS users (
 	password VARCHAR(300) NOT NULL,
 	PRIMARY KEY(id),
 	UNIQUE(name),
-	UNIQUE(password),
 	UNIQUE(email)
 );
 
@@ -48,7 +47,9 @@ CREATE TABLE IF NOT EXISTS flashtext_models (
 	path VARCHAR(255),
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+	UNIQUE(name),
+	UNIQUE(path)
 );
 CREATE TABLE IF NOT EXISTS tokens_password (
 	id INTEGER (50) NOT NULL AUTO_INCREMENT,
@@ -62,8 +63,12 @@ CREATE TABLE IF NOT EXISTS tokens_password (
 	FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
---INSERT INTO flashtext_models (id, user_id, name, type, path)
---VALUES (1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_human.pickle'); 
 
---INSERT INTO flashtext_models (id, user_id, name, type, path)
---VALUES (2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_dario_rerio.pickle'); 
+INSERT INTO users (id, name, email, password)
+VALUES
+	(1, 'admin', 'admin', '******');
+
+INSERT INTO flashtext_models (id, user_id, name, type, path, created_date)
+VALUES
+	(1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_human.pickle', CURRENT_TIMESTAMP),
+	(2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_danio_rerio.pickle', CURRENT_TIMESTAMP);
