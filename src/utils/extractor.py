@@ -178,7 +178,6 @@ def execute(
             # Extract articles
             results = {}
             for k in boolean_fields.keys():
-                print(boolean_fields)
                 if boolean_fields[k] == True:
                     called_function = globals()[k]
                     if k == "pubmed":
@@ -191,7 +190,6 @@ def execute(
 
             # Unify results in a single dataframe
             unified_df = unify(job_name, results)
-            print(unified_df.columns)
 
             # Prevent error from empty results
             if unified_df.empty:
@@ -212,6 +210,8 @@ def execute(
             if type(kp) is list:
                 print(f'Filtering {kp} with Flashtext')
                 unified_df = flashtext_kp(unified_df, kp)
+
+            print(unified_df.columns)
 
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)

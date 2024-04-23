@@ -67,13 +67,13 @@ def unify(job_name, dfs):
             df = pd.DataFrame(
                     {
                         "Title": pubmed["title"],
+                        "DOI": pubmed["doi"],
                         "Abstract": pubmed["abstract"],
+                        "Date": pubmed["pubdate"],
                         "Pages": pubmed["pages"],
                         "Journal": pubmed["journal"],
                         "Authors": pm_formated_auth,
-                        "Date": pubmed["pubdate"],
                         "Type": pm_formated_type,
-                        "DOI": pubmed["doi"],
                         "Affiliations": pubmed["affiliations"],
                         "MeSH Terms": pubmed["mesh_terms"],
                     }
@@ -101,13 +101,13 @@ def unify(job_name, dfs):
             df = pd.DataFrame(
                     {
                         "Title": scopus["dc:title"],
+                        "DOI": scopus["prism:doi"],
                         "Abstract": scopus["Abstract"],
+                        "Date": scopus["prism:coverDate"],
                         "Pages": scopus["prism:pageRange"],
                         "Journal": scopus["prism:publicationName"],
                         "Authors": scopus["dc:creator"],
-                        "Date": scopus["prism:coverDate"],
                         "Type": scopus["subtypeDescription"],
-                        "DOI": scopus["prism:doi"],
                         "Affiliations": sc_formated_affil,
                         "MeSH Terms": np.nan,
                     }
@@ -144,13 +144,13 @@ def unify(job_name, dfs):
             df = pd.DataFrame(
                     {
                         "Title": scidir["dc:title"],
+                        "DOI": scidir["prism:doi"],
                         "Abstract": scidir["abstract"],
+                        "Date": scidir["prism:coverDate"],
                         "Pages": sd_formated_pages,
                         "Journal": scidir["prism:publicationName"],
                         "Authors": sd_formated_auth,
-                        "Date": scidir["prism:coverDate"],
                         "Type": scidir["pubtype"],
-                        "DOI": scidir["prism:doi"],
                         "Affiliations": np.nan,
                         "MeSH Terms": np.nan,
                     }
@@ -176,13 +176,13 @@ def unify(job_name, dfs):
             df = pd.DataFrame(
                     {
                         "Title": scielo["title"],
+                        "DOI": scielo["doi"],
                         "Abstract": scielo["abstract"],
+                        "Date": scielo["year"],
                         "Pages": se_formated_pages,
                         "Journal": scielo["journal"],
                         "Authors": scielo["authors"],
-                        "Date": scielo["year"],
                         "Type": np.nan,
-                        "DOI": scielo["doi"],
                         "Affiliations": np.nan,
                         "MeSH Terms": np.nan,
                     }
@@ -201,13 +201,13 @@ def unify(job_name, dfs):
             df = pd.DataFrame(
                     {
                         "Title": preprints["title"],
+                        "DOI": preprints["doi"],
                         "Abstract": preprints["abstract"],
+                        "Date": preprints["date"],
                         "Pages": np.nan,
                         "Journal": preprints["journal"],
                         "Authors": preprints["authors"],
-                        "Date": preprints["date"],
                         "Type": np.nan,
-                        "DOI": preprints["doi"],
                         "Affiliations": np.nan,
                         "MeSH Terms": np.nan,
                     }

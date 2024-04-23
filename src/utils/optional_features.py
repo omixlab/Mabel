@@ -23,7 +23,7 @@ def scispacy_ner(df, entities):
                     recognized_list.append(entity.text)
             new_column.append(", ".join(set(recognized_list)))
 
-        df.insert(len(df.columns), f"{selected_entity}", new_column)
+        df.insert(4, f"{selected_entity}", new_column)
         print(f"Success: NER for {selected_entity} with SciSpacy")
     return df
 
@@ -47,7 +47,7 @@ def flashtext_kp_string(df, string):
 
         filtered_column.append(", ".join(set(filtered_row)))
 
-    df.insert(len(df.columns), "Filtered Keywords", filtered_column)
+    df.insert(4, "Filtered Keywords", filtered_column)
     print("Success: Keywords processed from string")
     return df
 
@@ -81,7 +81,7 @@ def flashtext_kp(df, models):
 
             filtered_column.append(", ".join(set(filtered_row)))
 
-        df.insert(len(df.columns), model.name, filtered_column)
+        df.insert(5, model.name, filtered_column)
 
     print("Success: Keywords proccessed")
     return df

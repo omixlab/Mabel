@@ -26,15 +26,15 @@
         {% for r, row in df.iterrows() %}
             <tr>
             {% for column_name in df.columns %}
-                <td>
-                    {% if column_name == "Abstract" %}
-                        <div class="scrollable-content">{{row[column_name]}}</div>
-                    {% elif column_name == "Human" %}
+                <td>    
+                    {% if column_name == "Human" %}
                         {% for gene in row[column_name].split(', ') %}
-                            <a href="https://www.uniprot.org/uniprotkb?query={{gene}}">{{gene}}</a><br>
+                            <a href="https://www.uniprot.org/uniprotkb?query={{gene[column_name]}}">{{gene}}</a><br>
                         {% endfor %}
+                    {% elif column_name == "DOI" %}
+                        <a href="https://doi.org/{{row[column_name]}}">{{row[column_name]}}</a>
                     {% else %}
-                        <div>{{row[column_name]}}</div>
+                    <div class="scrollable-content">{{row[column_name]}}</div>
                     {% endif %}
                 </td>
             {% endfor %}
