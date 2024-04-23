@@ -162,8 +162,8 @@ def pprint(query, num_of_articles):
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
-    _ = "",
-    apikey='',
+    pubmed_token = "",
+    elsevier_token='',
     insttoken='',
     job_name = "",
     query_fields = dict(),
@@ -178,12 +178,13 @@ def execute(
             # Extract articles
             results = {}
             for k in boolean_fields.keys():
+                print(boolean_fields)
                 if boolean_fields[k] == True:
                     called_function = globals()[k]
                     if k == "pubmed":
-                        results[k] = called_function(query_fields[k], range_fields[k], _)
-                    if k in ["scopus", "scidir"]:
-                        results[k] = called_function(query_fields[k], range_fields[k], apikey, insttoken)
+                        results[k] = called_function(query_fields[k], range_fields[k], pubmed_token)
+                    elif k in ["scopus", "scidir"]:
+                        results[k] = called_function(query_fields[k], range_fields[k], elsevier_token, insttoken)
                     else:
                         results[k] = called_function(query_fields[k], range_fields[k])
                 

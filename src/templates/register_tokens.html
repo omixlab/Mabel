@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-Form Register Token
+Register Tokens
 {% endblock %}
 {% block content %}
 
@@ -19,15 +19,15 @@ Form Register Token
 
             {{ form.NCBI_API_KEY.label() }}
             {{ form.NCBI_API_KEY(class='form-control', placeholder='NCBI API KEY') }}
-
+            <br>
             {{ form.X_ELS_APIKey.label() }}
             {{ form.X_ELS_APIKey(class='form-control', placeholder='X ELS APIKey') }}
-
+            <br>
             {{ form.X_ELS_Insttoken.label() }}
             {{ form.X_ELS_Insttoken(class='form-control', placeholder='X ELS Insttoken') }}
-
+            <br>
             {{ form.GeminiAI.label() }}
-            {{ form.GeminiAI(class='form-control', placeholder='GeminiAId') }}
+            {{ form.GeminiAI(class='form-control', placeholder='GeminiID') }}
 
             <br>
             <div class="d-grid">

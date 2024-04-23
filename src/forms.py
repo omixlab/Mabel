@@ -75,10 +75,10 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label="Log In")
 
 class RegisterTokensForm(FlaskForm):
-    NCBI_API_KEY = StringField(label="NCBI_API_KEY:")
-    X_ELS_APIKey = StringField(label="X_ELS_APIKey:")
-    X_ELS_Insttoken = StringField(label="X_ELS_Insttoken:")
-    GeminiAI = StringField(label="GemeniAI:")
+    NCBI_API_KEY = StringField(label="NCBI:")
+    X_ELS_APIKey = StringField(label="Elsevier API key:")
+    X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
+    GeminiAI = StringField(label="GeminiAI:")
     submit = SubmitField(label="Save")
 
 class RecoveryPasswordForm(FlaskForm):

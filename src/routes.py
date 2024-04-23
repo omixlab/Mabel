@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 
 from src import app, db
-from src.models import Users, Results, FlashtextModels, TokensPassword
+from src.models import Users, Results, FlashtextModels, TokensPassword, KeysTokens
 from src import forms
 import src.utils.extractor as extractor
 import resend
@@ -77,15 +77,15 @@ def extractor_base(func):
                         kp = None
 
                     #tokens
-                    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
+                    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
                     if register_token_exist:
-                        _ = register_token_exist.NCBI_API_KEY             
-                        apikey = register_token_exist.X_ELS_APIKey
+                        pubmed_token = register_token_exist.NCBI_API_KEY             
+                        elsevier_token = register_token_exist.X_ELS_APIKey
                         insttoken = register_token_exist.X_ELS_Insttoken
                     else:
-                        register_token_user_master= forms.KeysTokens.query.filter_by(user_id=1).first()
-                        _ = register_token_user_master.NCBI_API_KEY             
-                        apikey = register_token_user_master.X_ELS_APIKey
+                        register_token_user_master= KeysTokens.query.filter_by(user_id=1).first()
+                        pubmed_token = register_token_user_master.NCBI_API_KEY             
+                        elsevier_token = register_token_user_master.X_ELS_APIKey
                         insttoken = register_token_user_master.X_ELS_Insttoken
                     
                     # Celery
@@ -114,6 +114,9 @@ def extractor_base(func):
                     }
 
                     data_tmp = extractor.execute.apply_async((
+                        pubmed_token,
+                        elsevier_token,
+                        insttoken,
                         search_form.job_name.data,
                         query_fields,
                         boolean_fields,
@@ -276,12 +279,12 @@ def gemini_engine(result_id):
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
 
-    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
+    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
     
     if register_token_exist :
         key = register_token_exist.GeminiAI
     else:
-        register_token_master = forms.KeysTokens.query.filter_by(user_id=1).first()
+        register_token_master = KeysTokens.query.filter_by(user_id=1).first()
         key = register_token_master.GeminiAI
 
     list_doi = []
@@ -392,7 +395,7 @@ def register():
 @login_required
 def register_tokens():
     form = forms.RegisterTokensForm()
-    register_token_exist = forms.KeysTokens.query.filter_by(user_id=current_user.id).first()
+    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
 
     if register_token_exist:
         
@@ -406,7 +409,7 @@ def register_tokens():
         flash('Token was updated successfully!')
     else:
         # Create a new token
-        register_token = forms.KeysTokens(
+        register_token = KeysTokens(
             user_id=current_user.id,
             NCBI_API_KEY=form.NCBI_API_KEY.data,
             X_ELS_APIKey=form.X_ELS_APIKey.data,
