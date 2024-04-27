@@ -76,17 +76,17 @@ def extractor_base(func):
                     else:
                         kp = None
 
-                    #tokens
-                    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
-                    if register_token_exist:
-                        pubmed_token = register_token_exist.NCBI_API_KEY             
-                        elsevier_token = register_token_exist.X_ELS_APIKey
-                        insttoken = register_token_exist.X_ELS_Insttoken
+                    # Tokens
+                    user_token = KeysTokens.query.filter_by(user_id=current_user.id).first()
+                    if user_token:
+                        pubmed_token = user_token.NCBI_API_KEY             
+                        elsevier_token = user_token.X_ELS_APIKey
+                        insttoken = user_token.X_ELS_Insttoken
                     else:
-                        register_token_user_master= KeysTokens.query.filter_by(user_id=1).first()
-                        pubmed_token = register_token_user_master.NCBI_API_KEY             
-                        elsevier_token = register_token_user_master.X_ELS_APIKey
-                        insttoken = register_token_user_master.X_ELS_Insttoken
+                        flash("You have not set your tokens yet!", category="danger")
+                        return redirect(url_for('register_tokens'))
+                        
+                            
                     
                     # Celery
                     query_fields = {
@@ -400,32 +400,32 @@ def register():
 @login_required
 def register_tokens():
     form = forms.RegisterTokensForm()
-    register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
+    user_token = KeysTokens.query.filter_by(user_id=current_user.id).first()
 
-    if register_token_exist:
-        
-        # Update existing token
-        register_token_exist.NCBI_API_KEY = form.NCBI_API_KEY.data
-        register_token_exist.X_ELS_APIKey = form.X_ELS_APIKey.data
-        register_token_exist.X_ELS_Insttoken = form.X_ELS_Insttoken.data
-        register_token_exist.GeminiAI = form.GeminiAI.data
-        db.session.commit()
+    if form.validate_on_submit():
+        if user_token:
+            # Update existing token
+            user_token.NCBI_API_KEY = form.NCBI_API_KEY.data
+            user_token.X_ELS_APIKey = form.X_ELS_APIKey.data
+            user_token.X_ELS_Insttoken = form.X_ELS_Insttoken.data
+            user_token.GeminiAI = form.GeminiAI.data
+            db.session.commit()
 
-        flash('Token was updated successfully!')
-    else:
-        # Create a new token
-        register_token = KeysTokens(
-            user_id=current_user.id,
-            NCBI_API_KEY=form.NCBI_API_KEY.data,
-            X_ELS_APIKey=form.X_ELS_APIKey.data,
-            X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-            GeminiAI=form.GeminiAI.data
-        )
-        db.session.add(register_token)
-        db.session.commit()
+            flash('Token was updated successfully!')
+        else:
+            # Create a new token
+            register_token = KeysTokens(
+                user_id=current_user.id,
+                NCBI_API_KEY=form.NCBI_API_KEY.data,
+                X_ELS_APIKey=form.X_ELS_APIKey.data,
+                X_ELS_Insttoken=form.X_ELS_Insttoken.data,
+                GeminiAI=form.GeminiAI.data
+            )
+            db.session.add(register_token)
+            db.session.commit()
 
 
-        flash('New token registered successfully!')
+            flash('New token registered successfully!')
     
     return render_template("register_tokens.html", form=form)
 

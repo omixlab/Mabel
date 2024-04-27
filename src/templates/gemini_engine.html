@@ -6,8 +6,8 @@ Login
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<body>
-    <h1>Itens to be verified in Gemini</h1>
+<body style="padding-bottom: 20px;">
+    <h1>Items to be verified in Gemini</h1>
     <div class="table-responsive"></div>
     <!-- tem que ajustar o id  --> 
     <form id="checkboxForm" method="POST" action="/gemini_engine/{{result_id}}">
@@ -42,9 +42,8 @@ Login
                 {% endfor %}
                 {% endif %}
             {% endwith %}
-            </div>
+        </div>
     </form>
-    </div>
     <script>
         $(document).ready(function(){
         $("#mytable #checkall").click(function () {
