@@ -253,6 +253,78 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                             user_models = user_models,
                             )
 
+@app.route("/user_profile", methods=["GET", "POST"])
+@login_required
+def user_profile():
+    form = forms.UserProfile()
+    user_info = Users.query.filter_by(id=current_user.id).first()
+    user_tokens = KeysTokens.query.filter_by(user_id=current_user.id).first()
+
+    # Show current info
+    form.name.data = user_info.name
+    form.email.data = user_info.email
+
+    if user_tokens and request.method == "GET":
+        form.NCBI_API_KEY.data = user_tokens.NCBI_API_KEY
+        form.X_ELS_APIKey.data = user_tokens.X_ELS_APIKey
+        form.X_ELS_Insttoken.data = user_tokens.X_ELS_Insttoken
+        form.GeminiAI.data = user_tokens.GeminiAI
+    
+    if request.method == "POST":
+        if form.validate_on_submit: 
+
+            # Update existing existing info
+            user_info.name = form.name.data
+            user_info.email = form.email.data
+            
+            if form.new_password.data:
+                if len(form.new_password.data) < 6:
+                    flash("Password must be at least 6 characters long", category="danger")
+                elif form.new_password.data != form.confirm_password.data:
+                    flash("New password confirmation field didn't match", category="danger")
+                elif user_info.convert_password(password_clean_text=form.old_password.data) == False: 
+                    flash("Wrong password!", category="danger")
+                else:
+                    user_info.password = bcrypt.hashpw(
+                        form.new_password.data.encode("utf-8"), bcrypt.gensalt()
+                        )
+                    
+                    resend.api_key = os.getenv("RESEND")
+                    resend.Emails.send({
+                        "from": "onboarding@resend.dev",
+                        "to": f"{form.email.data}",
+                        "subject": "Changed Password",
+                        "html": f"<b>Hello, "
+                    + f"The password of your Bambu Systematic Review account has been changed</b><br><br>"
+                    + "If this was not you, please contact us"
+                    + "bambuenterprise@gmail.com"
+                        })
+                    flash("Password changed!", category="success")
+
+            if user_tokens:
+                user_tokens.NCBI_API_KEY = form.NCBI_API_KEY.data
+                user_tokens.X_ELS_APIKey = form.X_ELS_APIKey.data
+                user_tokens.X_ELS_Insttoken = form.X_ELS_Insttoken.data
+                user_tokens.GeminiAI = form.GeminiAI.data
+                db.session.commit()
+            
+            else:
+                # Create a new token
+                register_token = KeysTokens(
+                    user_id=current_user.id,
+                    NCBI_API_KEY=form.NCBI_API_KEY.data,
+                    X_ELS_APIKey=form.X_ELS_APIKey.data,
+                    X_ELS_Insttoken=form.X_ELS_Insttoken.data,
+                    GeminiAI=form.GeminiAI.data
+                )
+                db.session.add(register_token)
+                db.session.commit()
+
+            flash("Account informations updated", category="success")
+
+
+    return render_template("user_profile.html", form=form, user_info=user_info, user_tokens=user_tokens)
+
 @app.route("/user_area/")
 @login_required
 def user_area():
@@ -439,10 +511,10 @@ def login():
             password_clean_text=form.password.data
         ):
             login_user(user_logged)
-            flash(f"Success! Your login is: {user_logged.name}", category="success")
+            flash(f"Success! Your logged in as: {user_logged.name}", category="success")
             return redirect(url_for("articles_extractor"))
         else:
-            flash(f"User or password it's wrong. Try again!", category="danger")
+            flash(f"Wrong email or password. Try again!", category="danger")
     return render_template("login.html", form=form)
 
 
@@ -461,15 +533,15 @@ def recovery_passwordForm():
             )
             db.session.add(token_password)
             db.session.commit()
-            resend.api_key = os.getenv("RESEND")
 
+            resend.api_key = os.getenv("RESEND")
             resend.Emails.send({
                 "from": "onboarding@resend.dev",
                 "to": f"{form.email.data}",
                 "subject": "Recovery Password",
-                "html": f"<b>Hello "
-               + f"your password can be replace in this link {token_password.link}</b><br><br>"
-               + "Some questions cantact us "
+                "html": f"<b>Hello, "
+               + f"Click here to reset your password {token_password.link}</b><br><br>"
+               + "If you habe any questions, contact us "
                + "bambuenterprise@gmail.com"
                 })
 
@@ -491,7 +563,7 @@ def recovery_password(token, id):
                 form.password.data.encode("utf-8"), bcrypt.gensalt()
             )
             flash(
-                f"{user.name}, your password was changed with successfuly",
+                f"{user.name}, your password was changed successfuly",
                 category="success",
             )
             db.session.delete(token_password)

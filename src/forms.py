@@ -51,11 +51,12 @@ class RegisterForm(FlaskForm):
             )
 
     def validate_password(self, check_password):
-        password = Users.query.filter_by(password=check_password.data).first()
-        if password:
-            raise ValidationError(
-                "Password already exists! Register another user Password."
-            )
+        #password = Users.query.filter_by(password=check_password.data).first()
+        #if password:
+        #    raise ValidationError(
+        #        "Password already exists! Register another user Password."
+        #    )
+        pass
 
     name = StringField(
         label="Username:", validators=[Length(min=2, max=30), DataRequired()]
@@ -74,6 +75,27 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Senha:", validators=[DataRequired()])
     submit = SubmitField(label="Log In")
 
+class UserProfile(FlaskForm):
+    name = StringField(label="Username:", validators=[Length(min=4, max=24), DataRequired()])
+    email = StringField(label="E-mail:", validators=[Email(), DataRequired()])
+
+    old_password = PasswordField(
+        label="Old password:"
+    )
+    new_password = PasswordField(
+        label="New password:"
+    )
+    confirm_password = PasswordField(
+        label="Confirm password:"
+    )
+
+    NCBI_API_KEY = StringField(label="NCBI:")
+    X_ELS_APIKey = StringField(label="Elsevier API key:")
+    X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
+    GeminiAI = StringField(label="GeminiAI:")
+
+    submit = SubmitField(label="Confirm changes")
+
 class RegisterTokensForm(FlaskForm):
     NCBI_API_KEY = StringField(label="NCBI:")
     X_ELS_APIKey = StringField(label="Elsevier API key:")
@@ -87,11 +109,12 @@ class RecoveryPasswordForm(FlaskForm):
 
 class RecoveryPassword(FlaskForm):
     def validate_password(self, check_password):
-        password = Users.query.filter_by(password=check_password.data).first()
-        if password:
-            raise ValidationError(
-                "Password already exists! Register another user Password."
-            )
+        #password = Users.query.filter_by(password=check_password.data).first()
+        #if password:
+        #    raise ValidationError(
+        #        "Password already exists! Register another user Password."
+        #    )
+        pass
 
     password = PasswordField(
         label="Password:", validators=[Length(min=6), DataRequired()]
