@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS keys_tokens (
 	X_ELS_Insttoken	VARCHAR(200),
 	GeminiAI VARCHAR(200),
 	PRIMARY KEY(id),
-	FOREIGN KEY(user_id) REFERENCES users(id),
+	FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS results (
@@ -67,5 +67,5 @@ VALUES
 
 INSERT INTO flashtext_models (id, user_id, name, type, path, created_date)
 VALUES
-	(1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_human.pickle', CURRENT_TIMESTAMP),
-	(2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_danio_rerio.pickle', CURRENT_TIMESTAMP);
+	(1, 1, 'Human genes', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_human.pickle', CURRENT_TIMESTAMP),
+	(2, 1, 'Zebra fish genes', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_danio_rerio.pickle', CURRENT_TIMESTAMP);
