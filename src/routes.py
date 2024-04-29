@@ -545,10 +545,10 @@ def recovery_passwordForm():
                + "bambuenterprise@gmail.com"
                 })
 
-            flash(f"Success! We send e-mail to {form.email.data}", category="success")
+            flash(f"Success! Your password recovery request was sent to your email: {form.email.data}", category="success")
             return redirect(url_for("login"))
         else:
-            flash(f"Email don't found, please review your e-mail", category="danger")
+            flash(f"Account not found, please review your e-mail", category="danger")
     return render_template("recovery_password_form.html", form=form)
 
 
