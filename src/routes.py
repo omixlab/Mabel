@@ -483,7 +483,7 @@ def register_tokens():
             user_token.GeminiAI = form.GeminiAI.data
             db.session.commit()
 
-            flash('Token was updated successfully!')
+            flash('Token updated successfully!')
         else:
             # Create a new token
             register_token = KeysTokens(
@@ -511,7 +511,7 @@ def login():
             password_clean_text=form.password.data
         ):
             login_user(user_logged)
-            flash(f"Success! Your logged in as: {user_logged.name}", category="success")
+            flash(f"Success! You're logged in as: {user_logged.name}", category="success")
             return redirect(url_for("articles_extractor"))
         else:
             flash(f"Wrong email or password. Try again!", category="danger")
@@ -563,7 +563,7 @@ def recovery_password(token, id):
                 form.password.data.encode("utf-8"), bcrypt.gensalt()
             )
             flash(
-                f"{user.name}, your password was changed successfuly",
+                f"{user.name}, your password has been changed successfuly",
                 category="success",
             )
             db.session.delete(token_password)

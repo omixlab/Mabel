@@ -28,3 +28,4 @@ Werkzeug==2.2.0
 resend==0.8.0
 scielo-extractor
 keyword-search
+plotly==5.22.0
