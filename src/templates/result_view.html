@@ -1,45 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style> 
-.container {margin-left: 0;}
+<style>
+.container {
+    max-width: 98%;
+    margin-left: 1%;
+}
 .scrollable-content {
-    max-height: 300px; /* Adjust the height as needed */
+    max-height: 300px;
     overflow: auto;
     white-space: pre-wrap; /* Allow line breaks */}
-.table {
-    width: 250%;
+
+    .table th {
+    text-align: left;
 }
 </style>
 
 <h2>Result</h2>
 <hr>
-<table class="table table-hover table-bordered" >
-    <thead>
-        <tr>
-            {% for column_name in df.columns %}
-                <th space="col" class="wide-cell">{{column_name}}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for r, row in df.iterrows() %}
+<div class="table-responsive">
+    <table class="table table-hover table-bordered" style="width: 250%;">
+        <thead>
             <tr>
-            {% for column_name in df.columns %}
-                <td>    
-                    {% if column_name == "Human" %}
-                        {% for gene in row[column_name].split(', ') %}
-                            <a href="https://www.uniprot.org/uniprotkb?query={{gene[column_name]}}">{{gene}}</a><br>
-                        {% endfor %}
-                    {% elif column_name == "DOI" %}
-                        <a href="https://doi.org/{{row[column_name]}}">{{row[column_name]}}</a>
-                    {% else %}
-                    <div class="scrollable-content">{{row[column_name]}}</div>
-                    {% endif %}
-                </td>
-            {% endfor %}
+                {% for column_name in df.columns %}
+                    <th space="col" class="wide-cell">{{column_name}}</th>
+                {% endfor %}
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for r, row in df.iterrows() %}
+                <tr>
+                {% for column_name in df.columns %}
+                    <td>    
+                        {% if column_name == "Human" %}
+                            {% for gene in row[column_name].split(', ') %}
+                                <a href="https://www.uniprot.org/uniprotkb?query={{gene[column_name]}}">{{gene}}</a><br>
+                            {% endfor %}
+                        {% elif column_name == "DOI" %}
+                            <a href="https://doi.org/{{row[column_name]}}">{{row[column_name]}}</a>
+                        {% else %}
+                        <div class="scrollable-content">{{row[column_name]}}</div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div>
+    {% for key, df_html in count_dfs.items() %}
+    
+        <div class="scrollable-content table-responsive">
+            {{ df_html | safe }}
+        </div>
+        
+        <br>
+
+        <div>
+            {{ plots[key] | safe }}
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

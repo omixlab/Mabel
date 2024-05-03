@@ -46,6 +46,7 @@ class Results(db.Model):
     job_name = db.Column(db.String())
     used_queries = db.Column(db.String())
     result_json = db.Column(db.String())
+    result_count_dfs_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
 
 

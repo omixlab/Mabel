@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS results (
 	job_name VARCHAR(100),
 	used_queries VARCHAR(4096),
 	result_json json,
+	result_count_dfs_json json,
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),
 	PRIMARY KEY(id)

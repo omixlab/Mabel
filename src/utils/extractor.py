@@ -21,7 +21,7 @@ from metapub import PubMedFetcher
 from scielo_extractor.extractor import ScieloSearch
 
 from src import celery
-from src.utils.unify_dfs import unify
+from src.utils.unify_dfs import unify, create_graphs
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 from flashtext import KeywordProcessor
 import json
@@ -213,11 +213,20 @@ def execute(
 
             print(unified_df.columns)
 
+            # Create graphs
+            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]]
+            if diff_columns:
+                result_count_dfs_json = create_graphs(unified_df, diff_columns)
+            else:
+                result_count_dfs_json = None
+
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)
+            
             result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-            result.status = 'DONE'
             result.result_json = result_json
+            result.result_count_dfs_json = result_count_dfs_json
+            result.status = 'DONE'
             db.session.commit()
             return result_json
 

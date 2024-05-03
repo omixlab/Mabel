@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import (
     flash,
@@ -25,6 +26,7 @@ from src.utils.gemeni import gemeni as genai
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
 from src.utils.optional_features import flashtext_model_create
+import plotly.graph_objects as go
 
 import bcrypt
 import uuid
@@ -343,7 +345,17 @@ def result_view(result_id):
         ordered_columns = default_columns[:4] + missing_columns + default_columns[4:]
         df = df.reindex(columns=ordered_columns)
 
-        return render_template("result_view.html", df=df)
+        count_dfs = json.loads(result.result_count_dfs_json)
+        plots = {}
+        for key, value in count_dfs.items():
+            df_data = json.loads(value)
+            reloaded_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+            count_dfs[key] = reloaded_df.to_html(classes="table")
+
+            plots[key] = go.Figure([go.Bar(x=reloaded_df.head(15)[key], y=reloaded_df.head(15)['Count'])]).to_html()
+
+        return render_template("result_view.html", df=df, count_dfs=count_dfs, plots=plots)
+    
     else:
         flash(f"Invalid ID", category="danger")
         return redirect(url_for("user_area"))

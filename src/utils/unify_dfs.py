@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 
 def unify(job_name, dfs):
@@ -230,3 +231,35 @@ def unify(job_name, dfs):
         if not formated_dfs:
             print("Error: No results")
         return pd.DataFrame()  # Gera dataframe vazio
+
+
+
+
+def create_graphs(df, column_names):
+    # Read the df and count the ocurrence of terms for each fo the given columns, return json containing tables and bar plots
+    print(f"Creating tables and plots for {column_names}")
+    dfs_dict = {}
+    plots_dict = {}
+
+    for column_name in column_names:
+        gene_count = {}
+        for index, row in df.iterrows():
+            genes = row[column_name]
+            if isinstance(genes, str):
+                genes = genes.split(', ')
+                for gene in genes:
+                    if gene in gene_count:
+                        gene_count[gene] += 1
+                    else:
+                        gene_count[gene] = 1
+
+        df_count = pd.DataFrame(list(gene_count.items()), columns=[column_name, 'Count'])
+        df_count = df_count.sort_values(by='Count', ascending=False).reset_index(drop=True)
+
+        #fig = go.Figure([go.Bar(x=df_count[column_name], y=df_count['Count'])])
+
+        dfs_dict[column_name] = df_count.to_json(orient="split")
+        #plots_dict[column_name] = fig.to_json()
+
+    print('Success: Tables created')
+    return json.dumps(dfs_dict)
