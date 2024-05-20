@@ -164,14 +164,15 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
     # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data = query_constructor.basic(
-                search_form.query_pubmed.data, 
-                search_form.query_elsevier.data,
-                search_form.query_scielo.data,
-                query_form.tags.data,
-                query_form.keyword.data,
-                query_form.boolean.data,
-                query_form.open_access.data
+            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data, search_form.query_pprint.data = query_constructor.basic(
+                pm_query=search_form.query_pubmed.data, 
+                els_query=search_form.query_elsevier.data,
+                scielo_query=search_form.query_scielo.data,
+                ppr_query=search_form.query_pprint.data,
+                tag=query_form.tags.data,
+                keyword=query_form.keyword.data,
+                boolean=query_form.boolean.data,
+                open_access=query_form.open_access.data
             )
             
     return render_template("articles_extractor.html", 
@@ -179,7 +180,8 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                             search_form = search_form,
                             entities = available_entities,
                             default_models = default_models,
-                            user_models = user_models,)
+                            user_models = user_models,
+                            show_queries = True)
 
 
 

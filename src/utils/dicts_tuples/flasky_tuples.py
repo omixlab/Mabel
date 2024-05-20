@@ -4,12 +4,6 @@ tags = [
     ("TITLE", "Title"),
     ("ABS", "Abstract"),
     ("AUTH", "Author"),
-    ("AFFIL", "Affiliation"),
-    ("PAGES", "Pages"),
-    ("VOLUME", "Volume"),
-    ("LANGUAGE", "Language"),
-    ("DOCTYPE", "Publication Type"),
-    ("PUBLISHER", "Publisher"),
 ]
 
 
@@ -200,5 +194,11 @@ to_scielo = {
     "TITLE": "ti",
     "ABS": "ab",
     "AUTH": "au",
+}
+
+to_pprint = {
+    "TITLE": "title",
+    "ABS": "abstract",
+    "AUTH": "authors",
 }
 

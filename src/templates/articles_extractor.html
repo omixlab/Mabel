@@ -26,22 +26,28 @@ Articles Extractor
                 </div>
             </div>
             <br>
-            {% for database in ["pubmed", "elsevier", "scielo" ] %}
-            <div class="text-justify">{{search_form['query_' + database](placeholder = search_form['title_' + database] + ' Query')}}</div>
-            <br>
+            {% for database in ["pubmed", "elsevier", "scielo", "pprint"] %}
+                {% if database == "pubmed" %}        
+                    <div class="text-justify">{{search_form['query_' + database](placeholder = 'Query')}}</div>
+                    <br>
+                {% else %}
+                    <div style="display: none;">{{search_form['query_' + database](placeholder = search_form['title_' + database] + ' Query')}}</div>
+                {% endif %}
             {% endfor %}
 
             <div class="text-justify">
                 <h5 class="text-start">Select desired databases and number of articles:</h5>
 
-                {% for database in ["pubmed", "scopus", "scidir", "scielo"] %}
+                {% for database in ["pubmed", "scopus", "scidir", "scielo", "pprint"] %}
                 <div class="row">
                     <div class="col-md-2 text-start">
                         {{ search_form['check_' + database](class='mt-2') }}
                         <label class="form-check-label" for="check_{{ database }}">{{ search_form['title_' + database] }}</label>
                     </div>
+                    {% if search_form['num_' + database] %}
                     <div class="col-md-8">{{ search_form['range_' + database](class='form-range', step=5, min=0, max=5000, id='range_' + database, oninput="outputUpdate('range_' + database + '.value')") }}</div>
                     <div class="col-md-2">{{ search_form['num_' + database](class='form-control', id='num_' + database) }}</div>
+                    {% endif %}
                 </div>
                 <br>
                 {% endfor %}

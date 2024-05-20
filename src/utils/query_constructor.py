@@ -1,7 +1,7 @@
-from src.utils.dicts_tuples.flasky_tuples import to_pubmed, to_scielo
+from src.utils.dicts_tuples.flasky_tuples import to_pubmed, to_scielo, to_pprint
 
 
-def basic(pm_query, els_query, se_query, tag, keyword, boolean, open_access):
+def basic(pm_query, els_query, scielo_query, ppr_query, tag, keyword, boolean, open_access):
     # PubMed query
     if not pm_query:
         pm_query = f"({keyword}{to_pubmed[tag]})"
@@ -23,10 +23,22 @@ def basic(pm_query, els_query, se_query, tag, keyword, boolean, open_access):
     if boolean == "NOT":
         boolean = "AND NOT"
 
-    if not se_query:
-        se_query = f"({keyword})"
+    if not scielo_query:
+        scielo_query = f"({keyword})"
     else:
-        se_query += f" {boolean} ({keyword})"
+        scielo_query += f" {boolean} ({keyword})"
+
+    # Preprints query
+    if tag == "ALL":
+        if not ppr_query:
+            ppr_query = f'((abstract:{keyword}) or (title:{keyword}))'
+        else:
+            ppr_query += f' {boolean} ((abstract:{keyword}) or (title:{keyword}))'
+    else:
+        if not ppr_query:
+            ppr_query = f'({to_pprint[tag]}:{keyword})'
+        else:
+            ppr_query += f' {boolean} ({to_pprint[tag]}:{keyword})'
         
 
     # Filter
@@ -35,7 +47,7 @@ def basic(pm_query, els_query, se_query, tag, keyword, boolean, open_access):
     if open_access and "OPENACCESS(1)" not in els_query:
         els_query += " AND OPENACCESS(1)"
 
-    return pm_query, els_query, se_query
+    return pm_query, els_query, scielo_query, ppr_query
 
 
 def pubmed(pm_query, tag, keyword, boolean):
