@@ -345,14 +345,20 @@ def result_view(result_id):
         ordered_columns = default_columns[:4] + missing_columns + default_columns[4:]
         df = df.reindex(columns=ordered_columns)
 
-        count_dfs = json.loads(result.result_count_dfs_json)
-        plots = {}
-        for key, value in count_dfs.items():
-            df_data = json.loads(value)
-            reloaded_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
-            count_dfs[key] = reloaded_df.to_html(classes="table")
+        if result.result_count_dfs_json:
+            count_dfs = json.loads(result.result_count_dfs_json)
+            plots = {}
+            for key, value in count_dfs.items():
+                df_data = json.loads(value)
+                reloaded_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+                if reloaded_df.iloc[0][key] == '': # remove row counting empty spaces
+                    reloaded_df = reloaded_df.iloc[1:].reset_index(drop=True)
 
-            plots[key] = go.Figure([go.Bar(x=reloaded_df.head(15)[key], y=reloaded_df.head(15)['Count'])]).to_html()
+                count_dfs[key] = reloaded_df.to_html(classes="table") # Define df of each term appearance count
+                plots[key] = go.Figure([go.Bar(x=reloaded_df.head(15)[key], y=reloaded_df.head(15)['Count'])]).to_html()
+
+        else:
+            count_dfs, plots = None, None
 
         return render_template("result_view.html", df=df, count_dfs=count_dfs, plots=plots)
     
