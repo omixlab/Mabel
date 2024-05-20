@@ -1,15 +1,32 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 
-def unify(dfs):
+def unify(job_name, dfs):
     formated_dfs = []
 
+    directory_path = "data/dfs_results/"
+
+    folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
+
+    if not folders or "1" not in folders:
+        folder = "1"
+        os.makedirs(os.path.join(directory_path, folder))
+    else:
+        highest_numbered_folder = max(folders, key=lambda x: int(x))
+
+        folder = str(int(highest_numbered_folder) + 1)
+        os.makedirs(os.path.join(directory_path, folder))
+
+    folder_path = os.path.join(directory_path, folder)
+
     # PUBMED
-    if "pm" in dfs:
-        pubmed = dfs["pm"]
+    if "pubmed" in dfs:
+        pubmed = dfs["pubmed"]
 
         if pubmed.empty:
             pass
@@ -48,31 +65,31 @@ def unify(dfs):
                     pm_formated_type.append("error")
 
             # Converte em dataframes padronizados
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": pubmed["title"],
+                        "DOI": pubmed["doi"],
                         "Abstract": pubmed["abstract"],
+                        "Date": pubmed["pubdate"],
                         "Pages": pubmed["pages"],
                         "Journal": pubmed["journal"],
                         "Authors": pm_formated_auth,
-                        "Date": pubmed["pubdate"],
                         "Type": pm_formated_type,
-                        "DOI": pubmed["doi"],
                         "Affiliations": pubmed["affiliations"],
                         "MeSH Terms": pubmed["mesh_terms"],
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
 
     # SCOPUS
-    if "sc" in dfs:
-        scopus = dfs["sc"]
+    if "scopus" in dfs:
+        scopus = dfs["scopus"]
 
         if scopus.empty:
             pass
         else:
-            
+
             sc_formated_affil = []
             for row in scopus["affiliation"]:
                 try:
@@ -82,26 +99,26 @@ def unify(dfs):
                 except:
                     sc_formated_affil.append("error")
 
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": scopus["dc:title"],
+                        "DOI": scopus["prism:doi"],
                         "Abstract": scopus["Abstract"],
+                        "Date": scopus["prism:coverDate"],
                         "Pages": scopus["prism:pageRange"],
                         "Journal": scopus["prism:publicationName"],
                         "Authors": scopus["dc:creator"],
-                        "Date": scopus["prism:coverDate"],
                         "Type": scopus["subtypeDescription"],
-                        "DOI": scopus["prism:doi"],
                         "Affiliations": sc_formated_affil,
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
 
     # SCIENCE DIRECT
-    if "sd" in dfs:
-        scidir = dfs["sd"]
+    if "scidir" in dfs:
+        scidir = dfs["scidir"]
 
         if scidir.empty:
             pass
@@ -117,61 +134,132 @@ def unify(dfs):
                     sd_formated_auth.append("error")
 
             sd_formated_pages = []
-            for start, end in zip(scidir["prism:startingPage"], scidir["prism:endingPage"]):
+            for start, end in zip(
+                scidir["prism:startingPage"], scidir["prism:endingPage"]
+            ):
                 try:
                     sd_formated_pages.append(f"{start}-{end}")
                 except:
                     sd_formated_pages.append("error")
 
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": scidir["dc:title"],
+                        "DOI": scidir["prism:doi"],
                         "Abstract": scidir["abstract"],
+                        "Date": scidir["prism:coverDate"],
                         "Pages": sd_formated_pages,
                         "Journal": scidir["prism:publicationName"],
                         "Authors": sd_formated_auth,
-                        "Date": scidir["prism:coverDate"],
                         "Type": scidir["pubtype"],
-                        "DOI": scidir["prism:doi"],
                         "Affiliations": np.nan,
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
+
+    # SCIELO
+    if "scielo" in dfs:
+        scielo = dfs["scielo"]
+
+        se_formated_pages = []
+        for row1, row2 in zip(scielo["start_page"], scielo["end_page"]):
+            if row1 and row2:
+                pages = f"{row1}-{row2}"
+            else:
+                pages = np.nan
+            se_formated_pages.append(pages)
+
+        if scielo.empty:
+            pass
+        else:
+            df = pd.DataFrame(
+                    {
+                        "Title": scielo["title"],
+                        "DOI": scielo["doi"],
+                        "Abstract": scielo["abstract"],
+                        "Date": scielo["year"],
+                        "Pages": se_formated_pages,
+                        "Journal": scielo["journal"],
+                        "Authors": scielo["authors"],
+                        "Type": np.nan,
+                        "Affiliations": np.nan,
+                        "MeSH Terms": np.nan,
+                    }
+                )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
+
 
     # PREPRINTS
-    if "ppr" in dfs:
-        preprints = dfs["ppr"]
+    if "pprint" in dfs:
+        preprints = dfs["pprint"]
 
         if preprints.empty:
             pass
         else:
-            formated_dfs.append(
-                pd.DataFrame(
+            df = pd.DataFrame(
                     {
                         "Title": preprints["title"],
+                        "DOI": preprints["doi"],
                         "Abstract": preprints["abstract"],
+                        "Date": preprints["date"],
                         "Pages": np.nan,
                         "Journal": preprints["journal"],
                         "Authors": preprints["authors"],
-                        "Date": preprints["date"],
                         "Type": np.nan,
-                        "DOI": preprints["doi"],
                         "Affiliations": np.nan,
                         "MeSH Terms": np.nan,
                     }
                 )
-            )
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            formated_dfs.append(df)
 
 
     # Concatenação dos dataframes
     try:
         unified_dataframes = pd.concat(formated_dfs)
+
+        total = len(unified_dataframes)
         unified_dataframes = unified_dataframes.drop_duplicates(subset=['DOI'])
-        print("Success: Dataframes unified succesfully")
+        dropped = len(unified_dataframes)
+        print(f"Dropped {total-dropped} duplicates out of {total}")
+        print(f"Success: Dataframes unified succesfully ({len(unified_dataframes)} articles in total)")
         return (unified_dataframes)
     except:
         if not formated_dfs:
             print("Error: No results")
-        return pd.DataFrame() # Gera dataframe vazio
+        return pd.DataFrame()  # Gera dataframe vazio
+
+
+
+
+def create_graphs(df, column_names):
+    # Read the df and count the ocurrence of terms for each fo the given columns, return json containing tables and bar plots
+    print(f"Creating tables and plots for {column_names}")
+    dfs_dict = {}
+    plots_dict = {}
+
+    for column_name in column_names:
+        gene_count = {}
+        for index, row in df.iterrows():
+            genes = row[column_name]
+            if isinstance(genes, str):
+                genes = genes.split(', ')
+                for gene in genes:
+                    if gene in gene_count:
+                        gene_count[gene] += 1
+                    else:
+                        gene_count[gene] = 1
+
+        df_count = pd.DataFrame(list(gene_count.items()), columns=[column_name, 'Count'])
+        df_count = df_count.sort_values(by='Count', ascending=False).reset_index(drop=True)
+
+        #fig = go.Figure([go.Bar(x=df_count[column_name], y=df_count['Count'])])
+
+        dfs_dict[column_name] = df_count.to_json(orient="split")
+        #plots_dict[column_name] = fig.to_json()
+
+    print('Success: Tables created')
+    return json.dumps(dfs_dict)

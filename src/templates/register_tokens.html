@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}
+Register Tokens
+{% endblock %}
+{% block content %}
+
+<body class="text-center">
+    <br>
+    <div style="width: 50%; height: 550px; float:left;">
+        <img class='mt-5'
+            src="https://img.freepik.com/vetores-gratis/ilustracao-do-conceito-abstrato-de-aplicativo-descentralizado_335657-3888.jpg?w=740"
+            width="350" height="350">
+    </div>
+    <div style="width:50%; height: 550px; float:left;">
+        <h1 class="h3 mb-3 font-weight-normal">
+            Save your tokens 
+        </h1>
+        <br>
+        <form method="POST" class="form-register" styler="color: withesmoke">
+            {{form.hidden_tag()}}
+
+            {{ form.NCBI_API_KEY.label() }}
+            <div class="input-group mb-3">
+            {{ form.NCBI_API_KEY(class='form-control', placeholder='NCBI API KEY') }}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-container="body" data-bs-placement="right" data-bs-html="true"
+                data-bs-title="NCBI API Key" 
+                data-bs-content="Your key can be created at <a href='https://account.ncbi.nlm.nih.gov/settings/' target='_blank'>NCBI account settings</a>">
+            ?</button>
+            
+            </div>
+            <br>
+
+            {{ form.X_ELS_APIKey.label() }}
+            <div class="input-group mb-3">
+            {{ form.X_ELS_APIKey(class='form-control', placeholder='X ELS APIKey') }}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-container="body" data-bs-placement="right" data-bs-html="true"
+                    data-bs-title="Elsevier API Key" 
+                    data-bs-content="You can create your API key at <a href='https://dev.elsevier.com/apikey/manage' target='_blank'>Elsevier Developer Portal</a>">
+            ?</button>
+            </div>
+            <br>
+
+            {{ form.X_ELS_Insttoken.label() }}
+            <div class="input-group mb-3">
+            {{ form.X_ELS_Insttoken(class='form-control', placeholder='X ELS Insttoken') }}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-container="body" data-bs-placement="right" 
+                data-bs-title="Elsevier insttoken" 
+                data-bs-content="Your Insttoken must be requested directly to Elsevier support team">
+            ?</button>
+            </div>
+            <br>
+
+            {{ form.GeminiAI.label() }}
+            <div class="input-group mb-3">
+            {{ form.GeminiAI(class='form-control', placeholder='GeminiID') }}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-placement="right" data-bs-title="Help GeminiAI" data-bs-content="yes">?</button>
+            </div>
+            <br>
+
+            <div class="d-grid">
+                {{ form.submit(class="btn btn-lg btn-success") }}
+            </div>
+            <br>
+        </form>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+        });
+    </script>
+</body>
+{% endblock %}

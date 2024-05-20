@@ -31,9 +31,10 @@ class Users(db.Model, UserMixin):
 
 class KeysTokens(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    NCBI_API_KEY = db.Column(db.String(length=36), nullable=False, unique=True)
-    X_ELS_APIKey = db.Column(db.String(length=32), nullable=False, unique=True)
-    X_ELS_Insttoken = db.Column(db.String(length=32), nullable=False, unique=True)
+    NCBI_API_KEY = db.Column(db.String(length=200), unique=True)
+    X_ELS_APIKey = db.Column(db.String(length=200), unique=True)
+    X_ELS_Insttoken = db.Column(db.String(length=200), unique=True)
+    GeminiAI = db.Column(db.String(length=200))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
 
@@ -42,9 +43,10 @@ class Results(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     status = db.Column(db.String, nullable=True)
     celery_id = db.Column(db.String(length=100), nullable=False)
-    pubmed_query = db.Column(db.String())
-    elsevier_query = db.Column(db.String())
+    job_name = db.Column(db.String())
+    used_queries = db.Column(db.String())
     result_json = db.Column(db.String())
+    result_count_dfs_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
 
 

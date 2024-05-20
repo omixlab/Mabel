@@ -1,7 +1,7 @@
-from src.utils.dicts_tuples.flasky_tuples import to_pubmed
+from src.utils.dicts_tuples.flasky_tuples import to_pubmed, to_scielo, to_pprint
 
 
-def basic(pm_query, els_query, tag, keyword, boolean, open_access):
+def basic(pm_query, els_query, scielo_query, ppr_query, tag, keyword, boolean, open_access):
     # PubMed query
     if not pm_query:
         pm_query = f"({keyword}{to_pubmed[tag]})"
@@ -14,13 +14,40 @@ def basic(pm_query, els_query, tag, keyword, boolean, open_access):
     else:
         els_query += f" {boolean} {tag}({keyword})"
 
+    # Scielo query
+    if tag != "":
+        if tag in to_scielo:
+            keyword = f"{to_scielo[tag]}:({keyword})"
+        else:
+            pass
+    if boolean == "NOT":
+        boolean = "AND NOT"
+
+    if not scielo_query:
+        scielo_query = f"({keyword})"
+    else:
+        scielo_query += f" {boolean} ({keyword})"
+
+    # Preprints query
+    if tag == "ALL":
+        if not ppr_query:
+            ppr_query = f'((abstract:{keyword}) or (title:{keyword}))'
+        else:
+            ppr_query += f' {boolean} ((abstract:{keyword}) or (title:{keyword}))'
+    else:
+        if not ppr_query:
+            ppr_query = f'({to_pprint[tag]}:{keyword})'
+        else:
+            ppr_query += f' {boolean} ({to_pprint[tag]}:{keyword})'
+        
+
     # Filter
     if open_access and "ffrft[Filter]" not in pm_query:
         pm_query += " AND (ffrft[Filter])"
     if open_access and "OPENACCESS(1)" not in els_query:
         els_query += " AND OPENACCESS(1)"
 
-    return pm_query, els_query
+    return pm_query, els_query, scielo_query, ppr_query
 
 
 def pubmed(pm_query, tag, keyword, boolean):
@@ -29,6 +56,7 @@ def pubmed(pm_query, tag, keyword, boolean):
     else:
         pm_query += f" {boolean} ({keyword}{tag})"
     return pm_query
+
 
 def pubmed_filters(pm_query, filters):
     for filter in filters:
@@ -51,10 +79,32 @@ def elsevier(els_query, tag, keyword, boolean, open_access):
 
     return els_query
 
-def preprints(ppr_query, keyword):
-    if not ppr_query:
-        ppr_query = f'{keyword}'
+def scielo(scielo_query, tag, keyword, boolean, dates):
+    if tag:
+        if tag == "year_cluster": 
+            if len(dates) > 1:
+                year_subterms = [f"({tag}:({year}))" for year in dates] # Apesar da query correta, o Scielo não retorna o primeiro ano da lista
+                term = " OR ".join(year_subterms)
+            else:
+                term = f"{tag}:({dates[0]})"
+        else:
+            term = f"{tag}:({keyword})"
     else:
-        ppr_query += f', {keyword}'
+        term = keyword
+
+    if not scielo_query:
+        scielo_query = f"({term})"
+    else:
+        scielo_query += f" {boolean} ({term})"
+
+    return scielo_query
+
+def preprints(ppr_query, tag, keyword, boolean, date):
+    if tag == "date":
+        keyword = date
+    if not ppr_query:
+        ppr_query = f'({tag}:{keyword})'
+    else:
+        ppr_query += f' {boolean} ({tag}:{keyword})'
 
     return ppr_query

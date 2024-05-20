@@ -5,16 +5,17 @@
 <h2 style="text-align: center;">User area</h2>
 
 <h4 style="text-align: left;">My results</h4>
-<table class="table table-hover table-hover ms-0">
+<table class="table table-hover ms-0">
     <thead>
         <tr>
             <th space="col">task ID</th>
-            <th space="col">Pubmed Query</th>
-            <th space="col">Elsevier Query</th>
+            <th space="col">Job name</th>
+            <th space="col">Used queries</th>
             <th space="col">Created Date</th>
             <th space="col">Status</th>
-            <th space="col">Open</th>
-            <th space="col">Download</th>
+            <th space="col"></th>
+            <th space="col"></th>
+            <th space="col"></th>
             <th space="col"></th>
         </tr>
     </thead>
@@ -22,13 +23,18 @@
         {%for result in results %}
         <tr>
             <td>{{result.celery_id}}</td>
-            <td>{{result.pubmed_query}}</td>
-            <td>{{result.elsevier_query}}</td>
+            <td>{{result.job_name}}</td>
+            <td>{{result.used_queries}}</td>
             <td>{{result.created_date}}</td>
             <td>{{result.status}}</td>
             <td>
                 {% if result.status == 'DONE' %}
                    <a class="btn btn-md btn-primary" href="{{url_for('result_view', result_id=result.id)}}">Open</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if result.status == 'DONE' %}
+                   <a class="btn btn-md btn-info" href={{url_for('gemini_engine', result_id=result.id)}}>Gemini</a>
                 {% endif %}
             </td>
             <td>

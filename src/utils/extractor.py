@@ -1,18 +1,16 @@
 import os
-
-from dotenv import load_dotenv
-
 from .. import db
 from ..models import Results
 
-load_dotenv()
-_ = os.getenv("NCBI_API_KEY")
-apikey = os.getenv("X_ELS_APIKey")
-insttoken = os.getenv("X_ELS_Insttoken")
+#load_dotenv()
+#_ = os.getenv("NCBI_API_KEY")
+#apikey = os.getenv("X_ELS_APIKey")
+#insttoken = os.getenv("X_ELS_Insttoken")
 dumps_path = os.getenv("DUMPS_PATH")
 
+TERM_EXPRESSION = '([a-zA-Z0-9.@_]+:[a-zA-Z0-9_\- ]+)'
+
 import json
-from json import dumps, loads
 
 import pandas as pd
 import pubmed_parser as pp
@@ -20,15 +18,17 @@ from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import AbsDoc, FullDoc
 from elsapy.elssearch import ElsSearch
 from metapub import PubMedFetcher
+from scielo_extractor.extractor import ScieloSearch
 
 from src import celery
-from src.utils.unify_dfs import unify
+from src.utils.unify_dfs import unify, create_graphs
 from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
 from flashtext import KeywordProcessor
 import json
+from src.utils.keyword_search import keyword_search
 
 
-def pubmed(keyword, num_of_articles):
+def pubmed(keyword, num_of_articles, _):
     print(
         f"Starting data extraction of {num_of_articles} articles from Pubmed using the keyword: {keyword}"
     )
@@ -58,7 +58,7 @@ def pubmed(keyword, num_of_articles):
     return data_pubmed
 
 
-def scopus(keyword, num_of_articles):
+def scopus(keyword, num_of_articles, apikey, insttoken ):
     print(
         f"Starting data extraction of {num_of_articles} articles from Scopus using the keyword: {keyword}"
     )
@@ -83,17 +83,17 @@ def scopus(keyword, num_of_articles):
         else:
             dicts[i] = "Failed"
 
-        print("Scopus extraction done!")
+    print("Scopus extraction done!")
 
     abstracts_df = pd.DataFrame(dicts.items(), columns=["prism:url", "Abstract"])
     doc_srch_scopus.results_df = doc_srch_scopus.results_df.merge(
         abstracts_df, on="prism:url", how="left"
-    )
+    )       
 
     return doc_srch_scopus.results_df
 
 
-def scidir(keyword, num_of_articles):
+def scidir(keyword, num_of_articles, apikey, insttoken):
     print(
         f"Starting data extraction of {num_of_articles} articles from ScienceDirect using the keyword: {keyword}"
     )
@@ -117,6 +117,8 @@ def scidir(keyword, num_of_articles):
             abstract.append(doi_doc.data["coredata"]["dc:description"])
             pubtype.append(doi_doc.data["coredata"]["pubType"])
         else:
+            abstract.append("Document error")
+            pubtype.append("Document error")
             print("Read document failed.")
 
     doc_srch.results_df["abstract"] = abstract
@@ -124,88 +126,70 @@ def scidir(keyword, num_of_articles):
 
     return doc_srch.results_df
 
+def scielo(query, num_of_articles):
+    print(
+        f"Starting data extraction {num_of_articles} of articles from SciElo using the keyword: {query}"
+    )
+    results = ScieloSearch().query(query=query, format='dataframe', result_size=num_of_articles)
+    
+    return results
 
-def preprints(query, num_of_articles):
-    keywords = query.split(", ")
+
+def pprint(query, num_of_articles):
+    print(f'Extracting preprints with keywords: "{query}"')
+
+    # Process json files
+    def process_json_files(dumps):
+        json_data = []  
+        for dump in dumps:
+            file_path = os.path.join(dumps_path, dump)
+            with open(file_path, 'r', encoding='utf-8') as jsonl_file:
+                for line in jsonl_file:
+                    json_data.append(json.loads(line))
+        return json_data
+    
+    
     dumps = ["biorxiv.jsonl", "chemrxiv.jsonl", "medrxiv.jsonl"]
-
-    print(f'Extracting preprints with keywords: "{keywords}"')
-
-    def process_jsonl_file(file_path):
-        with open(file_path, 'r', encoding='utf-8') as jsonl_file:
-            decoder = json.JSONDecoder()
-            buffer = ""
-            for line in jsonl_file:
-                buffer += line
-                while buffer:
-                    try:
-                        obj, idx = decoder.raw_decode(buffer)
-                        yield obj
-                        buffer = buffer[idx:].lstrip()
-                    except json.JSONDecodeError as e:
-                        break
-
-    data_list = []
-    for dump in dumps:
-        file_path = os.path.join(dumps_path, dump)
-
-        # Write model
-        kp = KeywordProcessor(case_sensitive=False)
-        kp.add_keywords_from_list(keywords)
-
-
-        for data in process_jsonl_file(file_path):
-            abstract = data.get("abstract")
-
-            if set(kp.extract_keywords(abstract)):
-                data_list.append(data)
-
-            if len(data_list) == num_of_articles:
-                break
-
-    results_df = pd.DataFrame(data_list)
+    df = pd.DataFrame(process_json_files(dumps))
+    
+    results_df = keyword_search(df, query)
     print("Success: Preprints extracted")
 
     return results_df
 
 
-        
+# CELERY EXECUTOR
 @celery.task(bind=True, serializer="json")
 def execute(
     self,
-    pubmed_query="",
-    elsevier_query="",
-    preprints_query="",
-    check_pubmed=False,
-    check_scopus=False,
-    check_scidir=False,
-    check_preprints=False,
-    pm_num_of_articles=25,
-    sc_num_of_articles=25,
-    sd_num_of_articles=25,
-    ppr_num_of_articles=25,
+    pubmed_token = "",
+    elsevier_token='',
+    insttoken='',
+    job_name = "",
+    query_fields = dict(),
+    boolean_fields = dict(),
+    range_fields = dict(),
     ner = None,
     kp = None,
 ):
     try:
-        if check_pubmed or check_scopus or check_scidir or check_preprints:
+        if any(boolean_fields.values()):
+
+            # Extract articles
             results = {}
-            if check_pubmed:
-                response_pubmed = pubmed(pubmed_query, pm_num_of_articles)
-                results["pm"] = response_pubmed
-            if check_scopus:
-                response_scopus = scopus(elsevier_query, sc_num_of_articles)
-                results["sc"] = response_scopus
-            if check_scidir:
-                response_scidir = scidir(elsevier_query, sd_num_of_articles)
-                results["sd"] = response_scidir
-            if check_preprints:
-                response_preprints = preprints(preprints_query, ppr_num_of_articles)
-                results["ppr"] = response_preprints
+            for k in boolean_fields.keys():
+                if boolean_fields[k] == True:
+                    called_function = globals()[k]
+                    if k == "pubmed":
+                        results[k] = called_function(query_fields[k], range_fields[k], pubmed_token)
+                    elif k in ["scopus", "scidir"]:
+                        results[k] = called_function(query_fields[k], range_fields[k], elsevier_token, insttoken)
+                    else:
+                        results[k] = called_function(query_fields[k], range_fields[k])
+                
 
             # Unify results in a single dataframe
-            unified_df = unify(results)
-            print(unified_df.columns)
+            unified_df = unify(job_name, results)
 
             # Prevent error from empty results
             if unified_df.empty:
@@ -227,11 +211,22 @@ def execute(
                 print(f'Filtering {kp} with Flashtext')
                 unified_df = flashtext_kp(unified_df, kp)
 
+            print(unified_df.columns)
+
+            # Create graphs
+            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]]
+            if diff_columns:
+                result_count_dfs_json = create_graphs(unified_df, diff_columns)
+            else:
+                result_count_dfs_json = None
+
             # Return as json
             result_json = unified_df.to_json(orient='records', indent=4)
+            
             result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
-            result.status = 'DONE'
             result.result_json = result_json
+            result.result_count_dfs_json = result_count_dfs_json
+            result.status = 'DONE'
             db.session.commit()
             return result_json
 

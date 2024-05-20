@@ -9,21 +9,18 @@ CREATE TABLE IF NOT EXISTS users (
 	password VARCHAR(300) NOT NULL,
 	PRIMARY KEY(id),
 	UNIQUE(name),
-	UNIQUE(password),
 	UNIQUE(email)
 );
 
 CREATE TABLE IF NOT EXISTS keys_tokens (
 	id INTEGER (50) NOT NULL AUTO_INCREMENT,
-	NCBI_API_KEY VARCHAR(36) NOT NULL,
-	X_ELS_APIKey VARCHAR(32) NOT NULL,
-	X_ELS_Insttoken	VARCHAR(32) NOT NULL,
 	user_id	INTEGER,
-	UNIQUE(X_ELS_Insttoken),
+	NCBI_API_KEY VARCHAR(200),
+	X_ELS_APIKey VARCHAR(200),
+	X_ELS_Insttoken	VARCHAR(200),
+	GeminiAI VARCHAR(200),
 	PRIMARY KEY(id),
-	FOREIGN KEY(user_id) REFERENCES users(id),
-	UNIQUE(X_ELS_APIKey),
-	UNIQUE(NCBI_API_KEY)
+	FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS results (
@@ -31,9 +28,10 @@ CREATE TABLE IF NOT EXISTS results (
 	user_id	INTEGER,
 	status VARCHAR(20),
 	celery_id VARCHAR(100) NOT NULL,
-	pubmed_query VARCHAR(1024),
-	elsevier_query VARCHAR(1024),
+	job_name VARCHAR(100),
+	used_queries VARCHAR(4096),
 	result_json json,
+	result_count_dfs_json json,
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),
 	PRIMARY KEY(id)
@@ -47,7 +45,9 @@ CREATE TABLE IF NOT EXISTS flashtext_models (
 	path VARCHAR(255),
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(user_id) REFERENCES users(id),
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+	UNIQUE(name),
+	UNIQUE(path)
 );
 CREATE TABLE IF NOT EXISTS tokens_password (
 	id INTEGER (50) NOT NULL AUTO_INCREMENT,
@@ -61,8 +61,12 @@ CREATE TABLE IF NOT EXISTS tokens_password (
 	FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
-INSERT INTO flashtext_models (id, user_id, name, type, path)
-VALUES (1, 1, 'Human', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_human.pickle'); 
 
-INSERT INTO flashtext_models (id, user_id, name, type, path)
-VALUES (2, 1, 'Danio rerio', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/genes_dario_rerio.pickle'); 
+INSERT INTO users (id, name, email, password)
+VALUES
+	(1, 'admin', 'admin', '******');
+
+INSERT INTO flashtext_models (id, user_id, name, type, path, created_date)
+VALUES
+	(1, 1, 'Human genes', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_human.pickle', CURRENT_TIMESTAMP),
+	(2, 1, 'Zebra fish genes', 'GENE_OR_GENE_PRODUCT', 'data/flashtext_models/default_models/genes_danio_rerio.pickle', CURRENT_TIMESTAMP);

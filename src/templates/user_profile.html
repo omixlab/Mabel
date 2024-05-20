@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h2 style="text-align: center;">User Profile</h2>
+
+<body>
+    <div class="container mt-5 mb-5">
+        <form method="POST" class="form-register" styler="color: withesmoke">
+            <!-- Profile Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">Account Information</h4>
+                    
+                    {{ form.name.label() }}
+                    <div class="input-group mb-3">{{form.name(class='form-control', disabled='True') }}</div>
+                    {{ form.email.label() }}
+                    <div class="input-group mb-3">{{form.email(class='form-control', disabled='True') }}</div>
+
+                    <br>
+
+                    <h5>Change Password</h5>
+                    {{ form.old_password.label() }}
+                    <div class="input-group mb-3">{{form.old_password(class='form-control', disabled='True') }}</div>
+                    {{ form.new_password.label() }}
+                    <div class="input-group mb-3">{{form.new_password(class='form-control', disabled='True') }}</div>
+                    {{ form.confirm_password.label() }}
+                    <div class="input-group mb-3">{{form.confirm_password(class='form-control', disabled='True') }}</div>
+                </div>
+            </div>
+
+            <!-- Tokens Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">API Tokens</h4>
+                    {{ form.NCBI_API_KEY.label() }}
+                    <div class="input-group mb-3">
+                        {{ form.NCBI_API_KEY(class='form-control', placeholder='NCBI API KEY', disabled='True') }}
+                        <a tabindex="0" role="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-container="body" data-bs-placement="right" data-bs-html="true"
+                            data-bs-title="NCBI API Key" 
+                            data-bs-content="Your key can be created at <a href='https://account.ncbi.nlm.nih.gov/settings/' target='_blank'>NCBI account settings</a>">
+                            ?
+                        </a>
+                    </div>
+
+                    {{ form.X_ELS_APIKey.label() }}
+                    <div class="input-group mb-3">
+                        {{ form.X_ELS_APIKey(class='form-control', placeholder='X ELS APIKey', disabled='True') }}
+                        <a tabindex="1" role="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-container="body" data-bs-placement="right" data-bs-html="true"
+                            data-bs-title="Elsevier API Key" 
+                            data-bs-content="You can create your API key at <a href='https://dev.elsevier.com/apikey/manage' target='_blank'>Elsevier Developer Portal</a>">
+                            ?
+                        </a>
+                    </div>
+
+                    {{ form.X_ELS_Insttoken.label() }}
+                    <div class="input-group mb-3">
+                        {{ form.X_ELS_Insttoken(class='form-control', placeholder='X ELS Insttoken', disabled='True') }}
+                        <a tabindex="2" role="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-container="body" data-bs-placement="right" 
+                            data-bs-title="Elsevier insttoken" 
+                            data-bs-content="Your Insttoken must be requested directly to Elsevier support team">
+                            ?
+                        </a>
+                    </div>
+
+                    {{ form.GeminiAI.label() }}
+                    <div class="input-group mb-3">
+                        {{ form.GeminiAI(class='form-control', placeholder='GeminiID', disabled='True') }}
+                        <a tabindex="3" role="button" class="btn btn-secondary" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-container="body" data-bs-placement="right" data-bs-html="true"
+                            data-bs-title="Help GeminiAI" 
+                            data-bs-content="yes">
+                            ?
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        <!-- Links Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">Other</h4>
+                    <a href="{{ url_for('user_models') }}" class="btn btn-outline-secondary">User Custom Models</a>
+                </div>
+            </div>
+        
+        <div class="text-end">
+            <button class="btn btn-secondary" name="edit" id="editButton" onclick="toggleButtons()"> Edit </button>
+            <button class="btn btn-danger" id="cancelButton" style="display: none;";">Cancel</button>
+            {{ form.submit(class="btn btn-success", disabled="True")}}    
+        </div>
+    </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize popovers
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+            const popover = new bootstrap.Popover('.popover-dismiss', {
+                trigger: 'focus'
+            });
+        });
+
+        // Enable editing
+        const formFields = document.querySelectorAll('.form-control');
+            const submitButton = document.querySelector('.btn-success');
+            const editButton = document.getElementById('editButton');
+            const cancelButton = document.getElementById('cancelButton')
+
+            const enableForm = function() {
+                formFields.forEach(field => field.disabled = false);
+                submitButton.disabled = false;
+            };
+
+            editButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                enableForm();
+            });
+
+            function toggleButtons() {
+                document.getElementById('editButton').style.display = 'none';
+                document.getElementById('cancelButton').style.display = 'inline';
+                }
+
+            cancelButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                window.location.href = window.location.href;
+            })
+
+    </script>
+
+</body>
+{% endblock %}

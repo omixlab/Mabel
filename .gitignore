@@ -4,6 +4,7 @@ data/csv
 data/xmls
 data/uploads
 data/dumps
+data/dfs_results
 .env
 default
 version_old
@@ -11,3 +12,4 @@ __pycache__
 dump.*
 requirements_2.txt
 client_secret.json
+src/templates/articles_extractor_str copy.html

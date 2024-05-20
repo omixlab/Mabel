@@ -1,45 +1,114 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style> 
-.container {margin-left: 0;}
+<style>
+.container {
+    max-width: 98%;
+    margin-left: 1%;
+}
 .scrollable-content {
-    max-height: 300px; /* Adjust the height as needed */
+    max-height: 300px;
     overflow: auto;
     white-space: pre-wrap; /* Allow line breaks */}
-.table {
-    width: 250%;
+
+    .table th {
+    text-align: left;
 }
 </style>
 
-<h2>Result</h2>
-<hr>
-<table class="table table-hover table-bordered" >
-    <thead>
-        <tr>
-            {% for column_name in df.columns %}
-                <th space="col" class="wide-cell">{{column_name}}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for r, row in df.iterrows() %}
-            <tr>
-            {% for column_name in df.columns %}
-                <td>
-                    {% if column_name == "Abstract" %}
-                        <div class="scrollable-content">{{row[column_name]}}</div>
-                    {% elif column_name == "Genes" %}
-                        {% for gene in row[column_name].split(', ') %}
-                            <a href="https://www.uniprot.org/uniprotkb?query={{gene}}">{{gene}}</a><br>
+<br>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="articles-tab" data-bs-toggle="tab" data-bs-target="#articles-tab-pane" type="button" role="tab" aria-controls="articles-tab-pane" aria-selected="true">Articles</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="graphics-tab" data-bs-toggle="tab" data-bs-target="#graphics-tab-pane" type="button" role="tab" aria-controls="graphics-tab-pane" aria-selected="false">Graphics</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="articles-tab-pane" role="tabpanel" aria-labelledby="articles" tabindex="0">
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered" style="width: 250%;">
+                <thead>
+                    <tr>
+                        {% for column_name in df.columns %}
+                            <th space="col" class="wide-cell">{{column_name}}</th>
                         {% endfor %}
-                    {% else %}
-                        <div>{{row[column_name]}}</div>
-                    {% endif %}
-                </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r, row in df.iterrows() %}
+                        <tr>
+                        {% for column_name in df.columns %}
+                            <td>    
+                                {% if column_name == "Human" %}
+                                    {% for gene in row[column_name].split(', ') %}
+                                        <a href="https://www.uniprot.org/uniprotkb?query={{gene[column_name]}}">{{gene}}</a><br>
+                                    {% endfor %}
+                                {% elif column_name == "DOI" %}
+                                    <a href="https://doi.org/{{row[column_name]}}">{{row[column_name]}}</a>
+                                {% else %}
+                                <div class="scrollable-content">{{row[column_name]}}</div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+
+    
+    <div class="tab-pane fade" id="graphics-tab-pane" role="tabpanel" aria-labelledby="graphics" tabindex="0">
+    {% if count_dfs or plots %}
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-lg btn-outline-secondary dropdown-toggle mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select coolumn to count ocurrencies from
+                </button>
+                <ul class="dropdown-menu collapse nav nav-tabs">
+                    {% for key in count_dfs.keys() %}
+                    <li class="dropdown-item">
+                        {% if key == 'Human genes' %}
+                        <a class="dropdown-item active" id="{{key.replace(' ', '_')}}-tab" data-bs-toggle="tab" href="#{{key.replace(' ', '_')}}">{{key}}</a>
+                        {% else %}
+                        <a class="dropdown-item" id="{{key.replace(' ', '_')}}-tab" data-bs-toggle="tab" href="#{{key.replace(' ', '_')}}">{{key}}</a>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+    
+            <div class="tab-content" style="margin-left: 10%; margin-right: 10%;">
+            {% for key, df_html in count_dfs.items() %}
+                {% if key == 'Human genes' %}
+                <div class="tab-pane fade show active" id="{{key.replace(' ', '_')}}">
+                {% else %}
+                <div class="tab-pane fade" id="{{key.replace(' ', '_')}}">
+                {% endif %}
+                    <div>
+                        {{ plots[key] | safe }}
+                    </div>
+
+                    <div class="scrollable-content table-responsive">
+                        {{ df_html | safe }}
+                    </div>
+                </div>   
             {% endfor %}
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            </div>
+        </div>
+
+    {% else %}
+        <div> No graphics data was created or found</div>
+
+    {% endif %}
+    </div>
+    
+</div>
+
 {% endblock %}

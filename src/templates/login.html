@@ -29,14 +29,13 @@ Login
             </div>
             <br>
             <div class="Checkbox mb-3">
-                <h4 style="color:black">Forgot Password?</h4>
-                <a class= 'btn btn-sm btn-secondary' href="{{url_for('recovery_passwordForm')}}">Recovery password</a>
+                 <a href="{{url_for('recovery_passwordForm')}}"> <h6>Forgot Password?</h6> </a>
             </div>
             <div class="Checkbox mb-3">
-                <h4 style="color:black">Don't have an account yet?</h4>
-                <a class= 'btn btn-sm btn-secondary' href="{{url_for('register')}}">Sign in</a>
+                <a href="{{url_for('register')}}"> <h6>Don't have an account yet?</h6> </a>
             </div>
         </form>
     </div>
+   
 </body>
 {% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+Login
+{% endblock %}
+{% block content %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<body style="padding-bottom: 20px;">
+    <h1>Items to be verified in Gemini</h1>
+    <div class="table-responsive"></div>
+    <!-- tem que ajustar o id  --> 
+    <form id="checkboxForm" method="POST" action="/gemini_engine/{{result_id}}">
+        <table id="mytable" class="table table-hover table-bordered">
+            <thead>
+                <th><input type="checkbox" id="checkall" /></th>
+                <th>DOI</th>
+                <th>Title</th>
+                <th>Authors</th>
+            <tbody>
+                {% for index, row in df.iterrows() %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ row['DOI'] }}" name="mycheckbox" class="checkthis" /></td>
+                        <td>{{ row['DOI'] }}</td>
+                        <td>{{ row['Title'] }}</td>
+                        <td>{{ row['Authors'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            {{form.hidden_tag()}}
+
+            {{ form.question.label() }}
+            {{ form.question(class='form-control', placeholder='What do you want know') }}
+        <br>
+        <input type="submit" value="Select" class="btn btn-primary">  
+        <div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-primary" role="alert">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </form>
+    <script>
+        $(document).ready(function(){
+        $("#mytable #checkall").click(function () {
+                if ($("#mytable #checkall").is(':checked')) {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", true);
+                    });
+          
+                } else {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", false);
+                    });
+                }
+            });
+              
+            $("[data-toggle=tooltip]").tooltip();
+        });
+        </script>  
+</body>
+{% endblock %}
