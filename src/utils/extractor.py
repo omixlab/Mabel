@@ -37,8 +37,12 @@ def pubmed(keyword, num_of_articles, _):
     pmids = fetch.pmids_for_query(keyword, retmax=num_of_articles)
 
     xmls = {}
-    for pmid in pmids:
-        xmls[pmid] = fetch.article_by_pmid(pmid).xml
+    for n, pmid in enumerate(pmids):
+        try:
+            xmls[pmid] = fetch.article_by_pmid(pmid).xml
+        except:
+            print(f"Error in pmid {n}/{len(pmids)}")
+            continue
 
     data_pubmed = pd.DataFrame()
 
@@ -214,7 +218,7 @@ def execute(
             print(unified_df.columns)
 
             # Create graphs
-            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]]
+            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "PubmedID", "Source"]]
             if diff_columns:
                 result_count_dfs_json = create_graphs(unified_df, diff_columns)
             else:

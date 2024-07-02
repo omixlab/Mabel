@@ -342,7 +342,7 @@ def result_view(result_id):
     result = Results.query.get(result_id)
     if result:
         df = pd.read_json(result.result_json)
-        default_columns = ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]
+        default_columns = ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "PubmedID", "Source"]
         missing_columns = [col for col in df.columns if col not in default_columns]
         ordered_columns = default_columns[:4] + missing_columns + default_columns[4:]
         df = df.reindex(columns=ordered_columns)

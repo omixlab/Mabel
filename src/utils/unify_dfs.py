@@ -9,20 +9,24 @@ import plotly.graph_objects as go
 def unify(job_name, dfs):
     formated_dfs = []
 
-    directory_path = "data/dfs_results/"
+    local_download = True
+    if local_download:
+        directory_path = "data/dfs_results/"
+        folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
+        if not folders or "1" not in folders:
+            folder = "1"
+            os.makedirs(os.path.join(directory_path, folder))
+        else:
+            highest_numbered_folder = max(folders, key=lambda x: int(x))
+            folder = str(int(highest_numbered_folder) + 1)
+            os.makedirs(os.path.join(directory_path, folder))
+        folder_path = os.path.join(directory_path, folder)
 
-    folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
-
-    if not folders or "1" not in folders:
-        folder = "1"
-        os.makedirs(os.path.join(directory_path, folder))
-    else:
-        highest_numbered_folder = max(folders, key=lambda x: int(x))
-
-        folder = str(int(highest_numbered_folder) + 1)
-        os.makedirs(os.path.join(directory_path, folder))
-
-    folder_path = os.path.join(directory_path, folder)
+    def save_csv():
+        if local_download:
+            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+        else:
+            pass
 
     # PUBMED
     if "pubmed" in dfs:
@@ -76,10 +80,11 @@ def unify(job_name, dfs):
                         "Authors": pm_formated_auth,
                         "Type": pm_formated_type,
                         "Affiliations": pubmed["affiliations"],
-                        "MeSH Terms": pubmed["mesh_terms"],
+                        "PubmedID": pubmed["pmid"],
+                        "Source": "pubmed"
                     }
                 )
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            save_csv()
             formated_dfs.append(df)
 
     # SCOPUS
@@ -110,10 +115,11 @@ def unify(job_name, dfs):
                         "Authors": scopus["dc:creator"],
                         "Type": scopus["subtypeDescription"],
                         "Affiliations": sc_formated_affil,
-                        "MeSH Terms": np.nan,
+                        "PubmedID": scopus["pubmed-id"],
+                        "Source": "scopus"
                     }
                 )
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            save_csv()
             formated_dfs.append(df)
 
     # SCIENCE DIRECT
@@ -153,10 +159,11 @@ def unify(job_name, dfs):
                         "Authors": sd_formated_auth,
                         "Type": scidir["pubtype"],
                         "Affiliations": np.nan,
-                        "MeSH Terms": np.nan,
+                        "PubmedID": np.nan,
+                        "Source": "sciencedirect"
                     }
                 )
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            save_csv()
             formated_dfs.append(df)
 
     # SCIELO
@@ -185,10 +192,11 @@ def unify(job_name, dfs):
                         "Authors": scielo["authors"],
                         "Type": np.nan,
                         "Affiliations": np.nan,
-                        "MeSH Terms": np.nan,
+                        "PubmedID": np.nan,
+                        "Source": "scielo"
                     }
                 )
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            save_csv()
             formated_dfs.append(df)
 
 
@@ -210,10 +218,11 @@ def unify(job_name, dfs):
                         "Authors": preprints["authors"],
                         "Type": np.nan,
                         "Affiliations": np.nan,
-                        "MeSH Terms": np.nan,
+                        "PubmedID": np.nan,
+                        "Source": "preprints"
                     }
                 )
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+            save_csv()
             formated_dfs.append(df)
 
 
