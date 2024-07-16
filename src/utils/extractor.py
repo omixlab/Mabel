@@ -22,7 +22,7 @@ from scielo_extractor.extractor import ScieloSearch
 
 from src import celery
 from src.utils.unify_dfs import unify, create_graphs
-from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
+from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string, pubtator_request
 from flashtext import KeywordProcessor
 import json
 from src.utils.keyword_search import keyword_search
@@ -214,6 +214,12 @@ def execute(
             if type(kp) is list:
                 print(f'Filtering {kp} with Flashtext')
                 unified_df = flashtext_kp(unified_df, kp)
+
+            # Pubtator
+            if True:
+                print("Starting Biotator for entities:")
+                unified_df = pubtator_request(unified_df, ["gene",])
+
 
             print(unified_df.columns)
 

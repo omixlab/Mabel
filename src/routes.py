@@ -14,6 +14,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from wtforms import BooleanField
 
 import pandas as pd
+import numpy as np
 from werkzeug.utils import secure_filename
 from functools import wraps
 
@@ -353,6 +354,12 @@ def result_view(result_id):
             for key, value in count_dfs.items():
                 df_data = json.loads(value)
                 reloaded_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+                
+                if reloaded_df.empty:
+                    continue
+                if pd.isna(reloaded_df.iloc[0][key]):
+                    continue
+                
                 if reloaded_df.iloc[0][key] == '': # remove row counting empty spaces
                     reloaded_df = reloaded_df.iloc[1:].reset_index(drop=True)
 
