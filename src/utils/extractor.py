@@ -217,9 +217,9 @@ def execute(
                 unified_df = flashtext_kp(unified_df, kp)
 
             # Pubtator
-            if True:
-                print("Starting Biotator for entities:")
-                unified_df = pubtator_request(unified_df, ["gene",])
+            if pubtator:
+                print(f"Starting Biotator for entities: {pubtator}")
+                unified_df = pubtator_request(unified_df, pubtator)
 
 
             print(unified_df.columns)

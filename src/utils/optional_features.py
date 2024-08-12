@@ -127,7 +127,6 @@ def flashtext_model_create(name, tsv_file, path):
 # Pubtator
 def pubtator_request(df, entities):
     new_columns = {entity_type: [] for entity_type in entities}
-    fail_count = 0
 
     def append_none():
         for entity_type in entities:
@@ -173,5 +172,5 @@ def pubtator_request(df, entities):
 
     for entity_type in new_columns:
         df.insert(4, f"biotator_{entity_type}", new_columns[entity_type])
-    print("Success: Biotator annotation")
+    print(f"Success: Biotator annotation")
     return df
