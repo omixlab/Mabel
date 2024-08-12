@@ -47,6 +47,7 @@ def extractor_base(func):
         with current_app.app_context():
             search_form = forms.SearchArticles()
             available_entities = forms.ScispacyEntities()
+            pubtator_options = forms.PubtatorOptions()
 
             # Flashtext models
             default_models = forms.FlashtextDefaultModels()
@@ -58,11 +59,8 @@ def extractor_base(func):
             if request.method == "POST":
                 # Submit query
                 if "submit_query" in request.form:
-                    selected_entities = [
-                        e.name.upper()
-                        for e in available_entities
-                        if e.data and e.__class__.__name__ == "BooleanField"
-                    ]
+                    selected_entities = [e.name.upper() for e in available_entities if e.data and e.__class__.__name__ == "BooleanField"]
+                    pubtator = [e.name for e in pubtator_options if e.data and e.__class__.__name__ == "BooleanField"]
                     if search_form.flashtext_radio.data == "Keyword":
                         kp = search_form.flashtext_string.data
 
@@ -127,7 +125,8 @@ def extractor_base(func):
                         boolean_fields,
                         range_fields,
                         selected_entities,
-                        kp
+                        kp,
+                        pubtator
                         )
                     )
 
@@ -151,6 +150,7 @@ def extractor_base(func):
                 available_entities,
                 default_models,
                 user_models,
+                pubtator_options,
                 *args,
                 **kwargs,
             )
@@ -161,7 +161,7 @@ def extractor_base(func):
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 @extractor_base
-def articles_extractor(search_form, available_entities, default_models, user_models):
+def articles_extractor(search_form, available_entities, default_models, user_models, pubtator_options):
     query_form = forms.BasicQuery()
 
     # Query constructor
@@ -184,6 +184,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                             entities = available_entities,
                             default_models = default_models,
                             user_models = user_models,
+                            pubtator = pubtator_options,
                             show_queries = True)
 
 
@@ -191,7 +192,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 @extractor_base
-def articles_extractor_str(search_form, available_entities, default_models, user_models):
+def articles_extractor_str(search_form, available_entities, default_models, user_models, pubtator_options):
     query_form = forms.AdvancedQuery()
     search_filters = forms.SearchFilters()
 
@@ -258,6 +259,7 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                             entities = available_entities,
                             default_models = default_models,
                             user_models = user_models,
+                            pubtator = pubtator_options,
                             )
 
 @app.route("/user_profile", methods=["GET", "POST"])

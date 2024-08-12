@@ -175,6 +175,7 @@ def execute(
     range_fields = dict(),
     ner = None,
     kp = None,
+    pubtator = None
 ):
     try:
         if any(boolean_fields.values()):
