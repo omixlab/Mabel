@@ -1,5 +1,7 @@
 import os
 import json
+import io
+import zipfile
 
 from flask import (
     flash,
@@ -405,17 +407,45 @@ def gemini_engine(result_id):
     return render_template("gemini_engine.html", df=df, form=form, result_final=result, result_id=result_id)
 
 
-@app.route("/download/<result_id>")
+@app.route("/download/<result_id>/<selected_df>")
 @login_required
-def download(result_id):
+def download(result_id, selected_df):
     result = Results.query.get(result_id)
     if result:
-        result_df = pd.read_json(result.result_json)
-        return Response(
-            result_df.to_csv(),
-            mimetype="txt/csv",
-            headers={"Content-disposition": "attachment; filename=result.csv"},
-        )
+
+        if selected_df == 'summary': # download only summary
+            result_df = pd.read_json(result.result_json)
+
+            return Response(
+                result_df.to_csv(index=False),
+                mimetype="txt/csv",
+                headers={"Content-disposition": "attachment; filename=result.csv"},
+            )
+
+        else:
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+                count_dfs = json.loads(result.result_count_dfs_json)
+                for key, value in count_dfs.items(): # append count dfs
+                    df_data = json.loads(value)
+                    result_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+                    csv_data = result_df.to_csv(index=False)
+                    zf.writestr(f'{key}.csv', csv_data)
+                if selected_df == 'all': # append summary
+                    result_df = pd.read_json(result.result_json)
+                    csv_data = result_df.to_csv(index=False)
+                    zf.writestr('summary.csv', csv_data)
+        
+            zip_buffer.seek(0)
+            return Response(
+                zip_buffer.getvalue(),
+                mimetype='application/zip',
+                headers={"Content-disposition": "attachment; filename=result.zip"},
+            )
+
+    else:
+        flash("Unknow result ID", category='danger')
+        url_for(user_area)
 
 
 @app.route("/delete_record/<id>", methods=["POST"])

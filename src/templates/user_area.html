@@ -39,7 +39,18 @@
             </td>
             <td>
                 {% if result.status == 'DONE' %}
-                   <a class="btn btn-md btn-success" href="{{url_for('download', result_id=result.id)}}">Download</a>
+                   <div class="btn-group">
+                        <a class="btn btn-md btn-success" href="{{url_for('download', result_id=result.id, selected_df='all')}}">Download</a>
+                        <button type="button" class="btn btn-md btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{url_for('download', result_id=result.id, selected_df='summary')}}">Articles summary</a>
+                                <a class="dropdown-item" href="{{url_for('download', result_id=result.id, selected_df='count')}}">Entities count</a>
+                            </li>
+                        </ul>
+                    </div>
                 {% endif %}
             </td>
             <td>
