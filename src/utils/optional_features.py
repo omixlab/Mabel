@@ -6,6 +6,9 @@ import numpy as np
 import os
 from flashtext import KeywordProcessor
 from src.models import FlashtextModels
+import requests
+import json
+import time
 
 
 def scispacy_ner(df, entities):
@@ -120,3 +123,54 @@ def flashtext_model_create(name, tsv_file, path):
     # Save with pickle
     with open(f"./{path}", "wb") as writer:
         writer.write(pickle.dumps(kp))
+
+# Pubtator
+def pubtator_request(df, entities):
+    new_columns = {entity_type: [] for entity_type in entities}
+
+    def append_none():
+        for entity_type in entities:
+            new_columns[entity_type].append(np.nan)
+
+    for n, pmid in enumerate(df["PubmedID"]):
+        time.sleep(0.5)
+        new_row = {entity_type: [] for entity_type in entities}
+
+        if pmid:
+            try:
+                response = requests.get(f'https://www.ncbi.nlm.nih.gov/research/pubtator3-api/publications/export/biocjson?pmids={pmid}')
+                if response.status_code == 200:
+                    json_data = response.json()
+                    for entry in json_data['PubTator3']:
+                        for passage in entry['passages']:
+                            for annotation in passage['annotations']:
+                                entity_type = annotation['infons']['biotype']
+
+                                if entity_type in entities:
+                                    if 'name' in annotation['infons']:
+                                        name = annotation['infons']['name']
+                                        new_row[entity_type].append(name)
+                                    elif 'text' in annotation['infons']:
+                                        name = annotation['infons']['text']
+                                        new_row[entity_type].append(name)
+                                    else:
+                                        pass
+                    
+                    for entity_type in entities:
+                        if new_row[entity_type]:
+                            new_columns[entity_type].append(', '.join(set(new_row[entity_type])))
+                        else:
+                            new_columns[entity_type].append(np.nan)
+                    
+                else:
+                    append_none()
+            except:
+                append_none()
+        else:
+            append_none()
+
+
+    for entity_type in new_columns:
+        df.insert(4, f"biotator_{entity_type}", new_columns[entity_type])
+    print(f"Success: Biotator annotation")
+    return df

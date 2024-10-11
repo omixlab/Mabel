@@ -11,9 +11,9 @@
                 <div class="accordion-body">
                     <div class="row text-center">
                     
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <h5>Named-Entity Recognizer</h5>
-                            <div class="card card-body col-md-11 mr-4" style="max-height: 300px; overflow-y: auto;">
+                            <div class="card card-body col-md-12" style="max-height: 300px; overflow-y: auto;">
                                 {% for name, entity in entities._fields.items() %}
                                     {% if entity.__class__.__name__ == 'BooleanField' %}
                                     <div class="text-start">
@@ -27,7 +27,7 @@
 
                     <br>
 
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                         <h5>Filter keywords</h5>
                             <div class="card card-body col-md-12" style="max-height: 300px; overflow-y: auto;">
                                 <div class="text-start">
@@ -65,7 +65,24 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    <br>
+
+                        <div class="col-md-3">
+                        <h5>Pubtator</h5>
+                        <div class="card card-body col-md-12" style="max-height: 300px; overflow-y: auto;">
+                            {% for name, option in pubtator._fields.items() %}
+                                {% if option.__class__.__name__ == 'BooleanField' %}
+                                <div class="text-start">
+                                    {{option(class="mt-2")}} 
+                                    <label class="form-check-label" for={{option.name}}>{{name.title().replace("_", " ")}}</label>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+
+                        </div>
                     </div>
                 </div>
             </div>

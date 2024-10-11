@@ -1,5 +1,7 @@
 import os
 import json
+import io
+import zipfile
 
 from flask import (
     flash,
@@ -14,6 +16,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from wtforms import BooleanField
 
 import pandas as pd
+import numpy as np
 from werkzeug.utils import secure_filename
 from functools import wraps
 
@@ -44,6 +47,7 @@ def extractor_base(func):
         with current_app.app_context():
             search_form = forms.SearchArticles()
             available_entities = forms.ScispacyEntities()
+            pubtator_options = forms.PubtatorOptions()
 
             # Flashtext models
             default_models = forms.FlashtextDefaultModels()
@@ -55,11 +59,8 @@ def extractor_base(func):
             if request.method == "POST":
                 # Submit query
                 if "submit_query" in request.form:
-                    selected_entities = [
-                        e.name.upper()
-                        for e in available_entities
-                        if e.data and e.__class__.__name__ == "BooleanField"
-                    ]
+                    selected_entities = [e.name.upper() for e in available_entities if e.data and e.__class__.__name__ == "BooleanField"]
+                    pubtator = [e.name for e in pubtator_options if e.data and e.__class__.__name__ == "BooleanField"]
                     if search_form.flashtext_radio.data == "Keyword":
                         kp = search_form.flashtext_string.data
 
@@ -124,7 +125,8 @@ def extractor_base(func):
                         boolean_fields,
                         range_fields,
                         selected_entities,
-                        kp
+                        kp,
+                        pubtator
                         )
                     )
 
@@ -148,6 +150,7 @@ def extractor_base(func):
                 available_entities,
                 default_models,
                 user_models,
+                pubtator_options,
                 *args,
                 **kwargs,
             )
@@ -158,7 +161,7 @@ def extractor_base(func):
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 @extractor_base
-def articles_extractor(search_form, available_entities, default_models, user_models):
+def articles_extractor(search_form, available_entities, default_models, user_models, pubtator_options):
     query_form = forms.BasicQuery()
 
     # Query constructor
@@ -181,6 +184,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                             entities = available_entities,
                             default_models = default_models,
                             user_models = user_models,
+                            pubtator = pubtator_options,
                             show_queries = True)
 
 
@@ -188,7 +192,7 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 @extractor_base
-def articles_extractor_str(search_form, available_entities, default_models, user_models):
+def articles_extractor_str(search_form, available_entities, default_models, user_models, pubtator_options):
     query_form = forms.AdvancedQuery()
     search_filters = forms.SearchFilters()
 
@@ -255,6 +259,7 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                             entities = available_entities,
                             default_models = default_models,
                             user_models = user_models,
+                            pubtator = pubtator_options,
                             )
 
 @app.route("/user_profile", methods=["GET", "POST"])
@@ -342,7 +347,7 @@ def result_view(result_id):
     result = Results.query.get(result_id)
     if result:
         df = pd.read_json(result.result_json)
-        default_columns = ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]
+        default_columns = ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "PubmedID", "Source"]
         missing_columns = [col for col in df.columns if col not in default_columns]
         ordered_columns = default_columns[:4] + missing_columns + default_columns[4:]
         df = df.reindex(columns=ordered_columns)
@@ -353,6 +358,12 @@ def result_view(result_id):
             for key, value in count_dfs.items():
                 df_data = json.loads(value)
                 reloaded_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+                
+                if reloaded_df.empty:
+                    continue
+                if pd.isna(reloaded_df.iloc[0][key]):
+                    continue
+                
                 if reloaded_df.iloc[0][key] == '': # remove row counting empty spaces
                     reloaded_df = reloaded_df.iloc[1:].reset_index(drop=True)
 
@@ -398,17 +409,45 @@ def gemini_engine(result_id):
     return render_template("gemini_engine.html", df=df, form=form, result_final=result, result_id=result_id)
 
 
-@app.route("/download/<result_id>")
+@app.route("/download/<result_id>/<selected_df>")
 @login_required
-def download(result_id):
+def download(result_id, selected_df):
     result = Results.query.get(result_id)
     if result:
-        result_df = pd.read_json(result.result_json)
-        return Response(
-            result_df.to_csv(),
-            mimetype="txt/csv",
-            headers={"Content-disposition": "attachment; filename=result.csv"},
-        )
+
+        if selected_df == 'summary': # download only summary
+            result_df = pd.read_json(result.result_json)
+
+            return Response(
+                result_df.to_csv(index=False),
+                mimetype="txt/csv",
+                headers={"Content-disposition": "attachment; filename=result.csv"},
+            )
+
+        else:
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+                count_dfs = json.loads(result.result_count_dfs_json)
+                for key, value in count_dfs.items(): # append count dfs
+                    df_data = json.loads(value)
+                    result_df = pd.DataFrame(df_data['data'], columns=df_data['columns'], index=df_data['index'])
+                    csv_data = result_df.to_csv(index=False)
+                    zf.writestr(f'{key}.csv', csv_data)
+                if selected_df == 'all': # append summary
+                    result_df = pd.read_json(result.result_json)
+                    csv_data = result_df.to_csv(index=False)
+                    zf.writestr('summary.csv', csv_data)
+        
+            zip_buffer.seek(0)
+            return Response(
+                zip_buffer.getvalue(),
+                mimetype='application/zip',
+                headers={"Content-disposition": "attachment; filename=result.zip"},
+            )
+
+    else:
+        flash("Unknow result ID", category='danger')
+        url_for(user_area)
 
 
 @app.route("/delete_record/<id>", methods=["POST"])
