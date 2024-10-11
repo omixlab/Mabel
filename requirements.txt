@@ -1,5 +1,5 @@
 Flask==2.0.1
-celery==5.1.2
+celery>=5.1.2
 redis==3.5.3
 flask_bcrypt
 flask_login
@@ -21,7 +21,7 @@ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_ner_bionlp
 scispacy
 mysql-connector-python
 pymysql
-spacy
+#spacy
 flashtext
 Werkzeug==2.2.0
 #yagmail

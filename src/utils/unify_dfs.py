@@ -9,24 +9,24 @@ import plotly.graph_objects as go
 def unify(job_name, dfs):
     formated_dfs = []
 
-    local_download = True
-    if local_download:
-        directory_path = "data/dfs_results/"
-        folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
-        if not folders or "1" not in folders:
-            folder = "1"
-            os.makedirs(os.path.join(directory_path, folder))
-        else:
-            highest_numbered_folder = max(folders, key=lambda x: int(x))
-            folder = str(int(highest_numbered_folder) + 1)
-            os.makedirs(os.path.join(directory_path, folder))
-        folder_path = os.path.join(directory_path, folder)
+    #local_download = True
+    #if local_download:
+    #    directory_path = "data/dfs_results/"
+    #    folders = [folder for folder in os.listdir(directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
+    #    if not folders or "1" not in folders:
+    #        folder = "1"
+    #        os.makedirs(os.path.join(directory_path, folder))
+    #    else:
+    #        highest_numbered_folder = max(folders, key=lambda x: int(x))
+    #        folder = str(int(highest_numbered_folder) + 1)
+    #        os.makedirs(os.path.join(directory_path, folder))
+    #    folder_path = os.path.join(directory_path, folder)
 
-    def save_csv():
-        if local_download:
-            df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
-        else:
-            pass
+    #def save_csv():
+    #    if local_download:
+    #        df.to_csv(os.path.join(folder_path, f"{job_name}.csv"))
+    #    else:
+    #        pass
 
     # PUBMED
     if "pubmed" in dfs:
@@ -84,7 +84,7 @@ def unify(job_name, dfs):
                         "Source": "pubmed"
                     }
                 )
-            save_csv()
+            #save_csv()
             formated_dfs.append(df)
 
     # SCOPUS
@@ -119,7 +119,7 @@ def unify(job_name, dfs):
                         "Source": "scopus"
                     }
                 )
-            save_csv()
+            #save_csv()
             formated_dfs.append(df)
 
     # SCIENCE DIRECT
@@ -163,7 +163,7 @@ def unify(job_name, dfs):
                         "Source": "sciencedirect"
                     }
                 )
-            save_csv()
+            #save_csv()
             formated_dfs.append(df)
 
     # SCIELO
@@ -196,7 +196,7 @@ def unify(job_name, dfs):
                         "Source": "scielo"
                     }
                 )
-            save_csv()
+            #save_csv()
             formated_dfs.append(df)
 
 
@@ -222,7 +222,7 @@ def unify(job_name, dfs):
                         "Source": "preprints"
                     }
                 )
-            save_csv()
+            #save_csv()
             formated_dfs.append(df)
 
 
@@ -240,7 +240,6 @@ def unify(job_name, dfs):
         if not formated_dfs:
             print("Error: No results")
         return pd.DataFrame()  # Gera dataframe vazio
-
 
 
 
