@@ -329,6 +329,13 @@ class CreateFlashtextModel(FlaskForm):
     )
     submit = SubmitField(label="Create model")
 
+class PubtatorOptions(FlaskForm):
+    gene = BooleanField("Gene")
+    disease = BooleanField("Disease")
+    chemical = BooleanField("Chemical")
+    variant = BooleanField("Variant")
+    species = BooleanField("Species")
+    cell_line = BooleanField("Cell line")
 
 class GeminiForm(FlaskForm):
     question = TextAreaField(

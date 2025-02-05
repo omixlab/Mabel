@@ -22,7 +22,7 @@ from scielo_extractor.extractor import ScieloSearch
 
 from src import celery
 from src.utils.unify_dfs import unify, create_graphs
-from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string
+from src.utils.optional_features import scispacy_ner, flashtext_kp, flashtext_kp_string, pubtator_request
 from flashtext import KeywordProcessor
 import json
 from src.utils.keyword_search import keyword_search
@@ -37,8 +37,12 @@ def pubmed(keyword, num_of_articles, _):
     pmids = fetch.pmids_for_query(keyword, retmax=num_of_articles)
 
     xmls = {}
-    for pmid in pmids:
-        xmls[pmid] = fetch.article_by_pmid(pmid).xml
+    for n, pmid in enumerate(pmids):
+        try:
+            xmls[pmid] = fetch.article_by_pmid(pmid).xml
+        except:
+            print(f"Error in pmid {n}/{len(pmids)}")
+            continue
 
     data_pubmed = pd.DataFrame()
 
@@ -171,6 +175,7 @@ def execute(
     range_fields = dict(),
     ner = None,
     kp = None,
+    pubtator = None
 ):
     try:
         if any(boolean_fields.values()):
@@ -211,10 +216,16 @@ def execute(
                 print(f'Filtering {kp} with Flashtext')
                 unified_df = flashtext_kp(unified_df, kp)
 
+            # Pubtator
+            if pubtator:
+                print(f"Starting Biotator for entities: {pubtator}")
+                unified_df = pubtator_request(unified_df, pubtator)
+
+
             print(unified_df.columns)
 
             # Create graphs
-            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "MeSH Terms"]]
+            diff_columns = [c for c in unified_df.columns if c not in ["Title", "DOI", "Abstract", "Date", "Pages", "Journal", "Authors", "Type", "Affiliations", "PubmedID", "Source"]]
             if diff_columns:
                 result_count_dfs_json = create_graphs(unified_df, diff_columns)
             else:
