@@ -2,27 +2,20 @@ Bambu Systematic Review
 ==========================
 
 ### Clone repository 
-`git clone git@github.com:omixlab/bambu-systematic-review.git`
+`git clone git@github.com:omixlab/Mabel.git`
 
 ### Open folder 
-`cd bambu-systematic-review`
+`cd Mabel`
 
 ### Docker
 `make build`
 `make run`
 
 ```
-NCBI_API_KEY=XXXXXXXXXXXXXXXXXXXXXX
-X_ELS_APIKey=XXXXXXXXXXXXXXXXXXXXXX
-X_ELS_Insttoken=XXXXXXXXXXXXXXXXXXX
 CELERY_BROKER_URL=XXXXXXXXXXXXXXXXX
 CELERY_RESULT_BACKEND=XXXXXXXXXXXXX
 SQLALCHEMY_DATABASE_URI=XXXXXXXXXXX
 FLASK_SECRET_KEY=XXXXXXXXXXXXXXXXXX
-GOOGLE_CLIENT_ID=XXXXXXXXXXXXXXXXXX
-GOOGLE_CLIENT_SECRET=XXXXXXXXXXXXXX
-GOOGLE_REFRESH_TOKEN=XXXXXXXXXXXXXX
-EMAIL=XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 FLASHTEXT_MODELS='data/flashtext_models/default_models/'
 FLASHTEXT_USER_MODELS='data/flashtext_models/users_models/'
 UPLOAD_FILES='data/uploads/'
