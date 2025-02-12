@@ -34,7 +34,7 @@
             </td>
             <td>
                 {% if result.status == 'DONE' %}
-                   <a class="btn btn-md btn-info" href={{url_for('gemini_engine', result_id=result.id)}}>Gemini</a>
+                   <a class="btn btn-md btn-info" href={{url_for('openai_engine', result_id=result.id)}}>OpenAI</a>
                 {% endif %}
             </td>
             <td>

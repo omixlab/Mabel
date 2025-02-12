@@ -383,17 +383,17 @@ def result_view(result_id):
 @app.route("/openai_engine/<result_id>", methods=["GET", "POST"])
 @login_required
 def openai_engine(result_id):
-    form = forms.OpenaiForm()
+    form = forms.OpenAIForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
 
     register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
     
     if register_token_exist :
-        key = register_token_exist.openAI
+        key = register_token_exist.OpenAI
     else:
         register_token_master = KeysTokens.query.filter_by(user_id=1).first()
-        key = register_token_master.openAI
+        key = register_token_master.OpenAI
 
     list_doi = []
     if request.method == "POST":

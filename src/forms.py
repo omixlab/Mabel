@@ -92,15 +92,14 @@ class UserProfile(FlaskForm):
     NCBI_API_KEY = StringField(label="NCBI:")
     X_ELS_APIKey = StringField(label="Elsevier API key:")
     X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
-    GeminiAI = StringField(label="GeminiAI:")
-
+    OpenAI = StringField(label="OpenAI:")
     submit = SubmitField(label="Confirm changes")
 
 class RegisterTokensForm(FlaskForm):
     NCBI_API_KEY = StringField(label="NCBI:")
     X_ELS_APIKey = StringField(label="Elsevier API key:")
     X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
-    GeminiAI = StringField(label="GeminiAI:")
+    OpenAI = StringField(label="OpenAI:")
     submit = SubmitField(label="Save")
 
 class RecoveryPasswordForm(FlaskForm):
