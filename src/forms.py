@@ -337,9 +337,9 @@ class PubtatorOptions(FlaskForm):
     species = BooleanField("Species")
     cell_line = BooleanField("Cell line")
 
-class GeminiForm(FlaskForm):
+class OpenAIForm(FlaskForm):
     question = TextAreaField(
-        "Message Gemini",
+        "Message DeepSeek",
         render_kw={"rows": "4", "cols": "100"},
         validators=[DataRequired()],
     )

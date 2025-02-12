@@ -7,10 +7,10 @@ Login
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <body style="padding-bottom: 20px;">
-    <h1>Items to be verified in Gemini</h1>
+    <h1>Items to be verified in Deepseek</h1>
     <div class="table-responsive"></div>
     <!-- tem que ajustar o id  --> 
-    <form id="checkboxForm" method="POST" action="/gemini_engine/{{result_id}}">
+    <form id="checkboxForm" method="POST" action="/openai_engine/{{result_id}}">
         <table id="mytable" class="table table-hover table-bordered">
             <thead>
                 <th><input type="checkbox" id="checkall" /></th>
@@ -31,7 +31,7 @@ Login
             {{form.hidden_tag()}}
 
             {{ form.question.label() }}
-            {{ form.question(class='form-control', placeholder='What do you want know') }}
+            {{ form.question(class='form-control', placeholder='What do you want know?') }}
         <br>
         <input type="submit" value="Select" class="btn btn-primary">  
         <div>

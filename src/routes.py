@@ -25,7 +25,7 @@ from src.models import Users, Results, FlashtextModels, TokensPassword, KeysToke
 from src import forms
 import src.utils.extractor as extractor
 import resend
-from src.utils.gemeni import gemeni as genai
+from src.utils.openAI_deepseek import deepseek 
 import src.utils.query_constructor as query_constructor
 import src.utils.dicts_tuples.flasky_tuples as dicts_and_tuples
 from src.utils.optional_features import flashtext_model_create
@@ -277,7 +277,7 @@ def user_profile():
         form.NCBI_API_KEY.data = user_tokens.NCBI_API_KEY
         form.X_ELS_APIKey.data = user_tokens.X_ELS_APIKey
         form.X_ELS_Insttoken.data = user_tokens.X_ELS_Insttoken
-        form.GeminiAI.data = user_tokens.GeminiAI
+        form.OpenAI.data = user_tokens.OpenAI
     
     if request.method == "POST":
         if form.validate_on_submit: 
@@ -314,7 +314,7 @@ def user_profile():
                 user_tokens.NCBI_API_KEY = form.NCBI_API_KEY.data
                 user_tokens.X_ELS_APIKey = form.X_ELS_APIKey.data
                 user_tokens.X_ELS_Insttoken = form.X_ELS_Insttoken.data
-                user_tokens.GeminiAI = form.GeminiAI.data
+                user_tokens.OpenAI = form.OpenAI.data
                 db.session.commit()
             
             else:
@@ -324,7 +324,7 @@ def user_profile():
                     NCBI_API_KEY=form.NCBI_API_KEY.data,
                     X_ELS_APIKey=form.X_ELS_APIKey.data,
                     X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-                    GeminiAI=form.GeminiAI.data
+                    OpenAI=form.OpenAI.data
                 )
                 db.session.add(register_token)
                 db.session.commit()
@@ -380,20 +380,20 @@ def result_view(result_id):
         return redirect(url_for("user_area"))
 
 
-@app.route("/gemini_engine/<result_id>", methods=["GET", "POST"])
+@app.route("/openai_engine/<result_id>", methods=["GET", "POST"])
 @login_required
-def gemini_engine(result_id):
-    form = forms.GeminiForm()
+def openai_engine(result_id):
+    form = forms.OpenaiForm()
     result = Results.query.get(result_id)
     df = pd.read_json(result.result_json)
 
     register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
     
     if register_token_exist :
-        key = register_token_exist.GeminiAI
+        key = register_token_exist.openAI
     else:
         register_token_master = KeysTokens.query.filter_by(user_id=1).first()
-        key = register_token_master.GeminiAI
+        key = register_token_master.openAI
 
     list_doi = []
     if request.method == "POST":
@@ -402,11 +402,11 @@ def gemini_engine(result_id):
 
         abstract_selected = df[df["DOI"].isin(list_doi)][["Abstract"]]
 
-        result = genai(key, form.question.data, abstract_selected)
+        result = deepseek(key, form.question.data, abstract_selected)
 
         flash(result)
 
-    return render_template("gemini_engine.html", df=df, form=form, result_final=result, result_id=result_id)
+    return render_template("openai_engine.html", df=df, form=form, result_final=result, result_id=result_id)
 
 
 @app.route("/download/<result_id>/<selected_df>")
@@ -539,7 +539,7 @@ def register_tokens():
             user_token.NCBI_API_KEY = form.NCBI_API_KEY.data
             user_token.X_ELS_APIKey = form.X_ELS_APIKey.data
             user_token.X_ELS_Insttoken = form.X_ELS_Insttoken.data
-            user_token.GeminiAI = form.GeminiAI.data
+            user_token.OpenAI = form.OpenAI.data
             db.session.commit()
 
             flash('Token updated successfully!')
@@ -550,7 +550,7 @@ def register_tokens():
                 NCBI_API_KEY=form.NCBI_API_KEY.data,
                 X_ELS_APIKey=form.X_ELS_APIKey.data,
                 X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-                GeminiAI=form.GeminiAI.data
+                OpenAI=form.OpenAI.data
             )
             db.session.add(register_token)
             db.session.commit()
