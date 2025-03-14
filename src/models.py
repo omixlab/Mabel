@@ -31,9 +31,9 @@ class Users(db.Model, UserMixin):
 
 class KeysTokens(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    NCBI_API_KEY = db.Column(db.String(length=200), unique=True)
-    X_ELS_APIKey = db.Column(db.String(length=200), unique=True)
-    X_ELS_Insttoken = db.Column(db.String(length=200), unique=True)
+    NCBI_API_KEY = db.Column(db.String(length=200))
+    X_ELS_APIKey = db.Column(db.String(length=200))
+    X_ELS_Insttoken = db.Column(db.String(length=200))
     OpenRouter_Key = db.Column(db.String(length=200))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 

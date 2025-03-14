@@ -157,7 +157,6 @@ def extractor_base(func):
 
     return wrapper
 
-
 @app.route("/articles_extractor/", methods=["GET", "POST"])
 @login_required
 @extractor_base
@@ -186,7 +185,6 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                             user_models = user_models,
                             pubtator = pubtator_options,
                             show_queries = True)
-
 
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
@@ -339,7 +337,6 @@ def user_area():
     results = Results.query.filter_by(user_id=current_user.id).all()
     return render_template("user_area.html", results=results)
 
-
 @app.route("/result_view/<result_id>")
 @login_required
 def result_view(result_id):
@@ -378,7 +375,6 @@ def result_view(result_id):
         flash(f"Invalid ID", category="danger")
         return redirect(url_for("user_area"))
 
-
 @app.route("/openai_engine/<result_id>", methods=["GET", "POST"])
 @login_required
 def openai_engine(result_id):
@@ -406,7 +402,6 @@ def openai_engine(result_id):
         flash(result)
 
     return render_template("openai_engine.html", df=df, form=form, result_final=result, result_id=result_id)
-
 
 @app.route("/download/<result_id>/<selected_df>")
 @login_required
@@ -448,7 +443,6 @@ def download(result_id, selected_df):
         flash("Unknow result ID", category='danger')
         url_for(user_area)
 
-
 @app.route("/delete_record/<id>", methods=["POST"])
 @login_required
 def delete_record(id):
@@ -457,7 +451,6 @@ def delete_record(id):
         db.session.delete(result)
         db.session.commit()
         return redirect(url_for("user_area"))
-
 
 @app.route("/user_models/", methods=["GET", "POST"])
 @login_required
@@ -500,7 +493,6 @@ def user_models():
 
     return render_template("user_models.html", user_models=user_models, form=form)
 
-
 @app.route("/delete_model/<id>", methods=["POST"])
 @login_required
 def delete_model(id):
@@ -509,7 +501,6 @@ def delete_model(id):
         db.session.delete(model)
         db.session.commit()
         return redirect(url_for("user_models"))
-
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
@@ -559,7 +550,6 @@ def register_tokens():
     
     return render_template("register_tokens.html", form=form)
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = forms.LoginForm()
@@ -574,7 +564,6 @@ def login():
         else:
             flash(f"Wrong email or password. Try again!", category="danger")
     return render_template("login.html", form=form)
-
 
 @app.route("/recovery_password_form", methods=["GET", "POST"])
 def recovery_passwordForm():
@@ -609,7 +598,6 @@ def recovery_passwordForm():
             flash(f"Account not found, please review your e-mail", category="danger")
     return render_template("recovery_password_form.html", form=form)
 
-
 @app.route("/recovery_password/<id>/<token>", methods=["GET", "POST"])
 def recovery_password(token, id):
     form = forms.RecoveryPassword()
@@ -631,7 +619,6 @@ def recovery_password(token, id):
         flash(f"Token expired, generate another token", category="danger")
         return redirect(url_for("recovery_passwordForm"))
     return render_template("recovery_password.html", form=form, token=token, id=id)
-
 
 @app.route("/logout")
 def logout():
