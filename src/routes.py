@@ -188,7 +188,6 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
                             show_queries = True)
 
 
-
 @app.route("/articles_extractor_str/", methods=["GET", "POST"])
 @login_required
 @extractor_base
@@ -390,10 +389,10 @@ def openai_engine(result_id):
     register_token_exist = KeysTokens.query.filter_by(user_id=current_user.id).first()
     
     if register_token_exist :
-        key = register_token_exist.OpenAI
+        key = register_token_exist.OpenRouter_Key
     else:
         register_token_master = KeysTokens.query.filter_by(user_id=1).first()
-        key = register_token_master.OpenAI
+        key = register_token_master.OpenRouter_Key
 
     list_doi = []
     if request.method == "POST":
@@ -539,7 +538,7 @@ def register_tokens():
             user_token.NCBI_API_KEY = form.NCBI_API_KEY.data
             user_token.X_ELS_APIKey = form.X_ELS_APIKey.data
             user_token.X_ELS_Insttoken = form.X_ELS_Insttoken.data
-            user_token.OpenAI = form.OpenAI.data
+            user_token.OpenRouter_Key = form.OpenRouter_Key.data
             db.session.commit()
 
             flash('Token updated successfully!')
@@ -550,7 +549,7 @@ def register_tokens():
                 NCBI_API_KEY=form.NCBI_API_KEY.data,
                 X_ELS_APIKey=form.X_ELS_APIKey.data,
                 X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-                OpenAI=form.OpenAI.data
+                OpenRouter_Key=form.OpenRouter_Key.data
             )
             db.session.add(register_token)
             db.session.commit()

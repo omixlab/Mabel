@@ -34,7 +34,7 @@ class KeysTokens(db.Model):
     NCBI_API_KEY = db.Column(db.String(length=200), unique=True)
     X_ELS_APIKey = db.Column(db.String(length=200), unique=True)
     X_ELS_Insttoken = db.Column(db.String(length=200), unique=True)
-    OpenAI = db.Column(db.String(length=200))
+    OpenRouter_Key = db.Column(db.String(length=200))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
 

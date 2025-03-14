@@ -36,7 +36,7 @@ from src.models import Users, FlashtextModels
 # Sfrom wtforms.widgets import TextArea
 
 
-# Flask Login
+
 class RegisterForm(FlaskForm):
     def validate_username(self, check_user):
         user = Users.query.filter_by(name=check_user.data).first()
@@ -99,7 +99,7 @@ class RegisterTokensForm(FlaskForm):
     NCBI_API_KEY = StringField(label="NCBI:")
     X_ELS_APIKey = StringField(label="Elsevier API key:")
     X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
-    OpenAI = StringField(label="OpenAI:")
+    OpenRouter_Key = StringField(label="OpenRouter_Key:")
     submit = SubmitField(label="Save")
 
 class RecoveryPasswordForm(FlaskForm):
@@ -123,14 +123,11 @@ class RecoveryPassword(FlaskForm):
     )
     submit = SubmitField(label="Recovery Password")
 
-
-# Query constructor
 class BasicQuery(FlaskForm):
     tags = SelectField("option", choices=flasky_tuples.tags, validators=[InputRequired()], default=1)
     keyword = StringField(label="Keyword:", validators=[Length(min=2)])
     boolean = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access = BooleanField("open_access", validators=[Optional()], default=False)
-
 
 class AdvancedQuery(FlaskForm):
     tags_pubmed = SelectField("option", choices=flasky_tuples.pubmed_tags, default=1)
@@ -158,8 +155,6 @@ class AdvancedQuery(FlaskForm):
 
     open_access_pprint = None
 
-
-# Submit
 class SearchArticles(FlaskForm):
     job_name = StringField(label="Job name")
 
@@ -254,8 +249,6 @@ class SearchArticles(FlaskForm):
     flashtext_radio = RadioField("Keyword or Models", choices=[("Keyword", "Specify keywords"), ("Model", "Use a model")])
     flashtext_string = StringField("Keywords")
 
-
-# Others
 class SearchFilters(FlaskForm):
     abstract = BooleanField("Abstract")
     free_full_text = BooleanField("Free full text")
@@ -277,7 +270,6 @@ class SearchFilters(FlaskForm):
     excludepreprints = BooleanField("Exclude preprints")
     medline = BooleanField("MEDLINE")
 
-
 class ScispacyEntities(FlaskForm):
     amino_acid = BooleanField("AMINO_ACID")
     anatomical_system = BooleanField("ANATOMICAL_SYSTEM")
@@ -296,16 +288,13 @@ class ScispacyEntities(FlaskForm):
     simple_chemical = BooleanField("SIMPLE_CHEMICAL")
     tissue = BooleanField("TISSUE")
 
-
 class FlashtextDefaultModels(FlaskForm):
     genes_human = BooleanField(1)
     genes_danio_rerio = BooleanField(2)
 
-
 class FlashtextUserModels(FlaskForm):
     # Apenas cria a classe aqui, atributos são criados durante o acesso (routes.py)
     pass
-
 
 class CreateFlashtextModel(FlaskForm):
     name = StringField(
