@@ -44,7 +44,7 @@ class Results(db.Model):
     status = db.Column(db.String, nullable=True)
     celery_id = db.Column(db.String(length=100), nullable=False)
     job_name = db.Column(db.String())
-    used_queries = db.Column(db.String())
+    used_queries = db.Column(db.Text())
     result_json = db.Column(db.String())
     result_count_dfs_json = db.Column(db.String())
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
