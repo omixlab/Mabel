@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS results (
 	status VARCHAR(20),
 	celery_id VARCHAR(100) NOT NULL,
 	job_name VARCHAR(100),
-	used_queries VARCHAR(4096),
+	used_queries TEXT,
 	result_json json,
 	result_count_dfs_json json,
 	created_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
