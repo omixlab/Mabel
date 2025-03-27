@@ -553,16 +553,20 @@ def register_tokens():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = forms.LoginForm()
-    if form.validate_on_submit():
-        user_logged = Users.query.filter_by(email=form.email.data).first()
-        if user_logged and user_logged.convert_password(
-            password_clean_text=form.password.data
-        ):
-            login_user(user_logged)
-            flash(f"Success! You're logged in as: {user_logged.name}", category="success")
-            return redirect(url_for("articles_extractor"))
-        else:
-            flash(f"Wrong email or password. Try again!", category="danger")
+    if form.is_submitted():
+        try:
+            user_logged = Users.query.filter_by(email=form.email.data).first()
+            if user_logged and user_logged.convert_password(
+                password_clean_text=form.password.data
+            ):
+                login_user(user_logged)
+                flash(f"Success! You're logged in as: {user_logged.name}", category="success")
+                return redirect(url_for("articles_extractor"))
+            else:
+                flash(f"Wrong email or password. Try again!", category="danger")
+        except:
+            return(redirect(url_for("register")))
+            
     return render_template("login.html", form=form)
 
 @app.route("/recovery_password_form", methods=["GET", "POST"])
