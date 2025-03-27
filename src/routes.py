@@ -94,8 +94,8 @@ def extractor_base(func):
                     # Celery
                     query_fields = {
                         "pubmed": search_form.query_pubmed.data,
-                        "scopus":search_form.query_elsevier.data,
-                        "scidir":search_form.query_elsevier.data,
+                        "scopus":search_form.query_scopus.data,
+                        "scidir":search_form.query_scopus.data,
                         "scielo":search_form.query_scielo.data,
                         "pprint":search_form.query_pprint.data,
                     }
@@ -133,7 +133,7 @@ def extractor_base(func):
                     # Warning if incorrect query balance
                     for k in query_fields:
                         if not query_constructor.check_balance(query_fields[k]):
-                            flash(f"Warning: Your {k.title()} query looks wrong, check again if the request return no results.", category="warning")
+                            flash(f"Warning: Your {k.title()} query looks wrong, check again if the request returns no results.", category="warning")
 
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
@@ -171,9 +171,9 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
     # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data, search_form.query_pprint.data = query_constructor.basic(
+            search_form.query_pubmed.data, search_form.query_scopus.data, search_form.query_scielo.data, search_form.query_pprint.data = query_constructor.basic(
                 pm_query=search_form.query_pubmed.data, 
-                els_query=search_form.query_elsevier.data,
+                els_query=search_form.query_scopus.data,
                 scielo_query=search_form.query_scielo.data,
                 ppr_query=search_form.query_pprint.data,
                 tag=query_form.tags.data,
@@ -208,13 +208,22 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 query_form.boolean_pubmed.data,
             )
 
-        if "elsevier_add_keyword" in request.form:
-            search_form.query_elsevier.data = query_constructor.elsevier(
-                search_form.query_elsevier.data,
-                query_form.tags_elsevier.data,
-                query_form.keyword_elsevier.data,
-                query_form.boolean_elsevier.data,
-                query_form.open_access_elsevier.data,
+        if "scopus_add_keyword" in request.form:
+            search_form.query_scopus.data = query_constructor.elsevier(
+                search_form.query_scopus.data,
+                query_form.tags_scopus.data,
+                query_form.keyword_scopus.data,
+                query_form.boolean_scopus.data,
+                query_form.open_access_scopus.data,
+            )
+
+        if "scidir_add_keyword" in request.form:
+            search_form.query_scidir.data = query_constructor.elsevier(
+                search_form.query_scidir.data,
+                query_form.tags_scidir.data,
+                query_form.keyword_scidir.data,
+                query_form.boolean_scidir.data,
+                query_form.open_access_scidir.data,
             )
         
         if 'scielo_add_keyword' in request.form:
