@@ -274,7 +274,7 @@ def user_profile():
         form.NCBI_API_KEY.data = user_tokens.NCBI_API_KEY
         form.X_ELS_APIKey.data = user_tokens.X_ELS_APIKey
         form.X_ELS_Insttoken.data = user_tokens.X_ELS_Insttoken
-        form.OpenAI.data = user_tokens.OpenAI
+        form.OpenRouter_Key.data = user_tokens.OpenRouter_Key
     
     if request.method == "POST":
         if form.validate_on_submit: 
@@ -311,7 +311,7 @@ def user_profile():
                 user_tokens.NCBI_API_KEY = form.NCBI_API_KEY.data
                 user_tokens.X_ELS_APIKey = form.X_ELS_APIKey.data
                 user_tokens.X_ELS_Insttoken = form.X_ELS_Insttoken.data
-                user_tokens.OpenAI = form.OpenAI.data
+                user_tokens.OpenRouter_Key = form.OpenRouter_Key.data
                 db.session.commit()
             
             else:
@@ -321,7 +321,7 @@ def user_profile():
                     NCBI_API_KEY=form.NCBI_API_KEY.data,
                     X_ELS_APIKey=form.X_ELS_APIKey.data,
                     X_ELS_Insttoken=form.X_ELS_Insttoken.data,
-                    OpenAI=form.OpenAI.data
+                    OpenRouter_Key=form.OpenRouter_Key.data
                 )
                 db.session.add(register_token)
                 db.session.commit()
@@ -389,7 +389,7 @@ def openai_engine(result_id):
     else:
         register_token_master = KeysTokens.query.filter_by(user_id=1).first()
         key = register_token_master.OpenRouter_Key
-
+    
     list_doi = []
     if request.method == "POST":
         for getid in request.form.getlist("mycheckbox"):

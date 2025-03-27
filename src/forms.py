@@ -92,7 +92,7 @@ class UserProfile(FlaskForm):
     NCBI_API_KEY = StringField(label="NCBI:")
     X_ELS_APIKey = StringField(label="Elsevier API key:")
     X_ELS_Insttoken = StringField(label="Elsevier Institutional token:")
-    OpenAI = StringField(label="OpenAI:")
+    OpenRouter_Key = StringField(label="OpenRouter_Key:")
     submit = SubmitField(label="Confirm changes")
 
 class RegisterTokensForm(FlaskForm):

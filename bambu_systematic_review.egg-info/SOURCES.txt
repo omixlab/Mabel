@@ -11,7 +11,8 @@ src/models.py
 src/routes.py
 src/utils/__init__.py
 src/utils/extractor.py
+src/utils/keyword_search.py
+src/utils/openAI_deepseek.py
 src/utils/optional_features.py
 src/utils/query_constructor.py
 src/utils/unify_dfs.py
-src/utils/yagmail_utils.py

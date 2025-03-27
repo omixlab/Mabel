@@ -242,10 +242,13 @@ def execute(
             return result_json
 
         else:
+            result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
+            result.status = 'FAILED (no db selected)'
+            db.session.commit()
             return "None database selected"
     
     except Exception as e:
-        # exception_message = str(e)
+        exception_message = str(e)
         result = db.session.query(Results).filter_by(celery_id=self.request.id).first()
         result.status = 'FAILED'
         db.session.commit()

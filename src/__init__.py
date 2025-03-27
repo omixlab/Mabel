@@ -1,6 +1,5 @@
 import os
 
-import mysql.connector
 from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_bcrypt import Bcrypt
@@ -18,6 +17,7 @@ login_manager = LoginManager()
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 celery = make_celery(app)
 db.init_app(app)
 bcrypt = Bcrypt(app)
