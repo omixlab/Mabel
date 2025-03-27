@@ -130,6 +130,11 @@ def extractor_base(func):
                         )
                     )
 
+                    # Warning if incorrect query balance
+                    for k in query_fields:
+                        if not query_constructor.check_balance(query_fields[k]):
+                            flash(f"Warning: Your {k.title()} query looks wrong, check again if the request return no results.", category="warning")
+
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
                         user_id= current_user.id, 

@@ -1,4 +1,5 @@
 from src.utils.dicts_tuples.flasky_tuples import to_pubmed, to_scielo, to_pprint
+from collections import deque
 
 
 def basic(pm_query, els_query, scielo_query, ppr_query, tag, keyword, boolean, open_access):
@@ -108,3 +109,17 @@ def preprints(ppr_query, tag, keyword, boolean, date):
         ppr_query += f' {boolean} ({tag}:{keyword})'
 
     return ppr_query
+
+
+def check_balance(query):
+    stack = deque()
+    pares = {")": "(", "]": "["}
+
+    for char in query:
+        if char in "([":  # Se for abertura, adiciona à pilha
+            stack.append(char)
+        elif char in ")]":  # Se for fechamento
+            if not stack or stack.pop() != pares[char]:  
+                return False  # Erro: fechamento sem abertura correspondente
+
+    return not stack  # Retorna True se tudo estiver balanceado
