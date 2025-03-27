@@ -135,10 +135,15 @@ class AdvancedQuery(FlaskForm):
     boolean_pubmed = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
     open_access_pubmed = None
 
-    tags_elsevier = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
-    keyword_elsevier = StringField(label="Keywords:", validators=[Length(min=2)])
-    boolean_elsevier = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
-    open_access_elsevier = BooleanField("open_access", validators=[Optional()], default=False)
+    tags_scopus = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
+    keyword_scopus = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_scopus = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    open_access_scopus = BooleanField("open_access", validators=[Optional()], default=False)
+    
+    tags_scidir = SelectField("option", choices=flasky_tuples.elsevier_tags, default=1)
+    keyword_scidir = StringField(label="Keywords:", validators=[Length(min=2)])
+    boolean_scidir = SelectField("connective", choices=[("AND", "AND"), ("OR", "OR"), ("NOT", "NOT")])
+    open_access_scidir = BooleanField("open_access", validators=[Optional()], default=False)
 
     tags_scielo = SelectField("option", choices=flasky_tuples.scielo_tags, default=1)
     keyword_scielo = StringField(label="Keywords:", validators=[Length(min=2)])
@@ -164,8 +169,13 @@ class SearchArticles(FlaskForm):
         render_kw={"rows": "4", "cols": "100"}, 
         validators=[Optional()]
     )
-    query_elsevier = TextAreaField(
-        "Elsevier",
+    query_scopus = TextAreaField(
+        "Scopus",
+        render_kw={"rows": "4", "cols": "100"},
+        validators=[Optional()],
+    )
+    query_scidir = TextAreaField(
+        "ScienceDirect",
         render_kw={"rows": "4", "cols": "100"},
         validators=[Optional()],
     )

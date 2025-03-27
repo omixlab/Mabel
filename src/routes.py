@@ -94,8 +94,8 @@ def extractor_base(func):
                     # Celery
                     query_fields = {
                         "pubmed": search_form.query_pubmed.data,
-                        "scopus":search_form.query_elsevier.data,
-                        "scidir":search_form.query_elsevier.data,
+                        "scopus":search_form.query_scopus.data,
+                        "scidir":search_form.query_scopus.data,
                         "scielo":search_form.query_scielo.data,
                         "pprint":search_form.query_pprint.data,
                     }
@@ -129,6 +129,11 @@ def extractor_base(func):
                         pubtator
                         )
                     )
+
+                    # Warning if incorrect query balance
+                    for k in query_fields:
+                        if not query_constructor.check_balance(query_fields[k]):
+                            flash(f"Warning: Your {k.title()} query looks wrong, check again if the request returns no results.", category="warning")
 
                     flash(f"Your result id is: {data_tmp.id}", category="success")
                     results = Results(
@@ -166,9 +171,9 @@ def articles_extractor(search_form, available_entities, default_models, user_mod
     # Query constructor
     if request.method == 'POST':
         if 'add_keyword' in request.form:
-            search_form.query_pubmed.data, search_form.query_elsevier.data, search_form.query_scielo.data, search_form.query_pprint.data = query_constructor.basic(
+            search_form.query_pubmed.data, search_form.query_scopus.data, search_form.query_scielo.data, search_form.query_pprint.data = query_constructor.basic(
                 pm_query=search_form.query_pubmed.data, 
-                els_query=search_form.query_elsevier.data,
+                els_query=search_form.query_scopus.data,
                 scielo_query=search_form.query_scielo.data,
                 ppr_query=search_form.query_pprint.data,
                 tag=query_form.tags.data,
@@ -203,13 +208,22 @@ def articles_extractor_str(search_form, available_entities, default_models, user
                 query_form.boolean_pubmed.data,
             )
 
-        if "elsevier_add_keyword" in request.form:
-            search_form.query_elsevier.data = query_constructor.elsevier(
-                search_form.query_elsevier.data,
-                query_form.tags_elsevier.data,
-                query_form.keyword_elsevier.data,
-                query_form.boolean_elsevier.data,
-                query_form.open_access_elsevier.data,
+        if "scopus_add_keyword" in request.form:
+            search_form.query_scopus.data = query_constructor.elsevier(
+                search_form.query_scopus.data,
+                query_form.tags_scopus.data,
+                query_form.keyword_scopus.data,
+                query_form.boolean_scopus.data,
+                query_form.open_access_scopus.data,
+            )
+
+        if "scidir_add_keyword" in request.form:
+            search_form.query_scidir.data = query_constructor.elsevier(
+                search_form.query_scidir.data,
+                query_form.tags_scidir.data,
+                query_form.keyword_scidir.data,
+                query_form.boolean_scidir.data,
+                query_form.open_access_scidir.data,
             )
         
         if 'scielo_add_keyword' in request.form:
@@ -553,16 +567,20 @@ def register_tokens():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = forms.LoginForm()
-    if form.validate_on_submit():
-        user_logged = Users.query.filter_by(email=form.email.data).first()
-        if user_logged and user_logged.convert_password(
-            password_clean_text=form.password.data
-        ):
-            login_user(user_logged)
-            flash(f"Success! You're logged in as: {user_logged.name}", category="success")
-            return redirect(url_for("articles_extractor"))
-        else:
-            flash(f"Wrong email or password. Try again!", category="danger")
+    if form.is_submitted():
+        try:
+            user_logged = Users.query.filter_by(email=form.email.data).first()
+            if user_logged and user_logged.convert_password(
+                password_clean_text=form.password.data
+            ):
+                login_user(user_logged)
+                flash(f"Success! You're logged in as: {user_logged.name}", category="success")
+                return redirect(url_for("articles_extractor"))
+            else:
+                flash(f"Wrong email or password. Try again!", category="danger")
+        except:
+            return(redirect(url_for("register")))
+            
     return render_template("login.html", form=form)
 
 @app.route("/recovery_password_form", methods=["GET", "POST"])

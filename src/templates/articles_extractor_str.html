@@ -14,7 +14,7 @@ Articles Extractor
 
             <br>
             
-            {% for database in ["pubmed", "elsevier", "scielo", "pprint"] %}
+            {% for database in ["pubmed", "scopus", "scidir", "scielo", "pprint"] %}
                 <!-- Heading -->
                 <div class="row">
                     <div class="col-md-2 text-start"><h3>{{search_form['title_' + database]}}</h3></div>
@@ -24,19 +24,6 @@ Articles Extractor
                 </div>
                 
                 <!-- Check and Range -->
-                    {% if database == "elsevier" %}
-                        <div class="row">
-                            <div class="col-md-2 text-start">{{search_form.check_scopus(class='mt-2')}} <label class="form-check-label" for="check_scopus">Scopus</label></div>
-                            <div class="col-md-8">{{search_form.range_scopus(class='form-range', step=25, min=0, max=5000, id='range_scopus', oninput="outputUpdate(range_scopus.value)")}}</div>
-                            <div class="col-md-2 text-end">{{search_form.num_scopus(class='form-control', id='num_scopus')}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2 text-start">{{search_form.check_scidir(class='mt-2')}} <label class="form-check-label" for="check_scidir">ScienceDirect</label></div>
-                            <div class="col-md-8">{{search_form.range_scidir(class='form-range', step=25, min=0, max=5000, id='range_scidir', oninput="outputUpdate(range_scidir.value)")}}</div>
-                            <div class="col-md-2 text-end">{{search_form.num_scidir(class='form-control', id='num_scidir')}}</div>
-                        </div>
-
-                    {% else %}
                     <div class="row">
                         <div class="col-md-2 text-start" >{{search_form['check_' + database](class='mt-2')}} <label class="form-check-label" for="check_{{database}}">Enabled</label></div>
                         {% if search_form['num_' + database] %}
@@ -44,7 +31,6 @@ Articles Extractor
                         <div class="col-md-2">{{search_form['num_' + database](class='form-control', id='num_'+database)}}</div>
                         {% endif %}
                     </div>
-                    {% endif %}
 
                 <br>
                 

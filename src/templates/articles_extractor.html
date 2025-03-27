@@ -26,7 +26,7 @@ Articles Extractor
                 </div>
             </div>
             <br>
-            {% for database in ["pubmed", "elsevier", "scielo", "pprint"] %}
+            {% for database in ["pubmed", "scopus", "scidir", "scielo", "pprint"] %}
                 {% if database == "pubmed" %}        
                     <div class="text-justify">{{search_form['query_' + database](placeholder = 'Query')}}</div>
                     <br>
