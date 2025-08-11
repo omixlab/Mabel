@@ -1,0 +1,5 @@
+CELERY_BROKER_URL='redis://redis:6379'
+CELERY_RESULT_BACKEND='redis://redis:6379'
+SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:123456@bambu-db:3306/bambu'
+FLASK_SECRET_KEY="keyourpreference"
+EMAIL='example@gmail.com'

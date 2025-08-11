@@ -1,0 +1,13 @@
+name: BioSyn
+dependencies:
+  - python=3.11.13
+  - pip:
+    - numpy
+    - tqdm
+    - scikit-learn
+    - flair==0.14.0
+    - pandas
+    - scispacy==0.5.1
+    - spacy==3.4.4
+    - https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_core_sci_sm-0.5.1.tar.gz
+

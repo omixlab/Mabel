@@ -23,7 +23,7 @@ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_ner_bionlp
 scispacy==0.5.1
 mysql-connector-python
 pymysql
-flashtext
+#flashtext
 Werkzeug==2.2.0
 resend==0.8.0
 scielo-extractor

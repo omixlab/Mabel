@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: biosyn
+Version: 0.1
+Summary: biosyn
+Home-page: https://github.com/dmis-lab/biosyn
+Author: mujeensung
+Author-email: mujeensung@korea.ac.kr
+Keywords: biosyn
+Requires-Python: >=3.6.0
+License-File: LICENSE
